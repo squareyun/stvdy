@@ -22,15 +22,16 @@ public class Room {
     private String title;
 
     //    @Column(columnDefinition = "TINYINT(8)")
-    private int max;
+    private int quota;
 
-    private boolean privacy;
+    @Column(name = "is_privacy")
+    private boolean isPrivacy;
 
     @Column(length = 45)
     private String password;
 
-    @Column(name = "due_time")
-    private LocalDateTime dueTime;
+    @Column(name = "end_time")
+    private LocalDateTime endTime;
 
     @Column(name = "image_path", length = 45)
     private String imagePath;
