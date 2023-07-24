@@ -1,21 +1,19 @@
 <script setup>
 import LoginBanner from '@/components/LoginBanner.vue'
+import LoginBox from '@/components/LoginBox.vue'
 </script>
 
 <template>
   <LoginBanner />
-  <div class="vLogin">
-    <h1>hello</h1>
-  </div>
+  <LoginBox class="LoginBox"/>
 </template>
 
 <style>
-.vLogin {
+.LoginBox {
   background-color: #f8f8f2;
   border-radius: 20px;
   width: 420px;
   height: 720px;
-
   margin: 0 auto;
 }
 
