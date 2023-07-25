@@ -1,12 +1,15 @@
 package com.ssafy.ssap.domain.studyroom;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import static jakarta.persistence.FetchType.LAZY;
+
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -16,10 +19,11 @@ import static jakarta.persistence.FetchType.LAZY;
 public class Participants {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "is_out", columnDefinition = "TINYINT(1)")
+    @ColumnDefault("false")
     private Boolean isOut;
 
     @ManyToOne(fetch = LAZY)

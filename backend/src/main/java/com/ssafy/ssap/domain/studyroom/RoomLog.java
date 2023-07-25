@@ -9,15 +9,15 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "room_log")
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "room_log")
 public class RoomLog {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "room_title", length = 45)

@@ -28,6 +28,7 @@ public class RoomService {
      */
     @Transactional
     public Long create(RoomDto roomDto) throws Exception {
+        // 방 추가
         Room room = Room.builder()
                 .title(roomDto.getTitle())
                 .quota(roomDto.getQuota())
