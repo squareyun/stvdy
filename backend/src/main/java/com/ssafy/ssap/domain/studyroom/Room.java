@@ -25,13 +25,10 @@ public class Room {
     @Column(length = 20)
     private String title;
 
-    //    h2 DB에는 tinyint 지원안함. 추후 수정
-//    @Column(columnDefinition = "TINYINT(8)")
+    @Column(columnDefinition = "TINYINT(8)")
     private int quota;
 
-    //    h2 DB에는 tinyint 지원안함. 추후 수정
-//    @Column(name = "is_privacy", columnDefinition = "TINYINT(1)")
-    @Column(name = "is_privacy")
+    @Column(name = "is_privacy", columnDefinition = "TINYINT(1)")
     private Boolean isPrivacy;
 
     @Column(length = 45)

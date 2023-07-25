@@ -23,7 +23,7 @@ public class RoomService {
         Room room = Room.builder()
                 .title(roomDto.getTitle())
                 .quota(roomDto.getQuota())
-                .isPrivacy(roomDto.isPrivacy())
+                .isPrivacy(roomDto.getIsPrivacy())
                 .password(roomDto.getPassword())
                 .endTime(LocalDateTime.now().plusHours(roomDto.getEndHour()).plusMinutes(roomDto.getEndMinute()))
                 .imagePath(roomDto.getImagePath())

@@ -10,7 +10,7 @@ public class RoomDto {
     private long endHour;
     private long endMinute;
     private int quota;
-    private boolean isPrivacy;
+    private Boolean isPrivacy;
     private String password;
     private String imagePath;
     private String rule;
