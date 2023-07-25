@@ -19,6 +19,8 @@ spring:
       hibernate:
         #        show_sql: true
         format_sql: true
+        hbm2ddl:
+          import_files: 'classpath:static-data.sql'
 
 logging:
   level:

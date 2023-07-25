@@ -32,7 +32,7 @@ public class RoomController {
             resultMap.put("message", MessageFormat.SUCCESS);
             status = HttpStatus.ACCEPTED;
         } catch (Exception e) {
-            logger.error("스터디룸 생성 실패");
+            logger.error("스터디룸 생성 실패: ", e);
             resultMap.put("message", MessageFormat.SERVER_FAIL);
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
