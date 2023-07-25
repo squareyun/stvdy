@@ -4,14 +4,18 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
+@NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class Room {
 
     @Id
@@ -21,15 +25,19 @@ public class Room {
     @Column(length = 20)
     private String title;
 
-    //    @Column(columnDefinition = "TINYINT(8)")
+    //    h2 DB에는 tinyint 지원안함. 추후 수정
+//    @Column(columnDefinition = "TINYINT(8)")
     private int quota;
 
+    //    h2 DB에는 tinyint 지원안함. 추후 수정
+//    @Column(name = "is_privacy", columnDefinition = "TINYINT(1)")
     @Column(name = "is_privacy")
-    private boolean isPrivacy;
+    private Boolean isPrivacy;
 
     @Column(length = 45)
     private String password;
 
+    //    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     @Column(name = "end_time")
     private LocalDateTime endTime;
 
@@ -37,4 +45,5 @@ public class Room {
     private String imagePath;
 
     private String rule;
+
 }

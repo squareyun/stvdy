@@ -1,10 +1,18 @@
 package com.ssafy.ssap.dto;
 
-import lombok.Builder;
+import lombok.Getter;
 
-@Builder
+@Getter
 public class RoomDto {
 
     private Long userNo;
-    
+    private String title;
+    private long endHour;
+    private long endMinute;
+    private int quota;
+    private boolean isPrivacy;
+    private String password;
+    private String imagePath;
+    private String rule;
+
 }

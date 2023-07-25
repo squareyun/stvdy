@@ -1,7 +1,7 @@
 package com.ssafy.ssap.controller;
 
 import com.ssafy.ssap.common.MessageFormat;
-import com.ssafy.ssap.domain.studyroom.Room;
+import com.ssafy.ssap.dto.RoomDto;
 import com.ssafy.ssap.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -23,11 +23,11 @@ public class RoomController {
     private final RoomService roomService;
 
     @PostMapping("/add")
-    public ResponseEntity<Map<String, Object>> add(@RequestBody Room room) {
+    public ResponseEntity<Map<String, Object>> add(@RequestBody RoomDto roomDto) {
         Map<String, Object> resultMap = new HashMap<>();
         HttpStatus status = null;
         try {
-            Long roomId = roomService.create(room);
+            Long roomId = roomService.create(roomDto);
             logger.debug("{} 스터디룸 생성 성공", roomId);
             resultMap.put("message", MessageFormat.SUCCESS);
             status = HttpStatus.ACCEPTED;
