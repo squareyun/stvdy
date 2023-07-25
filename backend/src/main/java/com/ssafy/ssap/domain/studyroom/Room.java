@@ -35,7 +35,7 @@ public class Room {
     private String password;
 
     //    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    @Column(name = "end_time")
+    @Column(name = "end_time", columnDefinition = "timestamp")
     private LocalDateTime endTime;
 
     @Column(name = "image_path", length = 45)

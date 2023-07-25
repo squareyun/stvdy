@@ -3,8 +3,11 @@ package com.ssafy.ssap.service;
 import com.ssafy.ssap.domain.studyroom.Participants;
 import com.ssafy.ssap.domain.studyroom.ParticipantsRoleNs;
 import com.ssafy.ssap.domain.studyroom.Room;
+import com.ssafy.ssap.domain.studyroom.RoomLog;
 import com.ssafy.ssap.dto.RoomDto;
 import com.ssafy.ssap.repository.ParticipantsRepository;
+import com.ssafy.ssap.repository.ParticipantsRoleNsRepository;
+import com.ssafy.ssap.repository.RoomLogRepository;
 import com.ssafy.ssap.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,7 @@ public class RoomService {
 
     private final RoomRepository roomRepository;
     private final ParticipantsRepository participantsRepository;
+    private final RoomLogRepository roomLogRepository;
 
     /**
      * 스터디룸 생성
@@ -42,6 +46,13 @@ public class RoomService {
                 .room(room)
                 .build();
         participantsRepository.save(participants);
+
+        // 접속 기록 추가
+        RoomLog roomLog = RoomLog.builder()
+            .roomTitle(room.getTitle())
+            .enterTime(LocalDateTime.now())
+            .build();
+        roomLogRepository.save(roomLog);
 
         return room.getId();
     }
