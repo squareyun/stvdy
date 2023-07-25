@@ -1,11 +1,13 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
+// import { Alert } from '@/components';
 import TopBar from '@/components/TopBar.vue'
 </script>
 
 <template>
   <header>
     <TopBar />
+    <Alert />
   </header>
 
   <RouterView />

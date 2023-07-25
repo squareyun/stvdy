@@ -36,6 +36,7 @@ function fakeBackend() {
       // route functions
 
       function authenticate() {
+        console.log(">>>>페이크 백엔드에서 인증 함수에 도착<<<<")
         const { username, password } = body()
         const user = users.find(
           (x) => x.username === username && x.password === password,

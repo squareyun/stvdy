@@ -17,7 +17,13 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue'),
+      children: [
+        { path: '', name: 'login', component: () => import('../components/ent/LoginBox.vue')},
+        { path: '/regist', name: 'regist', component: () => import('../components/ent/RegisterBox.vue')},
+        { path: '/passwordReset', name: 'passwordReset', component: () => import('../components/ent/PasswordReset.vue')},
+      ]
     },
+
   ],
 })
 
@@ -28,7 +34,7 @@ router.beforeEach(async (to) => {
 
   // 로그인 없이도 접근 가능한 라우터
   // 접근 하려는 라우터가 public 인지 확인
-  const publicPages = ['/about']
+  const publicPages = ['/about', '/regist', '/passwordReset']
   const authRequired = !publicPages.includes(to.path)
 
   // 로컬 스토리지의 유저 로그인 정보가 있는지 받아오는 스토어
@@ -37,6 +43,8 @@ router.beforeEach(async (to) => {
   // 없으면 끝도 없이 유저 정보 검사후 이동을 반복
   if (authRequired && !authStore.user) {
     console.log('no user')
+    console.log(authRequired)
+    console.log(to.path)
     authStore.returnUrl = to.fullPath
 
     // 로그인 페이지로 넘김

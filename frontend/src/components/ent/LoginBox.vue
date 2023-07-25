@@ -15,6 +15,8 @@ async function onSubmit(values) {
     console.log('>>>>여기 도착<<<<<')
     await authStore.login(username, password);
 }
+
+
 </script>
 
 <template>
@@ -39,7 +41,7 @@ async function onSubmit(values) {
                         <span v-show="isSubmitting" class="spinner-border spinner-border-sm mr-1"></span>
                         로그인
                     </button>
-                    <router-link to="register" class="btn btn-link">회원가입</router-link>
+                    <router-link to="regist" class="btn btn-link">회원가입</router-link>
                     <router-link to="passwordReset" class="btn btn-link">비밀번호를 잊으셨나요?</router-link>
                 </div>
             </Form>

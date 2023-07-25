@@ -5,7 +5,8 @@ import LoginBox from '@/components/ent/LoginBox.vue'
 
 <template>
   <LoginBanner />
-  <LoginBox class="LoginBox"/>
+  <router-view class="LoginBox"/>
+  <!-- <LoginBox class="LoginBox"/> -->
 </template>
 
 <style>

@@ -33,7 +33,7 @@ function authHeader(url) {
   } else {
     return {}
   }
-}
+} 
 
 async function handleResponse(response) {
   const isJson = response.headers
