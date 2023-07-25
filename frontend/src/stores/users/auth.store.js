@@ -6,20 +6,24 @@ import { useAlertStore } from '@/stores'
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/users`
 
+
 export const useAuthStore = defineStore({
   id: 'auth',
   state: () => ({
-    // initialize state from local storage to enable user to stay logged in
+    // 유저가 로그인 상태를 유지할 수 있도록 로컬스토리지로부터 상태를 초기화
     user: JSON.parse(localStorage.getItem('user')),
     returnUrl: null,
   }),
   actions: {
     async login(username, password) {
       try {
+        console.log('로그인 함수 도착')
         const user = await fetchWrapper.post(`${baseUrl}/authenticate`, {
           username,
           password,
         })
+        console.log(user);
+
 
         // update pinia state
         this.user = user
