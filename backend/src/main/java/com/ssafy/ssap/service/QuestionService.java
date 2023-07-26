@@ -32,4 +32,16 @@ public class QuestionService {
 
         return question.getId();
     }
+
+    public void update(Long questionNo, QuestionCreateDto questionCreateDto) {
+        Question question = Question.builder()
+                .id(questionNo)
+                .title(questionCreateDto.getTitle())
+                .detail(questionCreateDto.getContent())
+                .registTime(LocalDateTime.now())
+                .category(new QuestionCategoryNs(questionCreateDto.getCategory()))
+                .build();
+
+        questionRepository.save(question);
+    }
 }

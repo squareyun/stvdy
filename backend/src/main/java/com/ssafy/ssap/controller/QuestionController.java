@@ -39,4 +39,22 @@ public class QuestionController {
 
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }
+
+    @PutMapping("/{questionNo}")
+    public ResponseEntity<Map<String, Object>> add(@PathVariable("questionNo") Long questionNo, @RequestBody QuestionCreateDto questionCreateDto) {
+        Map<String, Object> resultMap = new HashMap<>();
+        HttpStatus status = null;
+        try {
+            questionService.update(questionNo, questionCreateDto);
+            logger.debug("{} 질문 수정 성공", questionNo);
+            resultMap.put("message", MessageFormat.SUCCESS);
+            status = HttpStatus.ACCEPTED;
+        } catch (Exception e) {
+            logger.error("질문 수정 실패: ", e);
+            resultMap.put("message", MessageFormat.SERVER_FAIL);
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+
+        return new ResponseEntity<Map<String, Object>>(resultMap, status);
+    }
 }
