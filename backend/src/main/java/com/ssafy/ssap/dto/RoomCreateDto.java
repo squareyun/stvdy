@@ -3,7 +3,7 @@ package com.ssafy.ssap.dto;
 import lombok.Getter;
 
 @Getter
-public class RoomDto {
+public class RoomCreateDto {
 
     private Long userNo;
     private String title;

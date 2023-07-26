@@ -4,9 +4,8 @@ import com.ssafy.ssap.domain.studyroom.Participants;
 import com.ssafy.ssap.domain.studyroom.ParticipantsRoleNs;
 import com.ssafy.ssap.domain.studyroom.Room;
 import com.ssafy.ssap.domain.studyroom.RoomLog;
-import com.ssafy.ssap.dto.RoomDto;
+import com.ssafy.ssap.dto.RoomCreateDto;
 import com.ssafy.ssap.repository.ParticipantsRepository;
-import com.ssafy.ssap.repository.ParticipantsRoleNsRepository;
 import com.ssafy.ssap.repository.RoomLogRepository;
 import com.ssafy.ssap.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,16 +26,17 @@ public class RoomService {
      * 스터디룸 생성
      */
     @Transactional
-    public Long create(RoomDto roomDto) throws Exception {
+    public Long create(RoomCreateDto roomCreateDto) throws Exception {
         // 방 추가
         Room room = Room.builder()
-                .title(roomDto.getTitle())
-                .quota(roomDto.getQuota())
-                .isPrivacy(roomDto.getIsPrivacy())
-                .password(roomDto.getPassword())
-                .endTime(LocalDateTime.now().plusHours(roomDto.getEndHour()).plusMinutes(roomDto.getEndMinute()))
-                .imagePath(roomDto.getImagePath())
-                .rule(roomDto.getRule())
+                .title(roomCreateDto.getTitle())
+                .quota(roomCreateDto.getQuota())
+                .isPrivacy(roomCreateDto.getIsPrivacy())
+                .isValid(true)
+                .password(roomCreateDto.getPassword())
+                .endTime(LocalDateTime.now().plusHours(roomCreateDto.getEndHour()).plusMinutes(roomCreateDto.getEndMinute()))
+                .imagePath(roomCreateDto.getImagePath())
+                .rule(roomCreateDto.getRule())
                 .build();
         roomRepository.save(room);
 
@@ -50,11 +50,23 @@ public class RoomService {
 
         // 접속 기록 추가
         RoomLog roomLog = RoomLog.builder()
-            .roomTitle(room.getTitle())
-            .enterTime(LocalDateTime.now())
-            .build();
+                .roomTitle(room.getTitle())
+                .enterTime(LocalDateTime.now())
+                .room(room)
+                .build();
         roomLogRepository.save(roomLog);
 
         return room.getId();
+    }
+
+    /**
+     * 스터디룸 폐쇄
+     */
+    @Transactional
+    public void close(Long roomNo) {
+        // 방에 접속한 사람들의 room_log 데이터 업데이트
+        roomLogRepository.updateSpendHourByAllRoomId(roomNo);
+
+        roomRepository.setValidToZeroByRoomId(roomNo);
     }
 }

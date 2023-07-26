@@ -1,19 +1,16 @@
 package com.ssafy.ssap.domain.studyroom;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
-
-import org.hibernate.annotations.ColumnDefault;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -31,7 +28,6 @@ public class Room {
     private String title;
 
     @Column(columnDefinition = "TINYINT(8)")
-    @NotNull
     private int quota;
 
     @Column(name = "is_privacy", columnDefinition = "TINYINT(1)")
@@ -46,9 +42,16 @@ public class Room {
     @NotNull
     private LocalDateTime endTime;
 
+    @Column(name = "is_valid", columnDefinition = "TINYINT(1)")
+    @ColumnDefault("true")
+    private Boolean isValid;
+
     @Column(name = "image_path", length = 45)
     private String imagePath;
 
     private String rule;
+
+    @OneToMany(mappedBy = "room")
+    private List<Participants> participantsList = new ArrayList<>();
 
 }
