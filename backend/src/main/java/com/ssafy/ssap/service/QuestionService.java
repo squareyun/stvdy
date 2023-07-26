@@ -44,4 +44,8 @@ public class QuestionService {
 
         questionRepository.save(question);
     }
+
+    public void delete(Long questionNo) {
+        questionRepository.deleteById(questionNo);
+    }
 }

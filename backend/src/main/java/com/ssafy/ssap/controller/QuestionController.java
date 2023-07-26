@@ -57,4 +57,22 @@ public class QuestionController {
 
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }
+
+    @DeleteMapping("/{questionNo}")
+    public ResponseEntity<Map<String, Object>> add(@PathVariable("questionNo") Long questionNo) {
+        Map<String, Object> resultMap = new HashMap<>();
+        HttpStatus status = null;
+        try {
+            questionService.delete(questionNo);
+            logger.debug("{} 질문 삭제 성공", questionNo);
+            resultMap.put("message", MessageFormat.SUCCESS);
+            status = HttpStatus.ACCEPTED;
+        } catch (Exception e) {
+            logger.error("질문 삭제 실패: ", e);
+            resultMap.put("message", MessageFormat.SERVER_FAIL);
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+
+        return new ResponseEntity<Map<String, Object>>(resultMap, status);
+    }
 }
