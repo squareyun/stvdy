@@ -1,6 +1,6 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-// import { Alert } from '@/components';
+import Alert from '@/components/Alert.vue';
 import TopBar from '@/components/TopBar.vue'
 </script>
 

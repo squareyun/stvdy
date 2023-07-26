@@ -1,36 +1,19 @@
 <script setup>
-// import { Form, Field } from 'vee-validate';
-// import * as Yup from 'yup';
-
-import { useUsersStore, useAlertStore } from '@/stores';
+import { useAuthStore, useAlertStore } from '@/stores';
 import router from '@/router';
 
 
-// const schema = Yup.object().shape({
-//   username: Yup.string().required('이름을 작성해주세요.').max(45, '길이를 줄여주세요.').min(4, '더 긴 이름을 사용해야합니다.'),
-//   email: Yup.string().required('이메일을 넣어주세요'),
-//   password: Yup.string().required('비밀번호를 넣어주세요'),
-//   passwordConfirm: Yup.string().oneOf([Yup.ref('password'), null], '비밀번호가 일치하지 않습니다')
-// });
-
-
-// function varificationEmail(parameterHere) {
-//   const emailValue = parameterHere
-//   console.log(emailValue)
-//   // backend에 보내주기
-// }
-
-// async function onSubmit(values){
-//   const usersStore = useUsersStore();
-//   const alertStore = useAlertStore();
-//   try{
-//     await usersStore.register(values);
-//     await router.push('/login');
-//     alertStore.success('회원가입을 완료했습니다!');
-//   }catch(error){
-//     alertStore.error(error);
-//   }
-// }
+async function onSubmit(values) {
+  const authStore = useAuthStore();
+  const alertStore = useAlertStore();
+  try {
+    await authStore.passwordreset(values);
+    await router.push('/login');
+    alertStore.success('임시 비밀번호가 메일로 전송되었습니다.');
+  } catch (error) {
+    alertStore.error(error);
+  }
+}
 
 
 </script>
@@ -42,11 +25,11 @@ import router from '@/router';
       <Form @submit="onSubmit">
         <div class="form-group">
           <label>이름</label>
-          <Field name="username" type="text" class="form-control" />
+          <input name="username" type="text" class="form-control" />
         </div>
         <div class="form-group">
           <label>이메일</label>
-          <Field name="email" type="email" class="form-control" />
+          <input name="email" type="email" class="form-control" />
         </div>
         <div class="form-group">
           <button class="">
@@ -56,17 +39,6 @@ import router from '@/router';
         </div>
 
 
-        <!-- <div class="form-group">
-                  
-                  <input type="checkbox">로그인 유지
-                  <button class="btn btn-primary" :disabled="isSubmitting">
-                      <span v-show="isSubmitting" class="spinner-border spinner-border-sm mr-1"></span>
-                      로그인
-                  </button>
-                  <router-link to="regist" class="btn btn-link">회원가입</router-link>
-                  <button type="button" @click="movePage">가입</button>
-                  <router-link to="passwordReset" class="btn btn-link">비밀번호를 잊으셨나요?</router-link>
-              </div> -->
       </Form>
     </div>
   </div>

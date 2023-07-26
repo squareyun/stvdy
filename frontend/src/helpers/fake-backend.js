@@ -36,13 +36,13 @@ function fakeBackend() {
       // route functions
 
       function authenticate() {
-        console.log(">>>>페이크 백엔드에서 인증 함수에 도착<<<<")
-        const { username, password } = body()
+        console.log('>>>>페이크 백엔드에서 인증 함수에 도착<<<<')
+        const { email, password } = body()
         const user = users.find(
-          (x) => x.username === username && x.password === password,
+          (x) => x.email === email && x.password === password,
         )
 
-        if (!user) return error('Username or password is incorrect')
+        if (!user) return error('이메일 또는 비밀번호가 틀립니다.')
 
         return ok({
           ...basicDetails(user),

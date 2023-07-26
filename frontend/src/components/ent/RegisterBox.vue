@@ -14,20 +14,28 @@ const schema = Yup.object().shape({
 });
 
 
-function varificationEmail(parameterHere) {
-  const emailValue = parameterHere
-  console.log(emailValue)
-  // backend에 보내주기
-}
-
-async function onSubmit(values){
+async function varificationEmail(value) {
   const usersStore = useUsersStore();
   const alertStore = useAlertStore();
-  try{
+  try {
+    await usersStore.varifyEmail(value);
+    alertStore.success('인증메일이 전송되었습니다.');
+  } catch (error) {
+    alertStore.error(error);
+  }
+  // GET, /users/register/{email}
+}
+
+async function onSubmit(values) {
+  const registerData = values;
+  delete registerData.passwordConfirm;
+  const usersStore = useUsersStore();
+  const alertStore = useAlertStore();
+  try {
     await usersStore.register(values);
     await router.push('/login');
     alertStore.success('회원가입을 완료했습니다!');
-  }catch(error){
+  } catch (error) {
     alertStore.error(error);
   }
 }
@@ -69,25 +77,10 @@ async function onSubmit(values){
         </div>
         <div class="form-group">
           <button class="" :disabled="isSubmitting">
-            <!-- <span v-show="isSubmitting" class=""> -->
-              가입하기
-            <!-- </span> -->
+            가입하기
           </button>
           <router-link to="login">취소하기</router-link>
         </div>
-
-
-        <!-- <div class="form-group">
-                  
-                  <input type="checkbox">로그인 유지
-                  <button class="btn btn-primary" :disabled="isSubmitting">
-                      <span v-show="isSubmitting" class="spinner-border spinner-border-sm mr-1"></span>
-                      로그인
-                  </button>
-                  <router-link to="regist" class="btn btn-link">회원가입</router-link>
-                  <button type="button" @click="movePage">가입</button>
-                  <router-link to="passwordReset" class="btn btn-link">비밀번호를 잊으셨나요?</router-link>
-              </div> -->
       </Form>
     </div>
   </div>

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
-
 import { fetchWrapper } from '@/helpers'
 import { useAuthStore } from '@/stores'
+import router from '@/router'
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/users`
 
@@ -14,6 +14,11 @@ export const useUsersStore = defineStore({
   actions: {
     async register(user) {
       await fetchWrapper.post(`${baseUrl}/register`, user)
+      // baseUrl/users/register/{requestBody} // success/fail로 응답받음
+    },
+    async varificationEmail(email) {
+      await fetchWrapper.get(`${baseUrl}/varifyemail`, email)
+      // baseUrl/users/register/{email}
     },
     async getAll() {
       this.users = { loading: true }

@@ -9,6 +9,17 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
+      children: [
+        {
+          path: '/',
+          name: 'home',
+        },
+        {
+          path: '/mypage',
+          name: 'mypage',
+          component: () => import('../components/MyPage.vue'),
+        },
+      ],
     },
     {
       path: '/about',
@@ -18,12 +29,23 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue'),
       children: [
-        { path: '', name: 'login', component: () => import('../components/ent/LoginBox.vue')},
-        { path: '/regist', name: 'regist', component: () => import('../components/ent/RegisterBox.vue')},
-        { path: '/passwordReset', name: 'passwordReset', component: () => import('../components/ent/PasswordReset.vue')},
-      ]
+        {
+          path: '',
+          name: 'login',
+          component: () => import('../components/ent/LoginBox.vue'),
+        },
+        {
+          path: '/regist',
+          name: 'regist',
+          component: () => import('../components/ent/RegisterBox.vue'),
+        },
+        {
+          path: '/passwordReset',
+          name: 'passwordReset',
+          component: () => import('../components/ent/PasswordReset.vue'),
+        },
+      ],
     },
-
   ],
 })
 

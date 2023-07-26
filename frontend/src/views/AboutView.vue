@@ -5,12 +5,12 @@ import LoginBox from '@/components/ent/LoginBox.vue'
 
 <template>
   <LoginBanner />
-  <router-view class="LoginBox"/>
+  <router-view id="login-box"/>
   <!-- <LoginBox class="LoginBox"/> -->
 </template>
 
 <style>
-.LoginBox {
+#login-box {
   background-color: #f8f8f2;
   border-radius: 20px;
   width: 420px;

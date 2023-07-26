@@ -1,11 +1,16 @@
 <template>
   <div id="cTopBar">
-    <p id="time"></p>
+    <p id="time">
+    </p>
+    <router-link to="mypage" style="background:white">마이페이지</router-link>
+    <button @click="logout">LOGOUT</button>
   </div>
+  <!-- TOP BAR에 Notification dropdown(my page로 가는 경로 필), searchbar 들어가야함 -->
 </template>
 
 <script>
 import { onMounted } from 'vue'
+import { useAuthStore } from '@/stores';
 
 export default {
   setup(props) {
@@ -20,6 +25,12 @@ export default {
       ).innerHTML = `${month}월 ${day}일 ${hour} : ${min} Welcome to Stvdy !!`
     })
   },
+  methods: {
+    async logout() {
+      const authStore = useAuthStore();
+      await authStore.logout();
+    }
+  }
 }
 </script>
 

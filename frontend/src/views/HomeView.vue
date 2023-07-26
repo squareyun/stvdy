@@ -4,6 +4,7 @@ import TheWelcome from '../components/TheWelcome.vue'
 
 <template>
   <main>
-    <TheWelcome />
+    <!-- <TheWelcome /> -->
+    <router-view id="my-page" />
   </main>
 </template>

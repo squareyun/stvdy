@@ -11,9 +11,13 @@ const schema = Yup.object().shape({
 
 async function onSubmit(values) {
     const authStore = useAuthStore();
-    const { username, password } = values;
-    console.log('>>>>여기 도착<<<<<')
-    await authStore.login(username, password);
+    if (values.keeplog === 'keeplogon') {
+        values.keeplog = true;
+    } else {
+        values.keeplog = false;
+    }
+    const { username, password, keeplog } = values;
+    await authStore.login(username, password, keeplog);
 }
 
 
@@ -31,18 +35,19 @@ async function onSubmit(values) {
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <Field name="password" type="password" class="form-control" :class="{ 'is-invalid': errors.password }" />
+                    <Field name="password" type="password" class="form-control"
+                        :class="{ 'is-invalid': errors.password }" />
                     <div class="invalid-feedback">{{ errors.password }}</div>
                 </div>
                 <div class="form-group">
                     <!-- 로그인 유지 - 쿠키유지 로직 -->
-                    <input type="checkbox">로그인 유지
+                    <Field name="keeplog" type="checkbox" value="keeplogon" class="form-control" />로그인 유지
                     <button class="btn btn-primary" :disabled="isSubmitting">
                         <span v-show="isSubmitting" class="spinner-border spinner-border-sm mr-1"></span>
                         로그인
                     </button>
-                    <router-link to="regist" class="btn btn-link">회원가입</router-link>
-                    <router-link to="passwordReset" class="btn btn-link">비밀번호를 잊으셨나요?</router-link>
+                    <router-link to="regist" class="">회원가입</router-link>
+                    <router-link to="passwordReset" class="">비밀번호를 잊으셨나요?</router-link>
                 </div>
             </Form>
         </div>
