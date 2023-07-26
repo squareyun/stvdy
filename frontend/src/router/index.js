@@ -10,10 +10,10 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
       children: [
-        {
-          path: '/',
-          name: 'home',
-        },
+        // {
+        //   path: '/',
+        //   name: 'home',
+        // },
         {
           path: '/mypage',
           name: 'mypage',
