@@ -5,17 +5,24 @@
 <style scoped>
 #banner {
   border-radius: 20px;
-  width: 720px;
   height: 720px;
+  width: 720px;
   margin-right: 20px;
 
   background-image: url('./LoginBanner.png');
   background-size: cover;
+  background-position: center;
 }
 
-@media (max-width: 1216px) {
+@media (max-width: 1225px) {
   #banner {
-    display: none;
+    width: calc(100vw - 505px);
+  }
+}
+
+@media (max-width: 715px) {
+  #banner {
+    width: 0px;
   }
 }
 </style>
