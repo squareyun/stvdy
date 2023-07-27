@@ -35,9 +35,11 @@
           value="Leave session"
         />
       </div>
+      <!-- 내 캠 -->
       <div id="main-video">
         <user-video :stream-manager="mainStreamManager" />
       </div>
+      <!-- 모든 캠 -->
       <div id="video-container">
         <user-video :stream-manager="publisher" @click.native="updateMainVideoStreamManager(publisher)" />
         <user-video
@@ -62,13 +64,25 @@
           <button @click="sendMessage">전송</button>
         </form>
       </div>
+      <!-- 캠활성화, 음소거 버튼 -->
+      <button id="camera-activate" @click="handleCameraBtn">캠 비활성화</button>
+      <button id="mute-activate" @click="handleMuteBtn">음소거 활성화</button>
+      <!-- 캠,오디오 선택 옵션 -->
+      <div>
+        <select name="cameras" id="">
+          <option disabled value="">사용할 카메라를 선택하세요</option>
+        </select>
+        <select name="audios" id="">
+          <option disabled value="">사용할 카메라를 선택하세요</option>
+        </select>
+      </div>
     </div>
   </div>
 </template>
     
   
 <script setup>
-  import { ref } from 'vue'
+  import { ref, onMounted } from 'vue'
   import axios from 'axios'
   import { OpenVidu } from "openvidu-browser";
   import UserVideo from "@/components/UserVideo.vue";
@@ -89,10 +103,17 @@
   const mySessionId = ref("SessionA")
   const myUserName = ref("Participant" + Math.floor(Math.random() * 100))
   
-  //채팅창을 위한 부분임. ///////////////////
+  
+  /////////////////////채팅창을 위한 부분임.
   const inputMessage = ref("")
   const messages = ref([])
   ///////////////////
+  ///////////////////카메라 및 오디오 설정을 위한 부분임
+  const muted = ref(false)       // 기본 음소거
+  const camerOff = ref(false)    // 기본 카메라 비활성화
+  ///////////////////
+
+
 
 
   // vue2에서의 methods 부분을 vue3화 시키기
@@ -152,11 +173,16 @@
       .then(() => {
           // --- 5) Get your own camera stream with the desired properties ---
 
+          // const cameraSelect = document.querySelector('select[name="cameras"]');
+          // const audioSelect = document.querySelector('select[name="audios"]');
+
           // Init a publisher passing undefined as targetElement (we don't want OpenVidu to insert a video
           // element: we will manage it on our own) and with the desired properties
           let publisher_tmp = OV.value.initPublisher(undefined, {
             audioSource: undefined, // The source of audio. If undefined default microphone
             videoSource: undefined, // The source of video. If undefined default webcam
+            // audioSource: audioSelect.value, // The source of audio. If undefined default microphone
+            // videoSource: cameraSelect.value, // The source of video. If undefined default webcam
             publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
             publishVideo: true, // Whether you want to start publishing with your video enabled or not
             resolution: "640x480", // The resolution of your video
@@ -174,6 +200,7 @@
           // --- 6) Publish your stream ---
           // session.publish(publisher)
           session.value.publish(publisher.value)
+          getMedia()
         })
         .catch((error) => {
           console.log("There was an error connecting to the session:", error.code, error.message);
@@ -246,5 +273,75 @@
       });
       inputMessage.value = '';
     }
+  }
+
+
+  // 캠, 오디오 등 기기와 관련된 함수
+
+  // 카메라와 오디오를 가져옴.
+  async function getMedia() {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const cameras = devices.filter((device) => device.kind === 'videoinput');
+      const audios = devices.filter((device) => device.kind === 'audioinput');
+
+      const cameraSelect = document.querySelector('select[name="cameras"]');
+      const audioSelect = document.querySelector('select[name="audios"]');
+      
+      // 카메라 및 오디오 선택기 요소가 존재하는지 확인
+      if (cameraSelect && audioSelect) {
+        cameras.forEach((camera) => {
+          const option = document.createElement('option');
+          option.value = camera.deviceId;
+          option.text = camera.label;
+          cameraSelect.appendChild(option);
+        });
+
+        audios.forEach((audio) => {
+          const option = document.createElement('option');
+          option.value = audio.deviceId;
+          option.text = audio.label;
+          audioSelect.appendChild(option);
+        });
+      } else {
+        console.error('Camera or audio selector not found');
+      }
+    } catch (error) {
+      console.error('Error getting media devices:', error);
+    }
+  }
+
+
+  // 음소거, 캠 활성화 버튼 작동
+  function handleCameraBtn() {
+    if (!publisher.value) return;
+    console.log('publisher.value가 뭐시여',publisher.value)
+    // 카메라 상태를 토글합니다.
+    camerOff.value = !camerOff.value;
+    const cameraActivate = document.getElementById('camera-activate')
+    if(camerOff.value){   //카메라 비활성화상태
+      cameraActivate.innerText = '카메라 활성화'
+    }else{                //카메라 활성화상태
+      cameraActivate.innerText = '카메라 비활성화'
+    }
+    
+    // 카메라 작동 상태를 적용합니다.
+    publisher.value.publishVideo(!camerOff.value);
+  }
+
+  function handleMuteBtn() {
+    if (!publisher.value) return;
+
+    // 음소거 상태를 토글합니다.
+    muted.value = !muted.value;
+    const muteActivate = document.getElementById('mute-activate')
+    if(muted.value){   //음소거 활성화상태
+      muteActivate.innerText = '음소거 비활성화'
+    }else{                //음소거 비활성화상태
+      muteActivate.innerText = '음소거 활성화'
+    }
+
+    // 음소거 설정을 적용합니다.
+    publisher.value.publishAudio(!muted.value);
   }
 </script>
