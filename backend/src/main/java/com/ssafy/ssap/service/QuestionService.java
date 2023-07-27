@@ -7,6 +7,9 @@ import com.ssafy.ssap.dto.QuestionListResponseDto;
 import com.ssafy.ssap.repository.QueryRepository;
 import com.ssafy.ssap.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,24 +66,9 @@ public class QuestionService {
     /**
      * 전체 목록 조회
      * 전체, 키워드 검색, 사용자 번호 검색을 지원
+     * 페이징 지원
      */
-    public List<QuestionListResponseDto> getList(String keyword, String nickname) {
-//        List<Question> questionList = null;
-//
-//        if (StringUtils.hasText(keyword) && StringUtils.hasText(nickname)) {
-//            System.out.println("1");
-//        } else if (StringUtils.hasText(keyword)) {
-//            System.out.println("2");
-//            questionList = questionRepository.findByTitleContaining(keyword);
-//        } else if (StringUtils.hasText(nickname)) {
-//            // TODO
-//        } else {
-//            System.out.println("3");
-//            questionList = questionRepository.findAll();
-//        }
-
-
-//        return questionList;
-        return queryRepository.findAllQuestionWithKeywordAndNickName(keyword, nickname);
+    public Page<QuestionListResponseDto> getList(String keyword, String nickname, Pageable pageable) {
+        return queryRepository.findAllQuestionWithKeywordAndNickName(keyword, nickname, pageable);
     }
 }

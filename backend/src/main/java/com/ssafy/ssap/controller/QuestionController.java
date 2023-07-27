@@ -7,6 +7,8 @@ import com.ssafy.ssap.service.QuestionService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -79,12 +81,12 @@ public class QuestionController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<Map<String, Object>> add(@RequestParam(required = false) String keyword, @RequestParam(required = false) String nickname) {
+    public ResponseEntity<Map<String, Object>> add(@RequestParam(required = false) String keyword, @RequestParam(required = false) String nickname, Pageable pageable) {
         Map<String, Object> resultMap = new HashMap<>();
         HttpStatus status = null;
         try {
-            List<QuestionListResponseDto> questionList = questionService.getList(keyword, nickname);
-            logger.debug("{} 개의 질문 검색 성공", questionList.size());
+            Page<QuestionListResponseDto> questionList = questionService.getList(keyword, nickname, pageable);
+            logger.debug("{} 개의 질문 검색 성공", questionList.stream().count());
             resultMap.put("question", questionList);
             resultMap.put("message", MessageFormat.SUCCESS);
             status = HttpStatus.ACCEPTED;
