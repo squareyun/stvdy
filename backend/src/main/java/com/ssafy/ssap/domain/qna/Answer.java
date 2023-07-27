@@ -35,4 +35,10 @@ public class Answer {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "question_id")
     private Question question;
+
+    @OneToOne(mappedBy = "answer", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    Likes likes;
+
+    @OneToOne(mappedBy = "answer", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    ArticleImage articleImage;
 }

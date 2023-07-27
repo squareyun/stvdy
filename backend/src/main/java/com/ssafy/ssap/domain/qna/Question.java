@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static jakarta.persistence.FetchType.LAZY;
 
@@ -46,4 +48,13 @@ public class Question {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "category")
     private QuestionCategoryNs category;
+
+    @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    List<Answer> answerList = new ArrayList<>();
+
+    @OneToOne(mappedBy = "question", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    ArticleImage articleImage;
+
+    @OneToOne(mappedBy = "question", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    Likes likes;
 }
