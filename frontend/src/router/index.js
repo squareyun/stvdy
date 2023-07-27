@@ -50,6 +50,34 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to) => {
+  // // 테스트용 색상 팔레트 저장
+  // const colorPalette = {
+  //   backgroundUp: '#f8f8f2',
+  //   topbarBasic: '#282a3620',
+  //   topbarTime: '#20202080',
+  //   hlLight: '#282a36',
+  //   font100: '#f8f8f2',
+  //   font80: '#f8f8f2cc',
+  //   font50: '#f8f8f280',
+  //   font30: '#f8f8f24d',
+  // }
+
+  // localStorage.setItem('colorPalette', JSON.stringify(colorPalette))
+
+  // 컬러 팔레트를 로컬 스토리지에서 찾는다.
+  const obj = localStorage.getItem('colorPalette')
+
+  // 컬러 팔레트에 설정 된 값만 변경하고 나머지는 그대로 둔다.
+  if (obj) {
+    const colorPalette = JSON.parse(obj)
+    for (const color in colorPalette) {
+      document.documentElement.style.setProperty(
+        '--' + color.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase(),
+        colorPalette[color],
+      )
+    }
+  }
+
   // 유저 스토어 접근 후 경고를 알리는 스토어
   const alertStore = useAlertStore()
   alertStore.clear()

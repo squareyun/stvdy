@@ -1,5 +1,5 @@
-body {
-  background-color: #1b1f2c;
+/* body {
+  background-color: var(--hl-purple);
 
   height: calc(100vh - 30px);
   margin: 0;
@@ -7,4 +7,4 @@ body {
 
   display: flex;
   place-items: center;
-}
+} */

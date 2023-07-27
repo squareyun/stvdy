@@ -1,6 +1,13 @@
-@import './base.css';
+@import '@/assets/darkPalette.css';
+
+@font-face {
+  font-family: 'ASDGothic';
+  src: url('@/assets/fonts/AppleSDGothicNeoM.ttf') format('truetype');
+  font-weight: normal;
+}
 
 #app {
+  font-family: 'ASDGothic', 'Noto Sans KR', sans-serif;
   display: flex;
   place-items: center;
 
@@ -9,4 +16,49 @@
   padding: 2rem;
 
   font-weight: normal;
+
+  color: var(--font100);
+}
+
+body {
+  background-color: var(--background-up);
+
+  /* height: calc(100vh - 30px); */
+  width: 100vw;
+  height: auto;
+  margin-top: 30px;
+
+  align-items: center;
+
+  display: flex;
+  place-items: center;
+
+  overflow-x: hidden;
+}
+
+/* @media (max-height: 780px) {
+  #banner {
+    display: none;
+  }
+} */
+
+.window {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+body::-webkit-scrollbar {
+  width: 10px;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: #a0a0a0; /* 스크롤바 색상 */
+  border-radius: 3px;
+}
+
+body::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0); /*스크롤바 뒷 배경 색상*/
+}
+
+body::-webkit-scrollbar-button {
+  height: 6px;
 }

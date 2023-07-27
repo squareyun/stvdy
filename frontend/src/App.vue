@@ -1,12 +1,12 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import Alert from '@/components/Alert.vue';
+import Alert from '@/components/Alert.vue'
 import TopBar from '@/components/TopBar.vue'
 </script>
 
 <template>
   <header>
-    <TopBar />
+    <TopBar id="topbar" />
     <Alert />
   </header>
 
@@ -15,8 +15,10 @@ import TopBar from '@/components/TopBar.vue'
 
 <style scoped>
 header {
-  position: fixed;
-  left: 0;
-  top: 0;
+  #topbar {
+    position: fixed;
+    left: 0;
+    top: 0;
+  }
 }
 </style>

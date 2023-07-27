@@ -1,8 +1,11 @@
 <template>
-  <div id="cTopBar">
-    <p id="time">
-    </p>
-    <router-link to="mypage" style="background:white">마이페이지</router-link>
+  <div id="topbar">
+    <p id="time"></p>
+    <router-link
+      to="mypage"
+      style="background: white">
+      마이페이지
+    </router-link>
     <button @click="logout">LOGOUT</button>
   </div>
   <!-- TOP BAR에 Notification dropdown(my page로 가는 경로 필), searchbar 들어가야함 -->
@@ -10,7 +13,7 @@
 
 <script>
 import { onMounted } from 'vue'
-import { useAuthStore } from '@/stores';
+import { useAuthStore } from '@/stores'
 
 export default {
   setup(props) {
@@ -27,22 +30,24 @@ export default {
   },
   methods: {
     async logout() {
-      const authStore = useAuthStore();
-      await authStore.logout();
-    }
-  }
+      const authStore = useAuthStore()
+      await authStore.logout()
+    },
+  },
 }
 </script>
 
 <style scoped>
-#cTopBar {
-  background-color: #282a36;
+#topbar {
+  background-color: var(--topbar-basic);
   width: 100vw;
   height: 30px;
+
+  z-index: 1;
 }
 
 #time {
-  color: #ffffff80;
+  color: var(--topbar-time);
   font-size: 11pt;
   margin: 0;
   padding-top: 4px;

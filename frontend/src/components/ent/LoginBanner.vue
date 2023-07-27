@@ -1,20 +1,20 @@
 <template>
-  <div class="cBanner">Test Image</div>
+  <div id="banner">Test Image</div>
 </template>
 
 <style scoped>
-.cBanner {
-  /* background-color: aquamarine; */
+#banner {
   border-radius: 20px;
   width: 720px;
   height: 720px;
   margin-right: 20px;
 
-  background-image: url('./test.png');
+  background-image: url('./LoginBanner.png');
+  background-size: cover;
 }
 
 @media (max-width: 1216px) {
-  .cBanner {
+  #banner {
     display: none;
   }
 }
