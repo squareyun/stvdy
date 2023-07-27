@@ -70,10 +70,10 @@
       <!-- 캠,오디오 선택 옵션 -->
       <div>
         <select name="cameras" id="">
-          <option disabled value="">사용할 카메라를 선택하세요</option>
+          <option disabled @change=handleCameraChange>사용할 카메라를 선택하세요</option>
         </select>
         <select name="audios" id="">
-          <option disabled value="">사용할 카메라를 선택하세요</option>
+          <option disabled @change=handleAudioChange>사용할 오디오를 선택하세요</option>
         </select>
       </div>
     </div>
@@ -109,8 +109,11 @@
   const messages = ref([])
   ///////////////////
   ///////////////////카메라 및 오디오 설정을 위한 부분임
-  const muted = ref(false)       // 기본 음소거
-  const camerOff = ref(false)    // 기본 카메라 비활성화
+  const muted = ref(false)       // 기본은 음소거 비활성화
+  const camerOff = ref(false)    // 기본 카메라 활성화
+  const selectedCamera = ref("")  // 카메라 변경시 사용할 변수 
+  const selectedAudio  = ref("")  // 오디오 변경시 사용할 변수
+
   ///////////////////
 
 
@@ -183,8 +186,10 @@
             videoSource: undefined, // The source of video. If undefined default webcam
             // audioSource: audioSelect.value, // The source of audio. If undefined default microphone
             // videoSource: cameraSelect.value, // The source of video. If undefined default webcam
-            publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
-            publishVideo: true, // Whether you want to start publishing with your video enabled or not
+            // publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
+            // publishVideo: true, // Whether you want to start publishing with your video enabled or not
+            publishAudio: !muted.value, // Whether you want to start publishing with your audio unmuted or not
+            publishVideo: !camerOff.value, // Whether you want to start publishing with your video enabled or not
             resolution: "640x480", // The resolution of your video
             frameRate: 30, // The frame rate of your video
             insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
@@ -200,7 +205,7 @@
           // --- 6) Publish your stream ---
           // session.publish(publisher)
           session.value.publish(publisher.value)
-          getMedia()
+          getMedia()  // 세션이 만들어졌을때 미디어 불러옴
         })
         .catch((error) => {
           console.log("There was an error connecting to the session:", error.code, error.message);
@@ -277,7 +282,6 @@
 
 
   // 캠, 오디오 등 기기와 관련된 함수
-
   // 카메라와 오디오를 가져옴.
   async function getMedia() {
     try {
@@ -343,5 +347,39 @@
 
     // 음소거 설정을 적용합니다.
     publisher.value.publishAudio(!muted.value);
+  }
+  
+  // select태그에서 사용할 기기를 선택했을때
+  function handleCameraChange(event) {
+    selectedCamera.value = event.target.value
+    updateCameraAndAudio()
+  }
+  function handleAudioChange(event) {
+    selectedAudio.value = event.target.value
+    updateCameraAndAudio()
+  }
+  // 기기선택으로 이제 사용할 기기를 작동시키기
+  async function updateCameraAndAudio() {
+    if (!publisher.value) return;
+    
+    session.value.unpublish(publisher.value);
+
+    // 새 Publisher를 생성하고 카메라 및 오디오 소스를 업데이트함
+    publisher.value = OV.value.initPublisher(undefined, {
+      audioSource: selectedAudio.value || undefined,
+      videoSource: selectedCamera.value || undefined,
+      publishAudio: !muted.value,
+      publishVideo: !camerOff.value,
+      resolution: "640x480",
+      frameRate: 30,
+      insertMode: "APPEND",
+      mirror: false,
+    });
+
+    // 새로운 Publisher를 게시
+    await session.value.publish(publisher.value);
+
+    // 메인 스트림 매니저 업데이트
+    mainStreamManager.value = publisher.value;
   }
 </script>
