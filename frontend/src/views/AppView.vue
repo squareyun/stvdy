@@ -57,10 +57,10 @@
             </li>
           </ul>
         </div>
-        <div id="chat-write">
-          <input type="text" placeholder="전달할 내용을 입력하세요." v-model="message">
+        <form id="chat-write">
+          <input type="text" placeholder="전달할 내용을 입력하세요." v-model="inputMessage">
           <button @click="sendMessage">전송</button>
-        </div>
+        </form>
       </div>
     </div>
   </div>
@@ -68,7 +68,7 @@
     
   
 <script setup>
-  import { ref, computed, onMounted, onUnmounted } from 'vue'
+  import { ref } from 'vue'
   import axios from 'axios'
   import { OpenVidu } from "openvidu-browser";
   import UserVideo from "@/components/UserVideo.vue";
@@ -123,6 +123,17 @@
     session.value.on("exception", ({ exception }) => {
       console.warn(exception);
     });
+
+    // 채팅 이벤트 수신 처리 함. session.on이 addEventListenr 역할인듯.
+    session.value.on('signal:chat', (event) => { // event.from.connectionId === session.value.connection.connectionId 이건 나와 보낸이가 같으면임
+      console.log('이게 event.data',event.data)
+      const messageData = JSON.parse(event.data);
+      if(event.from.connectionId === session.value.connection.connectionId){
+        messageData['username'] = '나'
+      }
+      messages.value.push(messageData);
+    });
+
 
     // --- 4) Connect to the session with a valid user token ---
     // Get a token from the OpenVidu deployment
@@ -207,9 +218,9 @@
 
   async function createSession(sessionId) {
     console.log('이건 createSession 함수 들어옴',APPLICATION_SERVER_URL+" / "+sessionId)
-    const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions', { customSessionId: sessionId }, {
+    const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions', { customSessionId: sessionId, userNo: 53, endHour: 1, endMinute: 30, quota: 16, isPrivacy: false}, {
       headers: { 'Content-Type': 'application/json', },
-    }, { userNo: 53}, {endHour: 1}, {endMinute: 30}, {quota: 16}, {isPrivacy: false});
+    });
     console.log('이건 createSession 함수 빠져나가는중 response', response)
     return response.data; // The sessionId
   }
@@ -224,30 +235,16 @@
 
   // 채팅창 구현을 위한 함수 제작
   ///////////////////////////
-  function sendMessage() {
-    if (inputMessage.value.trim()){
+  function sendMessage(event) {
+    event.preventDefault();
+    if(inputMessage.value.trim()){
+      // messages.value.push({username : myUserName.value, message : inputMessage.value})
+      // 다른 참가원에게 메시지 전송하기
       session.value.signal({
-        type:"chat",
-        data: JSON.stringify({
-          username: sessionOptions.value.user,
-          message: inputMessage.value,
-        }),
+        data: JSON.stringify({username: myUserName.value, message: inputMessage.value}), // 메시지 데이터를 문자열로 변환해서 전송
+        type: 'chat' // 신호 타입을 'chat'으로 설정
       });
-      inputMessage.value = "";  // 메시지 전송 후 입력란 초기화
+      inputMessage.value = '';
     }
   }
-
-  const onMessageReceived = (event) => {
-    const parsedMessage = JSON.parse(event.data);
-    messages.value.push(parsedMessage);
-  };
-
-  onMounted(() => {
-    session.value.on("signal:chat", onMessageReceived);
-  });
-
-  onUnmounted(() => {
-    session.value.off("signal:chat", onMessageReceived);
-  });
-
 </script>
