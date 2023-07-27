@@ -26,12 +26,12 @@ public class Likes {
     private Boolean isGood;
 
     @OneToOne(fetch = LAZY)
-    @JoinColumn(name = "question_id")
+    @JoinColumn(name = "question_id", unique = false)
     @Nullable
     private Question question;
 
     @OneToOne(fetch = LAZY)
-    @JoinColumn(name = "answer_id")
+    @JoinColumn(name = "answer_id", unique = false)
     @Nullable
     private Answer answer;
 }

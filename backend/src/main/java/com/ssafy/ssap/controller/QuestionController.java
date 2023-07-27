@@ -2,6 +2,7 @@ package com.ssafy.ssap.controller;
 
 import com.ssafy.ssap.common.MessageFormat;
 import com.ssafy.ssap.dto.QuestionCreateDto;
+import com.ssafy.ssap.dto.QuestionListResponseDto;
 import com.ssafy.ssap.service.QuestionService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -69,6 +71,25 @@ public class QuestionController {
             status = HttpStatus.ACCEPTED;
         } catch (Exception e) {
             logger.error("질문 삭제 실패: ", e);
+            resultMap.put("message", MessageFormat.SERVER_FAIL);
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+
+        return new ResponseEntity<Map<String, Object>>(resultMap, status);
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<Map<String, Object>> add(@RequestParam(required = false) String keyword, @RequestParam(required = false) String nickname) {
+        Map<String, Object> resultMap = new HashMap<>();
+        HttpStatus status = null;
+        try {
+            List<QuestionListResponseDto> questionList = questionService.getList(keyword, nickname);
+            logger.debug("{} 개의 질문 검색 성공", questionList.size());
+            resultMap.put("question", questionList);
+            resultMap.put("message", MessageFormat.SUCCESS);
+            status = HttpStatus.ACCEPTED;
+        } catch (Exception e) {
+            logger.error("질문 검색 실패: ", e);
             resultMap.put("message", MessageFormat.SERVER_FAIL);
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }

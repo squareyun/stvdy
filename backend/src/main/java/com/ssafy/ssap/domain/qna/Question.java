@@ -1,5 +1,6 @@
 package com.ssafy.ssap.domain.qna;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -47,6 +48,7 @@ public class Question {
     @NotNull
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "category")
+    @JsonIgnore
     private QuestionCategoryNs category;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE, orphanRemoval = true)
