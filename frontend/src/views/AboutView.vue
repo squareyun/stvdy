@@ -38,7 +38,7 @@ div {
   /* position: relative;
   top: 50px; */
   background-color: var(--hl-light);
-  margin-left: 20px;
+  margin-left: 19px;
   margin-top: -12px;
   margin-bottom: 4px;
   padding-left: 18px;
