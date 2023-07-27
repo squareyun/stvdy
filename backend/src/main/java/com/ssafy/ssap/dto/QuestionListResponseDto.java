@@ -19,6 +19,6 @@ public class QuestionListResponseDto {
     private QuestionCategoryNs category;
     //    private String userNickname;
     private Integer cntAnswer;
-    private Long cntLike;
+    private Integer questionScore;
 
 }

@@ -1,6 +1,8 @@
 package com.ssafy.ssap.repository;
 
+import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -30,9 +32,9 @@ public class QueryRepository {
                 .select(Projections.constructor(QuestionListResponseDto.class,
                         question.id, question.title, question.detail, question.registTime,
                         question.category, question.answerList.size().as("cntAnswer"),
-                        JPAExpressions.select(likes.count()) // 여기서 likes 테이블의 결과 개수를 추가합니다.
-                                .from(likes)
-                                .where(likes.question.id.eq(question.id))))
+                    JPAExpressions.select(likes.isGood.when(true).then(1).otherwise(0).sum().castToNum(Integer.class))
+                        .from(likes)
+                        .where(likes.question.id.eq(question.id))))
                 .from(question)
                 .leftJoin(question.likes, likes)
                 .leftJoin(question.answer, answer);
