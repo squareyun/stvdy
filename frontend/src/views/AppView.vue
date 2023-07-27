@@ -207,7 +207,7 @@
       console.log('이건 createSession 함수 들어옴',APPLICATION_SERVER_URL+" / "+sessionId)
       const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions', { customSessionId: sessionId }, {
         headers: { 'Content-Type': 'application/json', },
-      }, { userNo : 53});
+      }, { userNo: 53}, {endHour: 1}, {endMinute: 30}, {quota: 16}, {isPrivacy: false});
       console.log('이건 createSession 함수 빠져나가는중 response', response)
       return response.data; // The sessionId
     }
