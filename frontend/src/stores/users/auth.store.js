@@ -21,7 +21,6 @@ export const useAuthStore = defineStore({
           password,
           keeplog,
         })
-        console.log(user)
 
         // update pinia state
         this.user = user
@@ -31,7 +30,7 @@ export const useAuthStore = defineStore({
           localStorage.setItem('user', JSON.stringify(user))
         }
         // 기본 페이지로 리다이렉트
-        router.push(this.returnUrl || '/')
+        router.push('/')
       } catch (error) {
         const alertStore = useAlertStore()
         alertStore.error(error)

@@ -7,7 +7,8 @@ import router from '@/router';
 
 
 const schema = Yup.object().shape({
-  username: Yup.string().required('이름을 작성해주세요.').max(45, '길이를 줄여주세요.').min(4, '더 긴 이름을 사용해야합니다.'),
+  username: Yup.string().required('닉네임을 작성해주세요.').max(45, '길이를 줄여주세요.').min(4, '더 긴 닉네임을 사용해야합니다.'),
+  realname: Yup.string().required('이름을 작성해주세요.').max(45, '길이를 줄여주세요.').min(4, '더 긴 이름을 사용해야합니다.'),
   email: Yup.string().required('이메일을 넣어주세요'),
   password: Yup.string().required('비밀번호를 넣어주세요'),
   passwordConfirm: Yup.string().oneOf([Yup.ref('password'), null], '비밀번호가 일치하지 않습니다')
@@ -49,9 +50,14 @@ async function onSubmit(values) {
     <div class="card-body">
       <Form @submit="onSubmit" :validation-schema="schema" v-slot="{ errors, isSubmitting }">
         <div class="form-group">
-          <label>이름</label>
+          <label>닉네임</label>
           <Field name="username" type="text" class="form-control" :class="{ 'is-invalid': errors.username }" />
           <div class="invalid-feedback">{{ errors.username }}</div>
+        </div>
+        <div class="form-group">
+          <label>이름</label>
+          <Field name="realname" type="text" class="form-control" :class="{ 'is-invalid': errors.username }" />
+          <div class="invalid-feedback">{{ errors.realname }}</div>
         </div>
         <div class="form-group">
           <label>이메일</label>

@@ -36,7 +36,6 @@ function fakeBackend() {
       // route functions
 
       function authenticate() {
-        console.log('>>>>페이크 백엔드에서 인증 함수에 도착<<<<')
         const { email, password } = body()
         const user = users.find(
           (x) => x.email === email && x.password === password,
@@ -54,7 +53,7 @@ function fakeBackend() {
         const user = body()
 
         if (users.find((x) => x.username === user.username)) {
-          return error('Username "' + user.username + '" is already taken')
+          return error('닉네임 "' + user.username + '"은(는) 이미 있습니다.')
         }
 
         user.id = users.length ? Math.max(...users.map((x) => x.id)) + 1 : 1
@@ -132,8 +131,8 @@ function fakeBackend() {
       }
 
       function basicDetails(user) {
-        const { id, username, email } = user
-        return { id, username, email }
+        const { id, username, email, realname } = user
+        return { id, username, email, realname }
       }
 
       function isAuthenticated() {

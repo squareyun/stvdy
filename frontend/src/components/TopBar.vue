@@ -1,12 +1,12 @@
 <template>
   <div id="topbar">
     <p id="time"></p>
-    <router-link
-      to="mypage"
-      style="background: white">
-      마이페이지
-    </router-link>
-    <button @click="logout">LOGOUT</button>
+    <span>
+      <router-link to="mypage" style="background: white">
+        마이페이지
+      </router-link>
+      <button @click="logout">LOGOUT</button>
+    </span>
   </div>
   <!-- TOP BAR에 Notification dropdown(my page로 가는 경로 필), searchbar 들어가야함 -->
 </template>

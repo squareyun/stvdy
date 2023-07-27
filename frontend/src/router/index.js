@@ -10,14 +10,28 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
       children: [
-        // {
-        //   path: '/',
-        //   name: 'home',
-        // },
         {
           path: '/mypage',
           name: 'mypage',
-          component: () => import('../components/MyPage.vue'),
+          component: () => import('../components/profile/MyPage.vue'),
+          children: [
+            {
+              path: '/deactivate',
+              name: 'deactivate',
+              component: () => import('../components/profile/Deactivate.vue'),
+            },
+            {
+              path: '/changepwd',
+              name: 'changepwd',
+              component: () => import('../components/profile/ChangePwd.vue'),
+            },
+            {
+              path: '/changeusername',
+              name: 'changeusername',
+              component: () =>
+                import('../components/profile/ChangeUsername.vue'),
+            },
+          ],
         },
       ],
     },
