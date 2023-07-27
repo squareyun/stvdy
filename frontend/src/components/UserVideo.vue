@@ -1,47 +1,43 @@
 <template>
-    <div v-if="streamManager">
-      <ov-video :stream-manager="streamManager"/>
-      <!-- {{ clientData }}이게 내 현재 이름임 -->
-      <div><p>{{ clientData }}</p></div>
-    </div>
-  </template>
-  
-  <script>
-    export default {
-      name: 'UserVideo',
-    }
-  </script>
-  
-  <script setup>
-    // import { ref, onMounted, computed } from 'vue';
-    import { computed } from 'vue';
-    import OvVideo from '@/components/OvVideo.vue';
-  
-  
-    const props = defineProps({
-      streamManager: Object,
-    })
-  
-    // const streamManager = ref(Object);
-    // onMounted(() => {
-    //   clientData.value = getConnectionData();
-    // });
-  
-    // clientData는 computed로 진행됨
-    const clientData = computed(() => {
-      const { clientData } = getConnectionData();
-      return clientData;
-    });
-  
-    function getConnectionData() {
-      const { connection } = props.streamManager.stream;
-  
-      console.log('이건 스트림매니저',props.streamManager)
-      console.log('이건 스트림매니조의 스트림',props.streamManager.stream)
-      console.log('connection', connection)
-      return JSON.parse(connection.data);
-    }
-  </script>
+  <div v-if="streamManager">
+    <ov-video :stream-manager="streamManager"/>
+    <!-- {{ clientData }}이게 내 현재 이름임 -->
+    <div><p>{{ clientData }}</p></div>
+  </div>
+</template>
+
+<script>
+  export default {
+    name: 'UserVideo',
+  }
+</script>
+
+<script setup>
+  // import { ref, onMounted, computed } from 'vue';
+  import { computed } from 'vue';
+  import OvVideo from '@/components/OvVideo.vue';
+
+
+  const props = defineProps({
+    streamManager: Object,
+  })
+
+  // const streamManager = ref(Object);
+  // onMounted(() => {
+  //   clientData.value = getConnectionData();
+  // });
+
+  // clientData는 computed로 진행됨
+  const clientData = computed(() => {
+    const { clientData } = getConnectionData();
+    return clientData;
+  });
+
+  function getConnectionData() {
+    const { connection } = props.streamManager.stream;
+    return JSON.parse(connection.data);
+  }
+</script>
   
   
   
