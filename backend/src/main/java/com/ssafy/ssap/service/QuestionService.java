@@ -1,8 +1,10 @@
 package com.ssafy.ssap.service;
 
+import com.ssafy.ssap.common.MessageFormat;
 import com.ssafy.ssap.domain.qna.Question;
 import com.ssafy.ssap.domain.qna.QuestionCategoryNs;
 import com.ssafy.ssap.dto.QuestionCreateDto;
+import com.ssafy.ssap.dto.QuestionDetailResponseDto;
 import com.ssafy.ssap.dto.QuestionListResponseDto;
 import com.ssafy.ssap.repository.QueryRepository;
 import com.ssafy.ssap.repository.QuestionRepository;
@@ -45,7 +47,7 @@ public class QuestionService {
     @Transactional
     public Integer update(Integer questionNo, QuestionCreateDto questionCreateDto) {
         Question question = questionRepository.findById(questionNo)
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. questionNo = " + questionNo));
+                .orElseThrow(() -> new IllegalArgumentException(MessageFormat.NO_QUETION_ID));
 
         return question.update(questionCreateDto.getTitle(), questionCreateDto.getContent(), new QuestionCategoryNs(questionCreateDto.getCategory()));
     }
@@ -65,5 +67,9 @@ public class QuestionService {
      */
     public Page<QuestionListResponseDto> getList(String keyword, String nickname, Pageable pageable) {
         return queryRepository.findAllQuestionWithKeywordAndNickName(keyword, nickname, pageable);
+    }
+
+    public QuestionDetailResponseDto detail(Integer questionNo) {
+        return queryRepository.findQuestionById(questionNo);
     }
 }

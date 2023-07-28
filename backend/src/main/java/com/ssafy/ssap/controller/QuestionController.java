@@ -2,6 +2,7 @@ package com.ssafy.ssap.controller;
 
 import com.ssafy.ssap.common.MessageFormat;
 import com.ssafy.ssap.dto.QuestionCreateDto;
+import com.ssafy.ssap.dto.QuestionDetailResponseDto;
 import com.ssafy.ssap.dto.QuestionListResponseDto;
 import com.ssafy.ssap.service.QuestionService;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,7 @@ public class QuestionController {
             status = HttpStatus.ACCEPTED;
         } catch (Exception e) {
             logger.error("질문 생성 실패: ", e);
-            resultMap.put("message", MessageFormat.SERVER_FAIL);
+            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage());
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
@@ -72,7 +73,32 @@ public class QuestionController {
             status = HttpStatus.ACCEPTED;
         } catch (Exception e) {
             logger.error("질문 삭제 실패: ", e);
-            resultMap.put("message", MessageFormat.SERVER_FAIL);
+            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage());
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+
+        return new ResponseEntity<Map<String, Object>>(resultMap, status);
+    }
+
+    @GetMapping("/{questionNo}")
+    public ResponseEntity<Map<String, Object>> detail(@PathVariable("questionNo") Integer questionNo) {
+        Map<String, Object> resultMap = new HashMap<>();
+        HttpStatus status = null;
+        try {
+            QuestionDetailResponseDto detail = questionService.detail(questionNo);
+            if (detail != null) {
+                logger.debug("{}번 질문 조회 성공", questionNo);
+                resultMap.put("message", MessageFormat.SUCCESS);
+                resultMap.put("question", detail);
+            } else {
+                logger.debug("{}번 질문 조회 실패 (존재하지 않음)", questionNo);
+                resultMap.put("message", MessageFormat.FAIL + ": " + MessageFormat.NO_QUETION_ID);
+                resultMap.put("question", detail);
+            }
+            status = HttpStatus.ACCEPTED;
+        } catch (Exception e) {
+            logger.error("질문 조회 실패: ", e);
+            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage());
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
@@ -91,7 +117,7 @@ public class QuestionController {
             status = HttpStatus.ACCEPTED;
         } catch (Exception e) {
             logger.error("질문 검색 실패: ", e);
-            resultMap.put("message", MessageFormat.SERVER_FAIL);
+            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage());
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
