@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -31,7 +30,7 @@ public class QuestionController {
         Map<String, Object> resultMap = new HashMap<>();
         HttpStatus status = null;
         try {
-            Long questionId = questionService.create(questionCreateDto);
+            Integer questionId = questionService.create(questionCreateDto);
             logger.debug("{} 질문 생성 성공", questionId);
             resultMap.put("message", MessageFormat.SUCCESS);
             status = HttpStatus.ACCEPTED;
@@ -45,7 +44,7 @@ public class QuestionController {
     }
 
     @PutMapping("/{questionNo}")
-    public ResponseEntity<Map<String, Object>> add(@PathVariable("questionNo") Long questionNo, @RequestBody QuestionCreateDto questionCreateDto) {
+    public ResponseEntity<Map<String, Object>> add(@PathVariable("questionNo") Integer questionNo, @RequestBody QuestionCreateDto questionCreateDto) {
         Map<String, Object> resultMap = new HashMap<>();
         HttpStatus status = null;
         try {

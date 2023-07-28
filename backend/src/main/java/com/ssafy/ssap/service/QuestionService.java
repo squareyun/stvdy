@@ -7,14 +7,12 @@ import com.ssafy.ssap.dto.QuestionListResponseDto;
 import com.ssafy.ssap.repository.QueryRepository;
 import com.ssafy.ssap.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +25,7 @@ public class QuestionService {
      * 질문 생성
      */
     @Transactional
-    public Long create(QuestionCreateDto questionCreateDto) throws Exception {
+    public Integer create(QuestionCreateDto questionCreateDto) throws Exception {
         Question question = Question.builder()
                 .title(questionCreateDto.getTitle())
                 .detail(questionCreateDto.getContent())
@@ -43,7 +41,7 @@ public class QuestionService {
     /**
      * 질문 수정
      */
-    public void update(Long questionNo, QuestionCreateDto questionCreateDto) {
+    public void update(Integer questionNo, QuestionCreateDto questionCreateDto) {
         Question question = Question.builder()
                 .id(questionNo)
                 .title(questionCreateDto.getTitle())

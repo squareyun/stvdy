@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 public class QuestionListResponseDto {
 
-    private Long id;
+    private int id;
     private String title;
     private String detail;
     //    private Integer hit;

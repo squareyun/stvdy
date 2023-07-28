@@ -21,7 +21,7 @@ public class Room {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(length = 20)
     @NotNull
@@ -30,8 +30,8 @@ public class Room {
     @Column(columnDefinition = "TINYINT(8)")
     private int quota;
 
-    @Column(name = "is_privacy", columnDefinition = "TINYINT(1)")
-    @ColumnDefault("false")
+    @Column(name = "is_privacy", columnDefinition = "bit")
+    @ColumnDefault("0")
     private Boolean isPrivacy;
 
     @Column(length = 45)
@@ -42,8 +42,8 @@ public class Room {
     @NotNull
     private LocalDateTime endTime;
 
-    @Column(name = "is_valid", columnDefinition = "TINYINT(1)")
-    @ColumnDefault("true")
+    @Column(name = "is_valid", columnDefinition = "bit")
+    @ColumnDefault("1")
     private Boolean isValid;
 
     @Column(name = "image_path", length = 45)

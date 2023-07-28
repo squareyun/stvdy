@@ -27,7 +27,7 @@ public class RoomController {
         Map<String, Object> resultMap = new HashMap<>();
         HttpStatus status = null;
         try {
-            Long roomId = roomService.create(roomCreateDto);
+            Integer roomId = roomService.create(roomCreateDto);
             logger.debug("{} 스터디룸 생성 성공", roomId);
             resultMap.put("message", MessageFormat.SUCCESS);
             status = HttpStatus.ACCEPTED;

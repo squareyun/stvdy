@@ -2,7 +2,6 @@ package com.ssafy.ssap.domain.qna;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,11 +18,11 @@ public class ArticleImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
-    @NotNull
-    @Column(length = 45)
-    private String path;
+    @Column(columnDefinition = "blob")
+    @Lob
+    private byte[] path;
 
     @OneToOne(fetch = LAZY)
     @JoinColumn(name = "question_id")

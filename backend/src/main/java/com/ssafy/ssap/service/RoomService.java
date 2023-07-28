@@ -26,7 +26,7 @@ public class RoomService {
      * 스터디룸 생성
      */
     @Transactional
-    public Long create(RoomCreateDto roomCreateDto) throws Exception {
+    public Integer create(RoomCreateDto roomCreateDto) throws Exception {
         // 방 추가
         Room room = Room.builder()
                 .title(roomCreateDto.getTitle())
