@@ -31,6 +31,7 @@ public class QuestionService {
                 .detail(questionCreateDto.getContent())
                 .registTime(LocalDateTime.now())
                 .category(new QuestionCategoryNs(questionCreateDto.getCategory()))
+                .hit(0)
                 .build();
 
         questionRepository.save(question);
@@ -41,23 +42,19 @@ public class QuestionService {
     /**
      * 질문 수정
      */
-    public void update(Integer questionNo, QuestionCreateDto questionCreateDto) {
-        Question question = Question.builder()
-                .id(questionNo)
-                .title(questionCreateDto.getTitle())
-                .detail(questionCreateDto.getContent())
-                .registTime(LocalDateTime.now())
-                .category(new QuestionCategoryNs(questionCreateDto.getCategory()))
-                .build();
+    @Transactional
+    public Integer update(Integer questionNo, QuestionCreateDto questionCreateDto) {
+        Question question = questionRepository.findById(questionNo)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. questionNo = " + questionNo));
 
-        questionRepository.save(question);
+        return question.update(questionCreateDto.getTitle(), questionCreateDto.getContent(), new QuestionCategoryNs(questionCreateDto.getCategory()));
     }
 
     /**
      * 질문 삭제
      * TODO: 연쇄적으로 연관된 FK 삭제되는지 확인 작업 필요
      */
-    public void delete(Long questionNo) {
+    public void delete(Integer questionNo) {
         questionRepository.deleteById(questionNo);
     }
 

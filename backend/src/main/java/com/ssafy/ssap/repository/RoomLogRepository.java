@@ -8,9 +8,9 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface RoomLogRepository extends JpaRepository<RoomLog, Long> {
+public interface RoomLogRepository extends JpaRepository<RoomLog, Integer> {
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query(value = "UPDATE room_log SET spend_hour = TIME(TIMESTAMPDIFF(SECOND, enter_time, CURRENT_TIMESTAMP)) WHERE room_id = :roomId", nativeQuery = true)
-    void updateSpendHourByAllRoomId(@Param("roomId") Long roomId);
+    @Query(value = "UPDATE room_log SET spend_hour = TIME_FORMAT(SEC_TO_TIME(TIMESTAMPDIFF(SECOND, enter_time, CURRENT_TIMESTAMP)), '%H:%i:%s') WHERE room_id = :roomId", nativeQuery = true)
+    void updateSpendHourByAllRoomId(@Param("roomId") Integer roomId);
 }

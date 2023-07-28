@@ -41,7 +41,7 @@ public class RoomController {
     }
 
     @DeleteMapping("/{roomno}")
-    public ResponseEntity<?> close(@PathVariable("roomno") Long roomNo) {
+    public ResponseEntity<?> close(@PathVariable("roomno") Integer roomNo) {
         Map<String, Object> resultMap = new HashMap<>();
         HttpStatus status = null;
         try {

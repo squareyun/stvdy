@@ -40,6 +40,8 @@ public class Question {
     @Column(name = "regist_time", columnDefinition = "timestamp")
     private LocalDateTime registTime;
 
+    private int hit;
+
     @OneToOne(fetch = LAZY)
     @JoinColumn(name = "best_answer")
     @Nullable
@@ -51,12 +53,19 @@ public class Question {
     @JsonIgnore
     private QuestionCategoryNs category;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "question")
     List<Answer> answerList = new ArrayList<>();
 
-    @OneToOne(mappedBy = "question", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToOne(mappedBy = "question")
     ArticleImage articleImage;
 
-    @OneToOne(mappedBy = "question", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToOne(mappedBy = "question")
     Likes likes;
+
+    public Integer update(String title, String detail, QuestionCategoryNs category) {
+        this.title = title;
+        this.detail = detail;
+        this.category = category;
+        return id;
+    }
 }

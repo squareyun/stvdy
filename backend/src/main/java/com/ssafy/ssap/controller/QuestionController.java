@@ -48,13 +48,13 @@ public class QuestionController {
         Map<String, Object> resultMap = new HashMap<>();
         HttpStatus status = null;
         try {
-            questionService.update(questionNo, questionCreateDto);
-            logger.debug("{} 질문 수정 성공", questionNo);
+            Integer updateQuestionId = questionService.update(questionNo, questionCreateDto);
+            logger.debug("{} 질문 수정 성공", updateQuestionId);
             resultMap.put("message", MessageFormat.SUCCESS);
             status = HttpStatus.ACCEPTED;
         } catch (Exception e) {
             logger.error("질문 수정 실패: ", e);
-            resultMap.put("message", MessageFormat.SERVER_FAIL);
+            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage());
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
@@ -62,7 +62,7 @@ public class QuestionController {
     }
 
     @DeleteMapping("/{questionNo}")
-    public ResponseEntity<Map<String, Object>> add(@PathVariable("questionNo") Long questionNo) {
+    public ResponseEntity<Map<String, Object>> add(@PathVariable("questionNo") Integer questionNo) {
         Map<String, Object> resultMap = new HashMap<>();
         HttpStatus status = null;
         try {

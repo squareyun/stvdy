@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 
@@ -34,11 +36,17 @@ public class Answer {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "question_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Question question;
 
-    @OneToOne(mappedBy = "answer", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToOne(mappedBy = "answer")
     Likes likes;
 
-    @OneToOne(mappedBy = "answer", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToOne(mappedBy = "answer")
     ArticleImage articleImage;
+
+    public void addQuestion(Question question) {
+        this.question = question;
+        question.answerList.add(this);
+    }
 }

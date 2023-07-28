@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import static jakarta.persistence.FetchType.LAZY;
 
@@ -27,10 +29,12 @@ public class ArticleImage {
     @OneToOne(fetch = LAZY)
     @JoinColumn(name = "question_id")
     @Nullable
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Question question;
 
     @OneToOne(fetch = LAZY)
     @JoinColumn(name = "answer_id")
     @Nullable
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Answer answer;
 }
