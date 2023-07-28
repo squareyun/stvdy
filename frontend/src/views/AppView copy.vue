@@ -37,21 +37,13 @@
       </div>
       <!-- 내 캠 -->
       <div id="main-video">
-        <!-- <user-video :stream-manager="mainStreamManager" /> -->
-        <user-video :stream-manager="mainStreamManagerComputed" />
+        <user-video :stream-manager="mainStreamManager" />
       </div>
       <!-- 모든 캠 -->
       <div id="video-container">
-        <!-- <user-video :stream-manager="publisher" @click.native="updateMainVideoStreamManager(publisher)" /> -->
-        <user-video :stream-manager="publisherComputed" @click.native="updateMainVideoStreamManager(publisher)" />
-        <!-- <user-video
-          v-for="sub in subscribers"
-          :key="sub.stream.connection.connectionId"
-          :stream-manager="sub"
-          @click.native="updateMainVideoStreamManager(sub)"
-        /> -->
+        <user-video :stream-manager="publisher" @click.native="updateMainVideoStreamManager(publisher)" />
         <user-video
-          v-for="sub in subscribersComputed"
+          v-for="sub in subscribers"
           :key="sub.stream.connection.connectionId"
           :stream-manager="sub"
           @click.native="updateMainVideoStreamManager(sub)"
@@ -121,12 +113,7 @@
   const camerOff = ref(false)    // 기본 카메라 활성화
   const selectedCamera = ref("")  // 카메라 변경시 사용할 변수 
   const selectedAudio  = ref("")  // 오디오 변경시 사용할 변수
-  ////다시그려내기 위해 computed 작성
-  const mainStreamManagerComputed = computed(() => mainStreamManager.value);
-  const publisherComputed = computed(() => publisher.value);
-  // const subscribersComputed = computed(() => subscribers);
-  const subscribersComputed = computed(() => subscribers.value);
-  ////
+
   ///////////////////
 
 

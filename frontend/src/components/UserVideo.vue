@@ -39,12 +39,7 @@
   }
 </script>
   
-  
-  
-  
-  
-  
-  
+
   
   <!-- <template>
       <div v-if="streamManager">
