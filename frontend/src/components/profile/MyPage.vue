@@ -12,17 +12,19 @@ import { RouterLink, RouterView } from 'vue-router';
 
 const localUser = ref(JSON.parse(localStorage.getItem('user')));
 const userID = JSON.parse(localStorage.getItem('user')).id;
-const usersStore = useUsersStore();
-const alertStore = useAlertStore();
-let user = ref(null);
 
-onMounted(async () => {
-  ({ user } = storeToRefs(usersStore));
-  await usersStore.getById(userID)
-  const testItem = user._object.user;
-  user = testItem;
-  console.log(user)
-})
+
+// const alertStore = useAlertStore();
+// const usersStore = useUsersStore();
+// let user = ref(null);
+
+// onMounted(async () => {
+//   ({ user } = storeToRefs(usersStore));
+//   await usersStore.getById(userID)
+//   const testItem = user._object.user;
+//   user = testItem;
+//   console.log(user)
+// })
 
 // const schema = Yup.object().shape({
 //   username: Yup.string().max(45, '길이를 줄여주세요.').min(4, '더 긴 이름을 사용해야합니다.'),

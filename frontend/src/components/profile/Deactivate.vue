@@ -8,8 +8,8 @@ const user = ref(JSON.parse(localStorage.getItem('user')));
 async function deactivate() {
   let isDeact = confirm("계정을 삭제합니다. 진행하나요?");
   if (isDeact) {
-    const authStore = useAuthStore();
     const alertStore = useAlertStore();
+    const authStore = useAuthStore();
     try {
       await authStore.deactivate();
       await router.push('/about');
@@ -28,7 +28,7 @@ async function deactivate() {
     <br>
     회원탈퇴
     <div>
-      본인은 {{ user.username }} #{{ user.id }} 계정을 삭제하겠습니다.
+      본인은 {{ user.username }}#{{ user.id }} 계정을 삭제하겠습니다.
     </div>
     <div>
       <button @click="deactivate">계정 삭제</button>
