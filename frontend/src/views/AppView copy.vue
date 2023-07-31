@@ -37,21 +37,13 @@
       </div>
       <!-- 내 캠 -->
       <div id="main-video">
-        <UserVideo :stream-manager="mainStreamManagerComputed" />
-        <!-- <user-video v-if="selectedCamera || selectedAudio" :stream-manager="mainStreamManagerComputed" /> -->
+        <user-video :stream-manager="mainStreamManager" />
       </div>
       <!-- 모든 캠 -->
       <div id="video-container">
-        <!-- <user-video :stream-manager="publisher" @click.native="updateMainVideoStreamManager(publisher)" /> -->
-        <UserVideo :stream-manager="publisherComputed" @click.native="updateMainVideoStreamManager(publisher)" />
-        <!-- <user-video
+        <user-video :stream-manager="publisher" @click.native="updateMainVideoStreamManager(publisher)" />
+        <user-video
           v-for="sub in subscribers"
-          :key="sub.stream.connection.connectionId"
-          :stream-manager="sub"
-          @click.native="updateMainVideoStreamManager(sub)"
-        /> -->
-        <UserVideo
-          v-for="sub in subscribersComputed"
           :key="sub.stream.connection.connectionId"
           :stream-manager="sub"
           @click.native="updateMainVideoStreamManager(sub)"
@@ -77,10 +69,10 @@
       <button id="mute-activate" @click="handleMuteBtn">음소거 활성화</button>
       <!-- 캠,오디오 선택 옵션 -->
       <div>
-        <select name="cameras" @change="handleCameraChange">
+        <select name="cameras" id="" @change="handleCameraChange">
           <option disabled>사용할 카메라를 선택하세요</option>
         </select>
-        <select name="audios" @change="handleAudioChange">
+        <select name="audios" id="" @change="handleAudioChange">
           <option disabled>사용할 마이크를 선택하세요</option>
         </select>
       </div>
@@ -108,7 +100,7 @@
   const subscribers = ref([])
 
   // Join form
-  const mySessionId = ref("SessionCrome")
+  const mySessionId = ref("SessionA")
   const myUserName = ref("Participant" + Math.floor(Math.random() * 100))
   
   
@@ -121,12 +113,7 @@
   const camerOff = ref(false)    // 기본 카메라 활성화
   const selectedCamera = ref("")  // 카메라 변경시 사용할 변수 
   const selectedAudio  = ref("")  // 오디오 변경시 사용할 변수
-  ////다시그려내기 위해 computed 작성
-  const mainStreamManagerComputed = computed(() => mainStreamManager.value);
-  const publisherComputed = computed(() => publisher.value);
-  // const subscribersComputed = computed(() => subscribers);
-  const subscribersComputed = computed(() => subscribers.value);
-  ////
+
   ///////////////////
 
 
@@ -356,59 +343,67 @@
   }
   
   // select태그에서 사용할 기기를 선택했을때
-  // function handleCameraChange(event) {
-  //   selectedCamera.value = event.target.value
-  // }
-  // function handleAudioChange(event) {
-  //   selectedAudio.value = event.target.value 
-  // }
-  async function handleCameraChange(event) {
-    selectedCamera.value = event.target.value;
-    await replaceCameraTrack(selectedCamera.value);
+  function handleCameraChange(event) {
+    selectedCamera.value = event.target.value
+    updateCameraAndAudio()
+  }
+  function handleAudioChange(event) {
+    selectedAudio.value = event.target.value
+    updateCameraAndAudio()
   }
 
-  async function handleAudioChange(event) {
-    selectedAudio.value = event.target.value;
-    await replaceAudioTrack(selectedAudio.value);
+  // 기기를 선택하면 그 기기사용하게 해주는 함수
+  function updateCameraAndAudio() {
+    // 선택한 카메라 및 오디오가 없을 경우 처리 안함
+    if (!selectedCamera.value && !selectedAudio.value) return;
+
+    const newPublisher = OV.value.initPublisher(
+      undefined,
+      {
+        audioSource: selectedAudio.value || undefined,
+        videoSource: selectedCamera.value || undefined,
+        publishAudio: !muted.value,
+        publishVideo: !camerOff.value,
+        resolution: "640x480",
+        frameRate: 30,
+        insertMode: "APPEND",
+        mirror: false,
+      }
+    );
+    // 새로운 Publisher를 기존 Publisher와 교체
+    session.value.unpublish(publisher.value);
+    publisher.value = newPublisher;
+    session.value.publish(publisher.value);
+
+    // 메인 비디오 및 미러링 업데이트
+    mainStreamManager.value = newPublisher;
   }
-
-  async function replaceCameraTrack(deviceId) {
-    if (!publisher.value) return;
-
-    const newConstraints = {
-        audio: false,
-        video: {
-            deviceId: { exact: deviceId },
-        },
-    };
-
-    try {
-        const newStream = await navigator.mediaDevices.getUserMedia(newConstraints);
-        const newVideoTrack = newStream.getVideoTracks()[0];
-        await publisher.value.replaceTrack(newVideoTrack);
-    } catch (error) {
-        console.error("Error replacing video track:", error);
-    }
-  }
-
-  async function replaceAudioTrack(deviceId) {
-    if (!publisher.value) return;
-
-    const newConstraints = {
-        audio: {
-            deviceId: { exact: deviceId },
-        },
-        video: false,
-    };
-
-    try {
-        const newStream = await navigator.mediaDevices.getUserMedia(newConstraints);
-        const newAudioTrack = newStream.getAudioTracks()[0];
-        await publisher.value.replaceTrack(newAudioTrack);
-    } catch (error) {
-        console.error("Error replacing audio track:", error);
-    }
-  }
-
   
 </script>
+<!-- // 기기선택으로 이제 사용할 기기를 작동시키기
+async function updateCameraAndAudio() {
+  if (!publisher.value) return;
+  
+  //기존 캠 참조
+  const originalVideoElement = publisher.value.videos[0].video
+
+  session.value.unpublish(publisher.value);
+
+  // 새 Publisher를 생성하고 카메라 및 오디오 소스를 업데이트함
+  publisher.value = OV.value.initPublisher(originalVideoElement, {
+    audioSource: selectedAudio.value || undefined,
+    videoSource: selectedCamera.value || undefined,
+    publishAudio: !muted.value,
+    publishVideo: !camerOff.value,
+    resolution: "640x480",
+    frameRate: 30,
+    insertMode: "APPEND",
+    mirror: false,
+  });
+
+  // 새로운 Publisher를 게시
+  await session.value.publish(publisher.value);
+
+  // 메인 스트림 매니저 업데이트
+  mainStreamManager.value = publisher.value;
+} -->
