@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import AppView from '../views/AppView.vue'
+// import RoomView from '../views/RoomView.vue'
 import { useAuthStore, useAlertStore } from '@/stores'
 
 
@@ -38,11 +38,6 @@ const router = createRouter({
       ],
     },
     {
-      path: '/webrtc',
-      name: 'webrtc',
-      component: AppView
-    },
-    {
       path: '/about',
       name: 'about',
       // route level code-splitting
@@ -66,6 +61,21 @@ const router = createRouter({
           component: () => import('../components/ent/PasswordReset.vue'),
         },
       ],
+    },
+    {   // 화상 채팅 방 생성
+      path: '/room',
+      name: 'roomAdd',
+      component: () => import('@/components/RoomAdd.vue'),
+    },
+    { // 화상 채팅 방 참여
+      path: '/room/:roomNo',
+      name: 'roomJoin',
+      component: () => import('@/components/RoomJoin.vue'),
+    },
+    { // 화상 채팅 방 참여
+      path: '/room/tmp',
+      name: 'roomJointmp',
+      component: () => import('@/views/RoomView.vue'),
     },
   ],
 })
@@ -105,7 +115,7 @@ router.beforeEach(async (to) => {
 
   // 로그인 없이도 접근 가능한 라우터
   // 접근 하려는 라우터가 public 인지 확인
-  const publicPages = ['/about', '/regist', '/passwordReset']
+  const publicPages = ['/about', '/regist', '/passwordReset', '/room',  '/room/:roomNo', '/room/tmp',] // 손 좀 대겠습니다. 기존 ['/about', '/regist', '/passwordReset', ]
   const authRequired = !publicPages.includes(to.path)
 
   // 로컬 스토리지의 유저 로그인 정보가 있는지 받아오는 스토어

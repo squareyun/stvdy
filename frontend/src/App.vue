@@ -2,6 +2,7 @@
 import { RouterLink, RouterView } from 'vue-router'
 import Alert from '@/components/Alert.vue'
 import TopBar from '@/components/TopBar.vue'
+// import AppView from '@/views/AppView.vue'
 </script>
 
 <template>
@@ -9,7 +10,10 @@ import TopBar from '@/components/TopBar.vue'
     <TopBar id="topbar" />
     <Alert />
   </header>
-
+  
+  <div>
+    <!-- <AppView /> -->
+  </div>
   <RouterView />
 </template>
 

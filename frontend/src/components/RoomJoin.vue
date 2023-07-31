@@ -1,86 +1,3 @@
-<template>
-  <div id="main-container">
-    <!-- session이 false일때! 즉, 방에 들어가지 않았을때 -->
-    <div id="join" v-if="!session">
-      <div id="img-div">
-        <!-- <img src="resources/images/openvidu_grey_bg_transp_cropped.png" alt="오픈비두 로고 이미지임"> --><!-- 이미지부분 -->
-      </div>
-      <div id="join-dialog">
-        <h1>Join a video session</h1>
-        <div>
-          <p>
-            <label>Participant</label>
-            <input v-model="myUserName" type="text" required />
-          </p>
-          <p>
-            <label>Session</label>
-            <input v-model="mySessionId" type="text" required />
-          </p>
-          <p>
-            <button @click="joinSession">
-              Join!
-            </button>
-          </p>
-        </div>
-      </div>
-    </div>
-    <!-- session이 true일때! 즉, 방에 들어갔을 때 -->
-    <div id="session" v-if="session">
-      <div id="session-header">
-        <h1 id="session-title">{{ mySessionId }}</h1>
-        <input
-          type="button"
-          id="buttonLeaveSession"
-          @click="leaveSession"
-          value="Leave session"
-        />
-      </div>
-      <!-- 내 캠 -->
-      <div id="main-video">
-        <user-video :stream-manager="mainStreamManager" />
-      </div>
-      <!-- 모든 캠 -->
-      <div id="video-container">
-        <user-video :stream-manager="publisher" @click.native="updateMainVideoStreamManager(publisher)" />
-        <user-video
-          v-for="sub in subscribers"
-          :key="sub.stream.connection.connectionId"
-          :stream-manager="sub"
-          @click.native="updateMainVideoStreamManager(sub)"
-        />
-      </div>
-      <!-- 방에 들어갔을 때 같이 보이게 될 채팅창 -->
-      <!-- 나중에 <chat-winow />로 넘길수 있도록 해보자. -->
-      <div id="chat-container">
-        <div id="chat-window">
-          <ul id="chat-history">
-            <li v-for="(message, index) in messages" :key="index">
-              <strong>{{message.username}}:</strong> {{message.message}}
-            </li>
-          </ul>
-        </div>
-        <form id="chat-write">
-          <input type="text" placeholder="전달할 내용을 입력하세요." v-model="inputMessage">
-          <button @click="sendMessage">전송</button>
-        </form>
-      </div>
-      <!-- 캠활성화, 음소거 버튼 -->
-      <button id="camera-activate" @click="handleCameraBtn">캠 비활성화</button>
-      <button id="mute-activate" @click="handleMuteBtn">음소거 활성화</button>
-      <!-- 캠,오디오 선택 옵션 -->
-      <div>
-        <select name="cameras" id="" @change="handleCameraChange">
-          <option disabled>사용할 카메라를 선택하세요</option>
-        </select>
-        <select name="audios" id="" @change="handleAudioChange">
-          <option disabled>사용할 마이크를 선택하세요</option>
-        </select>
-      </div>
-    </div>
-  </div>
-</template>
-    
-  
 <script setup>
   import { ref, computed } from 'vue'
   import axios from 'axios'
@@ -88,7 +5,7 @@
   import UserVideo from "@/components/UserVideo.vue";
 
   axios.defaults.headers.post["Content-Type"] = "application/json";
-
+  // 추후 배포와 관련해서 이부분에 대해서 설정을 할 필요가 있게 될것.
   const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000/';
 
   // OpenVidu objects
@@ -100,7 +17,7 @@
   const subscribers = ref([])
 
   // Join form
-  const mySessionId = ref("SessionA")
+  const mySessionId = ref("SessionCrome")
   const myUserName = ref("Participant" + Math.floor(Math.random() * 100))
   
   
@@ -113,7 +30,12 @@
   const camerOff = ref(false)    // 기본 카메라 활성화
   const selectedCamera = ref("")  // 카메라 변경시 사용할 변수 
   const selectedAudio  = ref("")  // 오디오 변경시 사용할 변수
-
+  ////다시그려내기 위해 computed 작성
+  const mainStreamManagerComputed = computed(() => mainStreamManager.value);
+  const publisherComputed = computed(() => publisher.value);
+  // const subscribersComputed = computed(() => subscribers);
+  const subscribersComputed = computed(() => subscribers.value);
+  ////
   ///////////////////
 
 
@@ -343,67 +265,114 @@
   }
   
   // select태그에서 사용할 기기를 선택했을때
-  function handleCameraChange(event) {
-    selectedCamera.value = event.target.value
-    updateCameraAndAudio()
-  }
-  function handleAudioChange(event) {
-    selectedAudio.value = event.target.value
-    updateCameraAndAudio()
+  async function handleCameraChange(event) {
+    selectedCamera.value = event.target.value;
+    await replaceCameraTrack(selectedCamera.value);
   }
 
-  // 기기를 선택하면 그 기기사용하게 해주는 함수
-  function updateCameraAndAudio() {
-    // 선택한 카메라 및 오디오가 없을 경우 처리 안함
-    if (!selectedCamera.value && !selectedAudio.value) return;
-
-    const newPublisher = OV.value.initPublisher(
-      undefined,
-      {
-        audioSource: selectedAudio.value || undefined,
-        videoSource: selectedCamera.value || undefined,
-        publishAudio: !muted.value,
-        publishVideo: !camerOff.value,
-        resolution: "640x480",
-        frameRate: 30,
-        insertMode: "APPEND",
-        mirror: false,
-      }
-    );
-    // 새로운 Publisher를 기존 Publisher와 교체
-    session.value.unpublish(publisher.value);
-    publisher.value = newPublisher;
-    session.value.publish(publisher.value);
-
-    // 메인 비디오 및 미러링 업데이트
-    mainStreamManager.value = newPublisher;
+  async function handleAudioChange(event) {
+    selectedAudio.value = event.target.value;
+    await replaceAudioTrack(selectedAudio.value);
   }
+
+  async function replaceCameraTrack(deviceId) {
+    if (!publisher.value) return;
+
+    const newConstraints = {
+        audio: false,
+        video: {
+            deviceId: { exact: deviceId },
+        },
+    };
+
+    try {
+        const newStream = await navigator.mediaDevices.getUserMedia(newConstraints);
+        const newVideoTrack = newStream.getVideoTracks()[0];
+        await publisher.value.replaceTrack(newVideoTrack);
+    } catch (error) {
+        console.error("Error replacing video track:", error);
+    }
+  }
+
+  async function replaceAudioTrack(deviceId) {
+    if (!publisher.value) return;
+
+    const newConstraints = {
+        audio: {
+            deviceId: { exact: deviceId },
+        },
+        video: false,
+    };
+
+    try {
+        const newStream = await navigator.mediaDevices.getUserMedia(newConstraints);
+        const newAudioTrack = newStream.getAudioTracks()[0];
+        await publisher.value.replaceTrack(newAudioTrack);
+    } catch (error) {
+        console.error("Error replacing audio track:", error);
+    }
+  }
+
   
 </script>
-<!-- // 기기선택으로 이제 사용할 기기를 작동시키기
-async function updateCameraAndAudio() {
-  if (!publisher.value) return;
-  
-  //기존 캠 참조
-  const originalVideoElement = publisher.value.videos[0].video
 
-  session.value.unpublish(publisher.value);
+<template>
+  <!-- session이 true일때! 즉, 방에 들어갔을 때 -->
+  <div id="session" v-if="session">
+      <div id="session-header">
+        <h1 id="session-title">{{ mySessionId }}</h1>
+        <input
+          type="button"
+          id="buttonLeaveSession"
+          @click="leaveSession"
+          value="Leave session"
+        />
+      </div>
+      <!-- 내 캠 -->
+      <div id="main-video">
+        <UserVideo :stream-manager="mainStreamManagerComputed" />
+        <!-- <user-video v-if="selectedCamera || selectedAudio" :stream-manager="mainStreamManagerComputed" /> -->
+      </div>
+      <!-- 모든 캠 -->
+      <div id="video-container">
+        <UserVideo :stream-manager="publisherComputed" @click.native="updateMainVideoStreamManager(publisher)" />
+        <UserVideo
+          v-for="sub in subscribersComputed"
+          :key="sub.stream.connection.connectionId"
+          :stream-manager="sub"
+          @click.native="updateMainVideoStreamManager(sub)"
+        />
+      </div>
+      <!-- 방에 들어갔을 때 같이 보이게 될 채팅창 -->
+      <!-- 나중에 <chat-winow />로 넘길수 있도록 해보자. -->
+      <div id="chat-container">
+        <div id="chat-window">
+          <ul id="chat-history">
+            <li v-for="(message, index) in messages" :key="index">
+              <strong>{{message.username}}:</strong> {{message.message}}
+            </li>
+          </ul>
+        </div>
+        <form id="chat-write">
+          <input type="text" placeholder="전달할 내용을 입력하세요." v-model="inputMessage">
+          <button @click="sendMessage">전송</button>
+        </form>
+      </div>
+      <!-- 캠활성화, 음소거 버튼 -->
+      <button id="camera-activate" @click="handleCameraBtn">캠 비활성화</button>
+      <button id="mute-activate" @click="handleMuteBtn">음소거 활성화</button>
+      <!-- 캠,오디오 선택 옵션 -->
+      <div>
+        <select name="cameras" @change="handleCameraChange">
+          <option disabled>사용할 카메라를 선택하세요</option>
+        </select>
+        <select name="audios" @change="handleAudioChange">
+          <option disabled>사용할 마이크를 선택하세요</option>
+        </select>
+      </div>
+    </div>
+</template>
 
-  // 새 Publisher를 생성하고 카메라 및 오디오 소스를 업데이트함
-  publisher.value = OV.value.initPublisher(originalVideoElement, {
-    audioSource: selectedAudio.value || undefined,
-    videoSource: selectedCamera.value || undefined,
-    publishAudio: !muted.value,
-    publishVideo: !camerOff.value,
-    resolution: "640x480",
-    frameRate: 30,
-    insertMode: "APPEND",
-    mirror: false,
-  });
+<style>
 
-  // 새로운 Publisher를 게시
-  await session.value.publish(publisher.value);
-
-  // 메인 스트림 매니저 업데이트
-  mainStreamManager.value = publisher.value;
-} -->
+</style>

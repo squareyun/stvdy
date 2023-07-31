@@ -22,11 +22,6 @@
     streamManager: Object,
   })
 
-  // const streamManager = ref(Object);
-  // onMounted(() => {
-  //   clientData.value = getConnectionData();
-  // });
-
   // clientData는 computed로 진행됨
   const clientData = computed(() => {
     const { clientData } = getConnectionData();
@@ -38,43 +33,3 @@
     return JSON.parse(connection.data);
   }
 </script>
-  
-
-  
-  <!-- <template>
-      <div v-if="streamManager">
-          <ov-video :stream-manager="streamManager"/>
-          <div><p>{{ clientData }}</p></div>
-      </div>
-      </template>
-      
-      <script>
-      import OvVideo from './OvVideo';
-      
-      export default {
-          name: 'UserVideo',
-      
-          components: {
-              OvVideo,
-          },
-      
-          props: {
-              streamManager: Object,
-          },
-      
-          computed: {
-              clientData () {
-                  const { clientData } = this.getConnectionData();
-                  return clientData;
-              },
-          },
-      
-          methods: {
-              getConnectionData () {
-                  const { connection } = this.streamManager.stream;
-                  return JSON.parse(connection.data);
-              },
-          },
-      };
-      </script>
-       -->
