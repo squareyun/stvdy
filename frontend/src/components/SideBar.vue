@@ -1,5 +1,14 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router';
+import { RouterLink } from 'vue-router';
+import { useQuestionsStore } from '@/stores';
+import router from '@/router';
+
+
+async function myQuestion() {
+  const questionStore = useQuestionsStore();
+  await questionStore.getMyQtn();
+  router.push({ name: 'question' })
+}
 
 </script>
 
@@ -20,12 +29,16 @@ import { RouterLink, RouterView } from 'vue-router';
         프로필(사진외 Done)
       </router-link>
       <br>
-      <router-link to="question">
-        내 질문(미구현)
-      </router-link>
+      <a href="#" @click="myQuestion()">
+        내 질문
+      </a>
       <br>
       <router-link to="">
         알림(미구현)
+      </router-link>
+      <br>
+      <router-link to="">
+        환경설정(미구현)
       </router-link>
     </div>
   </div>

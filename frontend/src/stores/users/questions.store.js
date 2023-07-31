@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import { fetchWrapper } from '@/helpers'
-// import { useAuthStore } from '@/stores'
 import router from '@/router'
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/questions`
@@ -13,30 +12,42 @@ export const useQuestionsStore = defineStore({
   }),
   actions: {
     async create(question) {
-      await fetchWrapper.post(`${baseUrl}/create`, question)
-      // baseUrl/users/register/{requestBody} // success/fail로 응답받음
+      // await fetchWrapper.post(`${baseUrl}/create`, question)
+      console.log(
+        'baseUrl/question/create/{requestBody} // success/fail로 응답받음',
+      )
     },
     async getAll() {
-      // this.questions = { loading: true }
-      // try {
-      //   this.questions = await fetchWrapper.get(baseUrl)
-      // } catch (error) {
-      //   this.questions = { error }
-      // }
-      // 테스트용
+      // test codes below
       this.questions = [
-        { id: 1, title: 'test-title1' },
-        { id: 2, title: 'test-title2' },
+        { id: 1, title: 'test-title1', user_id: 2 },
+        { id: 2, title: 'test-title2', user_id: 1 },
       ]
+      console.log('baseUrl/question/getAll')
     },
     async getById(id) {
-      this.question = { loading: true }
-      try {
-        this.question = await fetchWrapper.get(`${baseUrl}/${id}`)
-      } catch (error) {
-        this.question = { error }
+      // 테스트용 코드 below
+      this.question = {
+        id: 1,
+        title: 'test-title1',
+        detail: 'test detail!!! ',
+        user_id: id,
       }
+      console.log('baseUrl/question/{id}')
     },
+    async sortMostRecent() {
+      console.log('baseUrl/question/sortMostRecent')
+    },
+    async sortNoAnswer() {
+      console.log('baseUrl/question/sortNoAnswer')
+    },
+    async sortActivated() {
+      console.log('baseUrl/question/sortActivated')
+    },
+    async getMyQtn() {
+      console.log('baseUrl/question/getMyQtn')
+    },
+
     // async update(id, params) {
     //   await fetchWrapper.put(`${baseUrl}/${id}`, params)
 

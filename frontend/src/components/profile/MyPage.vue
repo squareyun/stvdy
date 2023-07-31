@@ -14,39 +14,6 @@ const localUser = ref(JSON.parse(localStorage.getItem('user')));
 const userID = JSON.parse(localStorage.getItem('user')).id;
 
 
-// const alertStore = useAlertStore();
-// const usersStore = useUsersStore();
-// let user = ref(null);
-
-// onMounted(async () => {
-//   ({ user } = storeToRefs(usersStore));
-//   await usersStore.getById(userID)
-//   const testItem = user._object.user;
-//   user = testItem;
-//   console.log(user)
-// })
-
-// const schema = Yup.object().shape({
-//   username: Yup.string().max(45, '길이를 줄여주세요.').min(4, '더 긴 이름을 사용해야합니다.'),
-//   password: Yup.string(),
-//   passwordConfirm: Yup.string().oneOf([Yup.ref('password'), null], '비밀번호가 일치하지않습니다.')
-// });
-
-// async function onSubmit(values) {
-//   // test console print below
-//   console.log(values);
-//   console.log(user.id);
-//   const editData = values;
-//   delete editData.passwordConfirm;
-//   try {
-//     await usersStore.update(user.id, values);
-//     await router.push('/')
-//     alertStore.success('회원정보가 변경되었습니다.');
-//   } catch (error) {
-//     alertStore.error(error);
-//   }
-// }
-
 </script>
 
 
