@@ -245,24 +245,32 @@
   * GETTING A TOKEN FROM YOUR APPLICATION SERVER
   * --------------------------------------------
   */
-  async function getToken(mySessionId) {
-    const sessionId = await createSession(mySessionId);
-    return await createToken(sessionId);
-  }
+    //// Edited code with Beom's code
+     async function getToken(mySessionId) {
+       const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/add', {userNo: 53, title: mySessionId, endHour: 1, endMinute: 30, quota: 16, isPrivacy: false, password:"1234", iamgePath:"imgURL", rule:"rule Text which is veruy long"}, {
+         headers: { 'Content-Type': 'application/json', },
+       });
+       console.log('TOKKKKKKKKKKKKKKKEN'+response.data);
+       return response.data;
+     }
 
-  async function createSession(sessionId) {
-    const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions', { customSessionId: sessionId, userNo: 53, endHour: 1, endMinute: 30, quota: 16, isPrivacy: false}, {
-      headers: { 'Content-Type': 'application/json', },
-    });
-    return response.data; // The sessionId
-  }
-
-  async function createToken(sessionId) {
-    const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions/' + sessionId + '/connections', {}, {
-      headers: { 'Content-Type': 'application/json', },
-    });
-    return response.data; // The token
-  }
+   // ////Beom's code
+   // async function getToken(mySessionId) {
+   //   const sessionId = await createSession(mySessionId);
+   //   return await createToken(sessionId);
+   // }
+   // async function createSession(sessionId) {
+   //   const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions', { customSessionId: sessionId, userNo: 53, endHour: 1, endMinute: 30, quota: 16, isPrivacy: false}, {
+   //     headers: { 'Content-Type': 'application/json', },
+   //   });
+   //   return response.data; // The sessionId
+   // }
+   // async function createToken(sessionId) {
+   //   const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions/' + sessionId + '/connections', {}, {
+   //     headers: { 'Content-Type': 'application/json', },
+   //   });
+   //   return response.data; // The token
+   // }
 
   // 채팅창 구현을 위한 함수 제작
   ///////////////////////////
