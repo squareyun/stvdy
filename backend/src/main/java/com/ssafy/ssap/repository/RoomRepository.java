@@ -13,4 +13,8 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
     @Modifying
     @Query("UPDATE Room r SET r.isValid = false WHERE r.id = :roomId")
     void setValidToZeroByRoomId(@Param("roomId") Long roomId);
+
+//    @Modifying
+//    @Query("UPDATE Room r SET r.sessionId = false WHERE r.id = :roomId")
+//    void updateSessionId(@Param("roomId") Long roomId);
 }
