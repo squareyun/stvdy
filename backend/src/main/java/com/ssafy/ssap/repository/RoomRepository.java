@@ -8,9 +8,9 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface RoomRepository extends JpaRepository<Room, Long> {
+public interface RoomRepository extends JpaRepository<Room, Integer> {
 
     @Modifying
     @Query("UPDATE Room r SET r.isValid = false WHERE r.id = :roomId")
-    void setValidToZeroByRoomId(@Param("roomId") Long roomId);
+    void setValidToZeroByRoomId(@Param("roomId") Integer roomId);
 }

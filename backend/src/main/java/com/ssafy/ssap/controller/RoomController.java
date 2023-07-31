@@ -27,13 +27,13 @@ public class RoomController {
         Map<String, Object> resultMap = new HashMap<>();
         HttpStatus status = null;
         try {
-            Long roomId = roomService.create(roomCreateDto);
+            Integer roomId = roomService.create(roomCreateDto);
             logger.debug("{} 스터디룸 생성 성공", roomId);
             resultMap.put("message", MessageFormat.SUCCESS);
             status = HttpStatus.ACCEPTED;
         } catch (Exception e) {
             logger.error("스터디룸 생성 실패: ", e);
-            resultMap.put("message", MessageFormat.SERVER_FAIL);
+            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage());
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
@@ -41,7 +41,7 @@ public class RoomController {
     }
 
     @DeleteMapping("/{roomno}")
-    public ResponseEntity<?> close(@PathVariable("roomno") Long roomNo) {
+    public ResponseEntity<?> close(@PathVariable("roomno") Integer roomNo) {
         Map<String, Object> resultMap = new HashMap<>();
         HttpStatus status = null;
         try {
@@ -51,7 +51,7 @@ public class RoomController {
             status = HttpStatus.ACCEPTED;
         } catch (Exception e) {
             logger.error("스터디룸 폐쇄 실패: ", e);
-            resultMap.put("message", MessageFormat.SERVER_FAIL);
+            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage());
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
