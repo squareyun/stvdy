@@ -22,6 +22,26 @@ spring:
         hbm2ddl:
           import_files: 'classpath:static-data.sql'
 
+    mail:
+      host: smtp.gmail.com
+      port: 587
+      username: thdl9893@ajou.ac.kr
+      password: imdanwvhpqlffvol
+      properties:
+        mail:
+          smtp:
+            auth: true
+            timeout: 5000
+            starttls:
+              enable: true
+
+jwt:
+  header: Authorization
+  #HS512 알고리즘을 사용할 것이기 때문에 512bit, 즉 64byte 이상의 secret key를 사용해야 한다.
+  #echo 'silvernine-tech-spring-boot-jwt-tutorial-secret-silvernine-tech-spring-boot-jwt-tutorial-secret'|base64
+  secret: c2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQtc2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQK
+  token-validity-in-seconds: 86400
+
 logging:
   level:
     org.hibernate.sql: debug
