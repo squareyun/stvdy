@@ -20,7 +20,7 @@ import { RouterLink, RouterView } from 'vue-router';
         프로필(사진외 Done)
       </router-link>
       <br>
-      <router-link to="">
+      <router-link to="question">
         내 질문(미구현)
       </router-link>
       <br>

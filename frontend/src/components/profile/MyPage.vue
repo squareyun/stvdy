@@ -107,7 +107,7 @@ const userID = JSON.parse(localStorage.getItem('user')).id;
         </Form> -->
       </div>
 
-
+      <a href="">대표 이미지 변경</a>
       <router-link to='/changeusername'>별명 변경</router-link>
       <router-link to='/changepwd'>비밀번호 변경</router-link>
     </div>

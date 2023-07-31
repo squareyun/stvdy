@@ -21,7 +21,7 @@ function testFunction3() {
 <template>
   <div style="color:white">
     질문 게시판.vue
-    <router-link to="">질문 작성하기(미구현)</router-link>
+    <router-link to="createqtn">질문 작성하기(구현 중)</router-link>
     <form action="">
       <label><input type="radio" name="listSort" value="newest" @click="testFunction1">최신순</label>
       <label><input type="radio" name="listSort" value="noAnswer" @click="testFunction2">답변없음</label>

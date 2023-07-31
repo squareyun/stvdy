@@ -39,6 +39,12 @@ const router = createRouter({
           component: () => import('../components/qna/QuestionList.vue'),
           children: [],
         },
+        {
+          path: '/createqtn',
+          name: 'createqtn',
+          component: () => import('../components/qna/CreateQtn.vue'),
+          children: [],
+        },
       ],
     },
     {
