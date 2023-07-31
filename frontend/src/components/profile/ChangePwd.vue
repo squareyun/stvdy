@@ -23,7 +23,7 @@ async function onSubmit(values) {
   delete editData.prvpassword;
   try {
     await usersStore.update(2, values);
-    await router.push('/')
+    await router.push('/mypage')
     alertStore.success('비밀번호가 변경되었습니다.');
   } catch (error) {
     alertStore.error(error);
