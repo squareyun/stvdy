@@ -1,8 +1,10 @@
 package com.ssafy.ssap.dto;
 
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@ToString
 public class RoomCreateDto {
 
     private Long userNo;
@@ -14,5 +16,6 @@ public class RoomCreateDto {
     private String password;
     private String imagePath;
     private String rule;
+    private String sessionId;
 
 }

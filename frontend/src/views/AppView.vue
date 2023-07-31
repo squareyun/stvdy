@@ -73,7 +73,8 @@
   
     axios.defaults.headers.post["Content-Type"] = "application/json";
   
-    const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000/';
+    // const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000/';
+    const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080/';
   
     // OpenVidu objects
     const OV = ref(undefined)
@@ -137,6 +138,8 @@
         // session.value.connect(token, {clientData: myUserName})
         session.value.connect(token, {clientData: myUserName.value})
         .then(() => {
+          console.log("session connect 성공");
+
             // --- 5) Get your own camera stream with the desired properties ---
   
             // Init a publisher passing undefined as targetElement (we don't want OpenVidu to insert a video
@@ -164,7 +167,9 @@
           })
           .catch((error) => {
             console.log("There was an error connecting to the session:", error.code, error.message);
+            console.error(error);
           })
+
       })
   
       window.addEventListener("beforeunload", leaveSession)
@@ -196,29 +201,34 @@
     * GETTING A TOKEN FROM YOUR APPLICATION SERVER
     * --------------------------------------------
     */
+
+    //// Edited code with Beom's code
     async function getToken(mySessionId) {
-      console.log('이건 getToken 함수 들어옴 mySessionId', mySessionId)
-      const sessionId = await createSession(mySessionId);
-      console.log('createSession 함수 빠져나옴', sessionId)
-      return await createToken(sessionId);
-    }
-  
-    async function createSession(sessionId) {
-      console.log('이건 createSession 함수 들어옴',APPLICATION_SERVER_URL+" / "+sessionId)
-      const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions', { customSessionId: sessionId }, {
-        headers: { 'Content-Type': 'application/json', },
-      }, { userNo: 53}, {endHour: 1}, {endMinute: 30}, {quota: 16}, {isPrivacy: false});
-      console.log('이건 createSession 함수 빠져나가는중 response', response)
-      return response.data; // The sessionId
-    }
-  
-    async function createToken(sessionId) {
-      const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions/' + sessionId + '/connections', {}, {
+      const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/add', {userNo: 53, title: mySessionId, endHour: 1, endMinute: 30, quota: 16, isPrivacy: false, password:"1234", iamgePath:"imgURL", rule:"rule Text which is veruy long"}, {
         headers: { 'Content-Type': 'application/json', },
       });
-      console.log('이건 createToken으로 생성된 response.data', response.data)
-      return response.data; // The token
+      console.log('TOKKKKKKKKKKKKKKKEN'+response.data);
+      return response.data;
     }
+  
+  // ////Beom's code
+  // async function getToken(mySessionId) {
+  //   const sessionId = await createSession(mySessionId);
+  //   return await createToken(sessionId);
+  // }
+  // async function createSession(sessionId) {
+  //   const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions', { customSessionId: sessionId, userNo: 53, endHour: 1, endMinute: 30, quota: 16, isPrivacy: false}, {
+  //     headers: { 'Content-Type': 'application/json', },
+  //   });
+  //   return response.data; // The sessionId
+  // }
+  // async function createToken(sessionId) {
+  //   const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions/' + sessionId + '/connections', {}, {
+  //     headers: { 'Content-Type': 'application/json', },
+  //   });
+  //   return response.data; // The token
+  // }
+
   
     // 채팅창 구현을 위한 함수 제작
     ///////////////////////////
