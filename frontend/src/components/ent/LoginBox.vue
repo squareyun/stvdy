@@ -1,15 +1,14 @@
 <script setup>
 import { Form, Field } from 'vee-validate'
-import * as Yup from 'yup'
-
 import { useAuthStore } from '@/stores'
+import * as Yup from 'yup'
 
 const schema = Yup.object().shape({
   username: Yup.string().email('*올바른 입력이 필요합니다.'),
   password: Yup.string().required('*올바른 입력이 필요합니다.'),
 })
 
-async function onSubmit(values) {
+const onSubmit = async (values) => {
   const authStore = useAuthStore()
   if (values.keeplog === 'keeplogon') {
     values.keeplog = true
@@ -23,16 +22,15 @@ async function onSubmit(values) {
 
 <template>
   <div>
-    <h2 class="ents-title">"다시 만나 반가워요"</h2>
-    <div id="login-form">
+    <h2 class="ents-title">"만나게 되어 반가워요"</h2>
+    <div>
       <Form
+        autocomplete="off"
         @submit="onSubmit"
         :validation-schema="schema"
         v-slot="{ errors, isSubmitting }">
-        <p
-          class="field-name"
-          id="name-email">
-          &nbsp;&nbsp;메일
+        <p class="field-name">
+          &nbsp;&nbsp;이메일
           <span class="error-yup">{{ errors.username }}</span>
           &nbsp;
         </p>
@@ -41,9 +39,7 @@ async function onSubmit(values) {
           type="text"
           class="field"
           :class="{ 'is-invalid': errors.username }" />
-        <p
-          class="field-name"
-          id="name-pwd">
+        <p class="field-name">
           &nbsp;&nbsp;비밀번호
           <span class="error-yup">{{ errors.password }}</span>
           &nbsp;
@@ -98,47 +94,8 @@ async function onSubmit(values) {
   align-items: center;
 }
 
-#login-form {
-  position: relative;
-  margin-top: 25px;
-}
-
-.field-name {
-  position: relative;
-  display: inline;
-  margin-left: 31px;
-
-  color: var(--font80);
-
-  /* font-size: 14px; */
-  font-size: 0.75vw;
-
-  text-align: center;
-
-  background-color: var(--hl-light);
-}
-
 .error-yup {
   color: var(--hl-warn);
-}
-
-.field {
-  /* position: relative;
-  top: 50px; */
-  background-color: var(--hl-light);
-  margin-left: 20px;
-  margin-top: -12px;
-  padding-left: 18px;
-
-  color: var(--font100);
-
-  width: 360px;
-  height: 46px;
-  border-radius: 10px;
-  border-style: solid;
-  border-width: 1px;
-  font-size: 16px;
-  margin-bottom: 10px;
 }
 
 #keep-login {
@@ -159,25 +116,39 @@ input[type='checkbox'] {
 
 #login-button {
   position: absolute;
-  top: 216px;
+  top: 328px;
   right: 20px;
   border: 0;
   background-color: transparent;
   cursor: pointer;
 }
 
+#login-button:hover > svg > path {
+  fill: var(--hl-green);
+  transition: fill 0.45s;
+}
+
 path {
-  fill: var(--font80);
+  fill: var(--font100);
+  transition: fill 0.45s;
 }
 
 #options {
   margin-left: 20px;
-  font-size: 18px;
+  font-size: 1.3rem;
   position: relative;
   top: 375px;
 }
 
 .link {
   color: var(--font80);
+  transition: color 0.45s;
+
+  text-underline-offset: 4px;
+}
+
+.link:hover {
+  color: var(--hl-green);
+  transition: color 0.45s;
 }
 </style>
