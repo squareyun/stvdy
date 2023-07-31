@@ -1,6 +1,6 @@
 <template>
   <div v-if="streamManager">
-    <ov-video :stream-manager="streamManager"/>
+    <OvVideo :stream-manager="streamManager"/>
     <!-- {{ clientData }}이게 내 현재 이름임 -->
     <div><p>{{ clientData }}</p></div>
   </div>
@@ -15,7 +15,7 @@
 <script setup>
   // import { ref, onMounted, computed } from 'vue';
   import { computed } from 'vue';
-  import OvVideo from '@/components/OvVideo.vue';
+  import OvVideo from '@/components/webrtc/OvVideo.vue';
 
 
   const props = defineProps({

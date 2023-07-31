@@ -32,7 +32,7 @@
     router.push({
       name:'roomJoin',
       params: { 
-        roomNo: mySessionId.value,
+        roomNo: encodeURIComponent(mySessionId.value),  // 인코딩해서 보내줘야만 작동함
       },
     })
   }
@@ -44,19 +44,19 @@
     <div id="img-div">
     </div>
     <div id="join-dialog">
-      <h1>Join a video session</h1>
+      <h1>화상회의 방 생성하기</h1>
       <div>
         <p>
-          <label>Participant</label>
+          <label>닉네임 설정: </label>
           <input :value="myUserName" @input="updateMyuserName" required />
         </p>
         <p>
-          <label>Session</label>
+          <label>방 제목 설정: </label>
           <input :value="mySessionId" @input="updateMysessionId" required />
         </p>
         <p>
           <button @click="joinSession">
-            Join!
+            생성! 또는 참가!(임시)
           </button>
         </p>
       </div>

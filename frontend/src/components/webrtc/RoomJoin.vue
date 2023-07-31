@@ -1,12 +1,18 @@
 <script setup>
-  import { ref, computed } from 'vue'
+  import { ref, computed, onBeforeMount } from 'vue'
   import axios from 'axios'
   import { OpenVidu } from "openvidu-browser";
-  import UserVideo from "@/components/UserVideo.vue";
+  import UserVideo from "@/components/webrtc/UserVideo.vue";
+  import { useRouter } from "vue-router"
+  import { webRtcStore } from "@/stores"
 
-  axios.defaults.headers.post["Content-Type"] = "application/json";
+  const store = webRtcStore()
+  const router = useRouter()
+
+  axios.defaults.headers.post["Content-Type"] = "application/json;charset=utf-8";
   // 추후 배포와 관련해서 이부분에 대해서 설정을 할 필요가 있게 될것.
   const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000/';
+  // const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080/';
 
   // OpenVidu objects
   const OV = ref(undefined)
@@ -17,8 +23,12 @@
   const subscribers = ref([])
 
   // Join form
-  const mySessionId = ref("SessionCrome")
-  const myUserName = ref("Participant" + Math.floor(Math.random() * 100))
+  const mySessionId = ref(decodeURIComponent(store.mySessionId))  // 인코딩값을 디코딩한 해줘서 받아야만 작동가능함
+  // 만약 인코딩해서 받은 값이 아니라면, 디코딩하지 않은 상태로 받기 위함.
+  if (store.mySessionId === encodeURIComponent(store.mySessionId)) {
+    mySessionId.value = store.mySessionId
+  }
+  const myUserName = ref(store.myUserName)
   
   
   /////////////////////채팅창을 위한 부분임.
@@ -39,7 +49,9 @@
   ///////////////////
 
 
-
+  onBeforeMount(() => {
+    joinSession()
+  })
 
   // vue2에서의 methods 부분을 vue3화 시키기
   function joinSession() {
@@ -80,23 +92,10 @@
     });
 
 
-    // --- 4) Connect to the session with a valid user token ---
-    // Get a token from the OpenVidu deployment
-    // getToken(mySessionId).then((token) => {
     getToken(mySessionId.value).then((token) => {
-      // First param is the token. Second param can be retrieved by every user on event
-      // 'streamCreated' (property Stream.connection.data), and will be appended to DOM as the user's nickname
-      // session.value.connect(token, {clientData: myUserName})
       session.value.connect(token, {clientData: myUserName.value})
       .then(() => {
-          // --- 5) Get your own camera stream with the desired properties ---
-
-          // const cameraSelect = document.querySelector('select[name="cameras"]');
-          // const audioSelect = document.querySelector('select[name="audios"]');
-
-          // Init a publisher passing undefined as targetElement (we don't want OpenVidu to insert a video
-          // element: we will manage it on our own) and with the desired properties
-          let publisher_tmp = OV.value.initPublisher(undefined, {
+          let publisherTmp = OV.value.initPublisher(undefined, {
             audioSource: undefined, // The source of audio. If undefined default microphone
             videoSource: undefined, // The source of video. If undefined default webcam
             // audioSource: audioSelect.value, // The source of audio. If undefined default microphone
@@ -111,12 +110,9 @@
             mirror: false, // Whether to mirror your local video or not
           });
 
-          // Set the main video in the page to display our webcam and store our Publisher
-          mainStreamManager.value = publisher_tmp
-          publisher.value = publisher_tmp
+          mainStreamManager.value = publisherTmp
+          publisher.value = publisherTmp
 
-          // --- 6) Publish your stream ---
-          // session.publish(publisher)
           session.value.publish(publisher.value)
           getMedia()  // 세션이 만들어졌을때 미디어 불러옴
         })
@@ -129,7 +125,6 @@
   }
 
   function leaveSession(){
-    // --- 7) Leave the session by calling 'disconnect' method over the Session object ---
     if(session.value) session.value.disconnect()
     
     // Empty all properties...
@@ -141,7 +136,14 @@
 
     // Remove beforeunload listener
     window.removeEventListener("beforeunload", leaveSession)
-
+    
+    // 메인페이지로 넘어감
+    router.push({
+      name:'roomAdd',
+      // params: { 
+      //   roomNo: mySessionId.value,
+      // },
+    })
   }
 
   function updateMainVideoStreamManager(stream) {

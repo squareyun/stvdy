@@ -13,7 +13,7 @@ export const webRtcStore = defineStore({
       this.myUserName = newUserName;
     },
     updateMySessionId(newSessionId) {
-      console.log(newSessionId)
+      // console.log(newSessionId)
       this.mySessionId = newSessionId;
     },
   },

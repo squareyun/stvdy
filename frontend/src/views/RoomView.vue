@@ -93,7 +93,7 @@
   import { ref, computed } from 'vue'
   import axios from 'axios'
   import { OpenVidu } from "openvidu-browser";
-  import UserVideo from "@/components/UserVideo.vue";
+  import UserVideo from "@/components/webrtc/UserVideo.vue";
 
   axios.defaults.headers.post["Content-Type"] = "application/json";
   // 추후 배포와 관련해서 이부분에 대해서 설정을 할 필요가 있게 될것.
@@ -187,7 +187,7 @@
 
           // Init a publisher passing undefined as targetElement (we don't want OpenVidu to insert a video
           // element: we will manage it on our own) and with the desired properties
-          let publisher_tmp = OV.value.initPublisher(undefined, {
+          let publisherTmp = OV.value.initPublisher(undefined, {
             audioSource: undefined, // The source of audio. If undefined default microphone
             videoSource: undefined, // The source of video. If undefined default webcam
             // audioSource: audioSelect.value, // The source of audio. If undefined default microphone
@@ -203,8 +203,8 @@
           });
 
           // Set the main video in the page to display our webcam and store our Publisher
-          mainStreamManager.value = publisher_tmp
-          publisher.value = publisher_tmp
+          mainStreamManager.value = publisherTmp
+          publisher.value = publisherTmp
 
           // --- 6) Publish your stream ---
           // session.publish(publisher)

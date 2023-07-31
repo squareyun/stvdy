@@ -65,12 +65,12 @@ const router = createRouter({
     {   // 화상 채팅 방 생성
       path: '/room',
       name: 'roomAdd',
-      component: () => import('@/components/RoomAdd.vue'),
+      component: () => import('@/components/webrtc/RoomAdd.vue'),
     },
     { // 화상 채팅 방 참여
       path: '/room/:roomNo',
       name: 'roomJoin',
-      component: () => import('@/components/RoomJoin.vue'),
+      component: () => import('@/components/webrtc/RoomJoin.vue'),
     },
     { // 화상 채팅 방 참여
       path: '/webrtc',
