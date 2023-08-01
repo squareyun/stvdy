@@ -1,6 +1,6 @@
 <script setup>
 import { Form, Field } from 'vee-validate'
-import { useUsersStore, useAlertStore } from '@/stores'
+import { useAlertStore } from '@/stores'
 import { joinUser } from '@/api/user'
 import router from '@/router'
 import * as Yup from 'yup'
@@ -22,49 +22,37 @@ const schema = Yup.object().shape({
   ),
 })
 
+const emailValue = ''
 const varificationEmail = async (value) => {
-  const usersStore = useUsersStore()
-  const alertStore = useAlertStore()
-  try {
-    await usersStore.varifyEmail(value)
-    alertStore.success('인증메일이 전송되었습니다.')
-  } catch (error) {
-    alertStore.error(error)
-  }
-  // GET, /users/register/{email}
-}
-
-async function onSubmit(data) {
+  console.log(value)
   // const usersStore = useUsersStore()
   // const alertStore = useAlertStore()
+  // try {
+  //   await usersStore.varifyEmail(value)
+  //   alertStore.success('인증메일이 전송되었습니다.')
+  // } catch (error) {
+  //   alertStore.error(error)
+  // }
+}
 
-  // delete registerData.passwordConfirm
-
+async function onSubmit(values) {
   const user = {
-    email: data.email,
-    password: data.password,
-    name: data.realname,
-    nickname: data.username,
+    email: values.email,
+    password: values.password,
+    name: values.realname,
+    nickname: values.username,
   }
 
-  console.log(user)
   joinUser(
     user,
-    ({ data }) => {
+    (data) => {
       console.log(data)
+      router.push('/about')
     },
     (error) => {
       console.log(error)
     },
   )
-
-  // try {
-  //   await usersStore.register(values)
-  //   await router.push('/login')
-  //   alertStore.success('회원가입을 완료했습니다!')
-  // } catch (error) {
-  //   alertStore.error(error)
-  // }
 }
 </script>
 
