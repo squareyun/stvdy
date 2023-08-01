@@ -18,8 +18,6 @@ onMounted(() => {
 const logout = async () => {
   const authStore = useAuthStore()
   await authStore.logout()
-
-  await authStore.gethello()
 }
 </script>
 
