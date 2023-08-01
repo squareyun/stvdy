@@ -29,11 +29,11 @@ public class EmailService {
 		return checkNum;
 	}
 
-	public String sendEmail(String email) throws MessagingException {
+	public boolean sendEmail(String email) throws MessagingException {
 
 		if (userRepository.findOneWithAuthoritiesByEmail(email).orElse(null) != null) {
 			System.out.println("이미 존재하는 사용자입니다.");
-			return "false";
+			return false;
 			// throw new RuntimeException(email + " -> 활성화되어 있지 않습니다.");
 		}
 
@@ -60,7 +60,7 @@ public class EmailService {
 		redisUtil.setDataExpire(key, String.valueOf(authNum));
 		javaMailSender.send(mimeMessage);
 
-		return Integer.toString(authNum);
+		return true;
 	}
 
 }
