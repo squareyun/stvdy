@@ -1,5 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia';
+import { Form, Field } from 'vee-validate';
 import { useQuestionsStore, useAlertStore } from '@/stores';
 import { ref } from 'vue';
 import router from '../../router';
@@ -9,6 +10,9 @@ const questionsStore = useQuestionsStore();
 const alertStore = useAlertStore();
 const { question } = storeToRefs(questionsStore);
 const localUser = ref(JSON.parse(localStorage.getItem('user')));
+const { answers } = storeToRefs(questionsStore);
+
+
 
 function QtnUpdate(value) {
   questionsStore.pickedQtn = value;
@@ -26,6 +30,21 @@ async function QtnDelete(value) {
       alertStore.error(error);
     }
   }
+}
+
+async function postAnswer(value) {
+  value.user_id = localUser._value.id;
+  const qtnId = questionsStore.pickedQtn;
+  value.question_id = qtnId;
+  console.log(value)
+  try {
+    await questionsStore.createAnswer(value)
+    await router.push('qtndetail')
+    alertStore.success('답변이 등록되었습니다.')
+  } catch (error) {
+    alertStore.error(error);
+  }
+
 }
 
 
@@ -52,13 +71,20 @@ async function QtnDelete(value) {
     <div>
       답변
     </div>
-    <form action="">
-      <textarea type="text" />
+    <Form @submit="postAnswer">
+      <Field v-slot="{ field }" name="detail">
+        <textarea v-bind="field" type="text" name="detail" />
+      </Field>
       <button>답변 등록하기</button>
-    </form>
+    </Form>
     <!-- v-for를 이용하여 질문ID를 Foreign key로 갖는 답변들을 이곳에 순환시킴 -->
-    <div>
-      답변들 이곳에 달림
+    <div v-if="answers.length">
+      <tr v-for="asr in answers" :key="asr.id">
+        <div v-if="asr.question_id == question.id">
+          <td>작성자 PK : {{ asr.user_id }}</td>
+          <td>답변 내용: {{ asr.detail }}</td>
+        </div>
+      </tr>
     </div>
   </div>
 </template>

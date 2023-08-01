@@ -10,6 +10,16 @@ export const useQuestionsStore = defineStore({
     questions: {},
     question: {},
     pickedQtn: {},
+    answers: [
+      { id: 1, user_id: 1, question_id: 1, detail: 'Sample Answer1' },
+      { id: 2, user_id: 1, question_id: 1, detail: 'Sample Answer2' },
+      { id: 3, user_id: 1, question_id: 2, detail: 'Sample Answer3' },
+      { id: 4, user_id: 1, question_id: 2, detail: 'Sample Answer4' },
+      { id: 5, user_id: 2, question_id: 1, detail: 'Sample Answer5' },
+      { id: 6, user_id: 2, question_id: 1, detail: 'Sample Answer6' },
+      { id: 7, user_id: 2, question_id: 2, detail: 'Sample Answer7' },
+      { id: 8, user_id: 2, question_id: 2, detail: 'Sample Answer8' },
+    ],
   }),
   actions: {
     async create(question) {
@@ -23,16 +33,19 @@ export const useQuestionsStore = defineStore({
       this.questions = [
         { id: 1, title: 'test-title1', user_id: 1 },
         { id: 2, title: 'test-title2', user_id: 2 },
+        { id: 3, title: 'test-title3', user_id: 1 },
+        { id: 4, title: 'test-title4', user_id: 2 },
+        { id: 5, title: 'test-title5', user_id: 1 },
+        { id: 6, title: 'test-title6', user_id: 2 },
       ]
       console.log('baseUrl/question/getAll')
     },
-    async getById(id) {
+    async getById(qtnId) {
       // 테스트용 코드 below
-      this.question = {
-        id: 2,
-        title: 'test-title1',
-        detail: 'test detail!!! ',
-        user_id: id,
+      for (let i = 0; i < this.questions.length; i++) {
+        if (this.questions[i].id == qtnId) {
+          this.question = this.questions[i]
+        }
       }
       console.log('baseUrl/question/{id}')
     },
@@ -54,6 +67,10 @@ export const useQuestionsStore = defineStore({
     },
     async delete(id) {
       console.log('baseUrl/question/{id}')
+    },
+
+    async createAnswer(answer) {
+      console.log('baseUrl/answer/{answer}')
     },
   },
 })
