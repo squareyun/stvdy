@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import { fetchWrapper } from '@/helpers'
 import { useAuthStore } from '@/stores'
-import { join } from '@/api/user'
 import router from '@/router'
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/users`
@@ -13,17 +12,17 @@ export const useUsersStore = defineStore({
     user: {},
   }),
   actions: {
-    async userJoin(user) {
-      await join(
-        user,
-        ({ data }) => {
-          console.log(data)
-        },
-        (error) => {
-          console.log(error)
-        },
-      )
-    },
+    // async userJoin(user) {
+    //   await join(
+    //     user,
+    //     ({ data }) => {
+    //       console.log(data)
+    //     },
+    //     (error) => {
+    //       console.log(error)
+    //     },
+    //   )
+    // },
     async register(user) {
       await fetchWrapper.post(`${baseUrl}/register`, user)
       // baseUrl/users/register/{requestBody} // success/fail로 응답받음
