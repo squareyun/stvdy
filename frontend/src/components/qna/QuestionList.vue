@@ -21,6 +21,7 @@ function sortActivated() {
 
 async function showDetail(value) {
   await questionsStore.getById(value);
+  questionsStore.pickedQtn = value;
   router.push({ name: 'qtndetail' });
 }
 

@@ -10,7 +10,7 @@ const { question } = storeToRefs(questionsStore);
 const localUser = ref(JSON.parse(localStorage.getItem('user')));
 
 async function QtnUpdate(value) {
-  questionsStore.question = value;
+  questionsStore.pickedQtn = value;
   console.log(questionsStore.question)
   router.push('CreateQtn')
 }

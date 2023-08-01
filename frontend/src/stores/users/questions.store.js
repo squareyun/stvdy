@@ -9,6 +9,7 @@ export const useQuestionsStore = defineStore({
   state: () => ({
     questions: {},
     question: {},
+    pickedQtn: {},
   }),
   actions: {
     async create(question) {
@@ -20,15 +21,15 @@ export const useQuestionsStore = defineStore({
     async getAll() {
       // test codes below
       this.questions = [
-        { id: 1, title: 'test-title1', user_id: 2 },
-        { id: 2, title: 'test-title2', user_id: 1 },
+        { id: 1, title: 'test-title1', user_id: 1 },
+        { id: 2, title: 'test-title2', user_id: 2 },
       ]
       console.log('baseUrl/question/getAll')
     },
     async getById(id) {
       // 테스트용 코드 below
       this.question = {
-        id: 1,
+        id: 2,
         title: 'test-title1',
         detail: 'test detail!!! ',
         user_id: id,
