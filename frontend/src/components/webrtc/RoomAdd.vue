@@ -2,6 +2,7 @@
   import { ref, computed, onUpdated, watch } from 'vue'
   import { useRouter } from "vue-router"
   import { webRtcStore } from "@/stores"
+  import axios from 'axios' 
   // import { storeToRefs } from "pinia";
 
 
@@ -116,17 +117,24 @@
   }
 
   // 방 참가를 위한 함수
+  // function joinSession() {
+  //   if(!store.myUserName || !store.mySessionId){
+  //     alert("이름과 방제목을 작성해주세요.")
+  //     return
+  //   }
+  //   router.push({
+  //     name:'roomJoin',
+  //     params: { 
+  //       roomNo: encodeURIComponent(mySessionId.value),  // 인코딩해서 보내줘야만 작동함
+  //     },
+  //   })
+  // },
   function joinSession() {
     if(!store.myUserName || !store.mySessionId){
       alert("이름과 방제목을 작성해주세요.")
       return
     }
-    router.push({
-      name:'roomJoin',
-      params: { 
-        roomNo: encodeURIComponent(mySessionId.value),  // 인코딩해서 보내줘야만 작동함
-      },
-    })
+    store.joinSession(router)
   }
 </script>
 
