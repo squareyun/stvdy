@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.ssap.domain.user.Authority;
 import com.ssafy.ssap.domain.user.User;
+import com.ssafy.ssap.dto.user.LoginResponseDto;
 import com.ssafy.ssap.dto.user.UserDto;
 import com.ssafy.ssap.exception.DuplicateMemberException;
 import com.ssafy.ssap.exception.NotFoundMemberException;
@@ -50,11 +51,8 @@ public class UserService {
 		return UserDto.from(userRepository.findOneWithAuthoritiesByEmail(email).orElse(null));
 	}
 
-	public boolean getUserWithEmail(String email) {
-		if (userRepository.findOneWithAuthoritiesByEmail(email).orElse(null) != null) {
-			return true;
-		}
-		return false;
+	public LoginResponseDto getUserWithEmail(String email) {
+		return LoginResponseDto.from(userRepository.findOneWithAuthoritiesByEmail(email).orElse(null));
 	}
 
 	@Transactional(readOnly = true)
