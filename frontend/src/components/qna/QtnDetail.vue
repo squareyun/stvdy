@@ -41,6 +41,7 @@ async function postAnswer(value) {
     await questionsStore.createAnswer(value)
     await router.push('qtndetail')
     alertStore.success('답변이 등록되었습니다.')
+    document.getElementById('answer-field').value = "??????";
   } catch (error) {
     alertStore.error(error);
   }
@@ -63,7 +64,12 @@ async function deleteAnswer(id) {
 }
 
 async function awardAnswer(id) {
-  console.log(id)
+  try {
+    questionsStore.awardAnswer(id)
+    alertStore.success('답변이 채택되었습니다.')
+  } catch (error) {
+    alertStore.error(error);
+  }
 }
 
 
@@ -92,14 +98,15 @@ async function awardAnswer(id) {
     </div>
     <Form @submit="postAnswer">
       <Field v-slot="{ field }" name="detail">
-        <textarea v-bind="field" type="text" name="detail" />
+        <textarea id="answer-field" v-bind="field" type="text" name="detail" />
       </Field>
       <button>답변 등록하기</button>
     </Form>
     <div v-if="answers.length">
       <tr v-for="asr in answers" :key="asr.id">
         <div v-if="asr.question_id == question.id">
-          <td>작성자 PK : {{ asr.user_id }}</td>
+          <td v-if="question.best_answer === asr.id">채택됨!</td>
+          <td>작성자 PK: {{ asr.user_id }}</td>
           <td>답변 내용: {{ asr.detail }}</td>
           <button v-if="question.user_id === localUser.id &&
             asr.user_id != localUser.id &&

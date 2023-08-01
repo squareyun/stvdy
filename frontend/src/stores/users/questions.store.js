@@ -107,5 +107,9 @@ export const useQuestionsStore = defineStore({
     async deleteAnswer(answer) {
       console.log('baseUrl/answer/{answer}')
     },
+    async awardAnswer(id) {
+      // this.question.id와 매개변수로 받은 id를 같이 보내야함
+      console.log('baseUrl/question/award/{param}')
+    },
   },
 })
