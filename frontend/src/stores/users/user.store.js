@@ -12,10 +12,6 @@ export const useUsersStore = defineStore({
     user: {},
   }),
   actions: {
-    async register(user) {
-      await fetchWrapper.post(`${baseUrl}/register`, user)
-      // baseUrl/users/register/{requestBody} // success/fail로 응답받음
-    },
     async varificationEmail(email) {
       await fetchWrapper.get(`${baseUrl}/varifyemail`, email)
       // baseUrl/users/register/{email}
@@ -64,6 +60,10 @@ export const useUsersStore = defineStore({
       if (id === authStore.user.id) {
         authStore.logout()
       }
+      // async register(user) {
+      //   await fetchWrapper.post(`${baseUrl}/register`, user)
+      //   // baseUrl/users/register/{requestBody} // success/fail로 응답받음
+      // },
     },
   },
 })
