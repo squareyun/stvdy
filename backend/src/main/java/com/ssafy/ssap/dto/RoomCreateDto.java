@@ -7,7 +7,7 @@ import lombok.ToString;
 @ToString
 public class RoomCreateDto {
 
-    private Long userNo;
+    private int userNo;
     private String title;
     private long endHour;
     private long endMinute;
