@@ -1,33 +1,39 @@
 <script setup>
 import { Form, Field } from 'vee-validate';
 import * as Yup from 'yup';
-import { useQuestionsStore } from '../../stores/users/questions.store';
+import { useQuestionsStore, useAlertStore } from '@/stores';
 import router from '@/router';
 import { ref } from 'vue';
 
 const schema = Yup.object().shape({
   title: Yup.string().required('제목을 작성해주세요.'),
 })
+
 let question = {};
 let editFlag = false;
+let buttonName = ref('등록하기')
 const questionsStore = useQuestionsStore();
+const alertStore = useAlertStore();
 if (questionsStore.question.id === questionsStore.pickedQtn) {
   questionsStore.pickedQtn = null;
   question = ref(questionsStore.question)
   editFlag = true;
+  buttonName = ref('수정하기')
 }
+
 
 async function onSubmit(values) {
   try {
     if (editFlag) {
-      console.log('go edit!')
       await questionsStore.update(question.id, values);
+      await router.push({ name: 'qtndetail' })
+      alertStore.success('수정이 완료되었습니다.')
     } else {
-      console.log('go create!')
       await questionsStore.create(values);
+      alertStore.success('질문이 등록되었습니다.')
     }
   } catch (error) {
-    console.log(error);
+    alertStore.error(error);
   }
 }
 
@@ -52,7 +58,7 @@ async function onSubmit(values) {
         </div>
         <div class="form-group">
           <button :disabled="isSubmitting">
-            등록하기
+            {{ buttonName }}
           </button>
           <router-link to="question">취소하기</router-link>
         </div>
