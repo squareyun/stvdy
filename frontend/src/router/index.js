@@ -1,8 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 // import RoomView from '../views/RoomView.vue'
-import { useAuthStore, useAlertStore } from '@/stores'
-
+import { useAuthStore, useAlertStore, useUsersStore } from '@/stores'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -10,7 +8,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView,
+      component: () => import('../views/HomeView.vue'),
       children: [
         {
           path: '/mypage',
@@ -81,18 +79,20 @@ const router = createRouter({
         },
       ],
     },
-    /// 화상 채팅 방관련 router
-    {   // 화상 채팅 방 생성
+    {
+      // 화상 채팅 방 생성
       path: '/room',
       name: 'roomAdd',
       component: () => import('@/components/webrtc/RoomAdd.vue'),
     },
-    { // 화상 채팅 방 참여
+    {
+      // 화상 채팅 방 참여
       path: '/room/:roomNo',
       name: 'roomJoin',
       component: () => import('@/components/webrtc/RoomJoin.vue'),
     },
-    { // 화상 채팅 방 참여
+    {
+      // 화상 채팅 방 참여
       path: '/webrtc',
       name: 'roomJointmp',
       component: () => import('@/views/RoomView.vue'),
@@ -138,14 +138,27 @@ router.beforeEach(async (to) => {
 
   // 로그인 없이도 접근 가능한 라우터
   // 접근 하려는 라우터가 public 인지 확인
-  const publicPages = ['/about', '/regist', '/passwordReset', '/room',  '/room/123', '/webrtc',] // 손 좀 대겠습니다. 기존 ['/about', '/regist', '/passwordReset', ]
+  const publicPages = [
+    '/about',
+    '/regist',
+    '/passwordReset',
+    '/room',
+    '/room/123',
+    '/webrtc',
+  ] // 손 좀 대겠습니다. 기존 ['/about', '/regist', '/passwordReset', ]
   const authRequired = !publicPages.includes(to.path)
 
   // 로컬 스토리지의 유저 로그인 정보가 있는지 받아오는 스토어
   const authStore = useAuthStore()
+  const userStore = useUsersStore()
+
+  let token = sessionStorage.getItem('access-token')
+  if (token) {
+    await userStore.getInfo(token)
+  }
   // public 라우터이면 유저 정보를 확인하지 않아 무한 반복 방지
   // 없으면 끝도 없이 유저 정보 검사후 이동을 반복
-  if (authRequired && !authStore.user) {
+  if (authRequired && !authStore.isLogin) {
     console.log('no user')
     console.log(authRequired)
     console.log(to.path)

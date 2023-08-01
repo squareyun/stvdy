@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted } from 'vue'
+import { mapState } from 'vuex'
 import { useAuthStore } from '@/stores'
 
 onMounted(() => {
@@ -17,6 +18,8 @@ onMounted(() => {
 const logout = async () => {
   const authStore = useAuthStore()
   await authStore.logout()
+
+  await authStore.gethello()
 }
 </script>
 
