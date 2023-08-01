@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { fetchWrapper } from '@/helpers'
-import { useAlertStore } from '@/stores'
+import { useAlertStore, useUsersStore } from '@/stores'
 import { loginAuth } from '@/api/auth'
 import router from '@/router'
 
@@ -16,6 +16,10 @@ export const useAuthStore = defineStore({
     returnUrl: null,
   }),
   actions: {
+    async setValid(value) {
+      this.isLogin = value
+      this.isValidToken = value
+    },
     async login(values) {
       const user = {
         email: values.email,
@@ -24,19 +28,23 @@ export const useAuthStore = defineStore({
 
       await loginAuth(
         user,
-        (data) => {
-          if (values.keeplog === true) isLogin = true
+        async (data) => {
+          // if (values.keeplog === true) isLogin = true
 
-          this.isLogin = true
-          this.isValidToken = true
-          sessionStorage.setItem('access-token', data.data['token'])
+          // this.isLogin = true
+          // this.isValidToken = true
+          const token = data.data.token
+          sessionStorage.setItem('access-token', token)
+
+          const usersStore = useUsersStore()
+          await usersStore.getInfo()
+
           // sessionStorage.setItem('refresh-token', refreshToken)
         },
         (error) => {
           console.log(error)
 
-          this.isLogin = false
-          this.isValidToken = false
+          this.setValid(false)
         },
       )
     },
@@ -64,8 +72,12 @@ export const useAuthStore = defineStore({
       }
     },
     logout() {
-      this.user = null
-      localStorage.removeItem('user')
+      const usersStore = useUsersStore()
+      usersStore.user = null
+
+      this.setValid(false)
+
+      sessionStorage.removeItem('access-token')
       router.push('/about')
     },
   },

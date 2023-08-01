@@ -15,21 +15,22 @@ export const useUsersStore = defineStore({
   }),
   actions: {
     async getInfo(token) {
-      const decodeToken = jwtDecode(token)
+      const AuthStore = useAuthStore()
 
-      console.log(token)
       await getUser(
-        (data) => {
+        async (data) => {
           this.user = {
             email: data.data.email,
             realname: data.data.name,
             username: data.data.nickname,
           }
 
-          console.log(this.user)
+          await AuthStore.setValid(true)
         },
-        (error) => {
+        async (error) => {
           console.log(error)
+
+          await AuthStore.setValid(false)
         },
       )
     },

@@ -17,10 +17,8 @@ const onSubmit = async (values) => {
   values.keeplog = values.keeplog === 'keeplog'
   await authStore.login(values)
 
-  let token = sessionStorage.getItem('access-token')
   if (authStore.isLogin) {
-    await userStore.getInfo(token)
-    router.push('/home')
+    router.push('/')
   }
 }
 </script>
