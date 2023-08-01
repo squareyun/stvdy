@@ -34,10 +34,12 @@ export const useAuthStore = defineStore({
           // this.isLogin = true
           // this.isValidToken = true
           const token = data.data.token
+
+          if (values.keeplog) localStorage.setItem('access-token', token)
           sessionStorage.setItem('access-token', token)
 
           const usersStore = useUsersStore()
-          await usersStore.getInfo()
+          await usersStore.getInfo(token)
 
           // sessionStorage.setItem('refresh-token', refreshToken)
         },
@@ -77,6 +79,7 @@ export const useAuthStore = defineStore({
 
       this.setValid(false)
 
+      localStorage.removeItem('access-token')
       sessionStorage.removeItem('access-token')
       router.push('/about')
     },

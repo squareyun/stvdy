@@ -102,21 +102,21 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   // 테스트용 색상 팔레트 저장
-  const colorPalette = {
-    backgroundUp: '#f8f8f2',
-    topbarBasic: '#282a3620',
-    topbarTime: '#202020',
-    hlLight: '#282a36',
-    font100: '#f8f8f2',
-    font80: '#f8f8f2cc',
-    font50: '#f8f8f280',
-    font30: '#f8f8f24d',
-    font25: '#f8f8f240',
-    font20: '#f8f8f233',
-    font10: '#f8f8f21a',
-  }
+  // const colorPalette = {
+  //   backgroundUp: '#f8f8f2',
+  //   topbarBasic: '#282a3620',
+  //   topbarTime: '#202020',
+  //   hlLight: '#282a36',
+  //   font100: '#f8f8f2',
+  //   font80: '#f8f8f2cc',
+  //   font50: '#f8f8f280',
+  //   font30: '#f8f8f24d',
+  //   font25: '#f8f8f240',
+  //   font20: '#f8f8f233',
+  //   font10: '#f8f8f21a',
+  // }
 
-  localStorage.setItem('colorPalette', JSON.stringify(colorPalette))
+  // localStorage.setItem('colorPalette', JSON.stringify(colorPalette))
 
   // 컬러 팔레트를 로컬 스토리지에서 찾는다.
   const obj = localStorage.getItem('colorPalette3')
@@ -152,7 +152,10 @@ router.beforeEach(async (to) => {
   const authStore = useAuthStore()
   const userStore = useUsersStore()
 
-  let token = sessionStorage.getItem('access-token')
+  let token = localStorage.getItem('access-token')
+  console.log(token)
+  token = sessionStorage.getItem('access-token')
+  console.log(token)
   if (token) {
     await userStore.getInfo(token)
   }
