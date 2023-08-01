@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
 import { fetchWrapper } from '@/helpers'
-import router from '@/router'
 import { useAlertStore } from '@/stores'
+import { hello } from '@/api/user'
+import router from '@/router'
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/users`
 
@@ -9,10 +10,22 @@ export const useAuthStore = defineStore({
   id: 'auth',
   state: () => ({
     // 유저가 로그인 상태를 유지할 수 있도록 로컬스토리지로부터 상태를 초기화
+    isLogin: false,
+    isValidToken: false,
     user: JSON.parse(localStorage.getItem('user')),
     returnUrl: null,
   }),
   actions: {
+    async gethello() {
+      hello(
+        ({ data }) => {
+          console.log(data)
+        },
+        (error) => {
+          console.log(error)
+        },
+      )
+    },
     async login(email, password, keeplog) {
       try {
         // baseUrl/users/login/{requestBody}
