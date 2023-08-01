@@ -27,35 +27,35 @@ public class UserController {
 		this.userService = userService;
 	}
 
-	/*
+	/**
 	 * 테스트를 위한 코드 : 추후 삭제 예정
-	 * */
+	 */
 	@GetMapping("/hello")
 	public ResponseEntity<String> hello() {
 		return ResponseEntity.ok("hello");
 	}
 
-	/*
+	/**
 	 * 회원가입
-	 * */
+	 */
 	@PostMapping("/join")
 	public ResponseEntity<UserDto> join(@Valid @RequestBody UserDto userDto) {
-		return ResponseEntity.ok(userService.signup(userDto));
+		return ResponseEntity.ok(userService.join(userDto));
 	}
 
-	/*
+	/**
 	 * 접근: 로그인한 유저, 관리자만 가능
-	 * */
+	 */
 	@GetMapping("/user")
 	@PreAuthorize("hasAnyRole('USER','ADMIN')")
 	public ResponseEntity<UserDto> getMyUserInfo(HttpServletRequest request) {
 		return ResponseEntity.ok(userService.getMyUserWithAuthorities());
 	}
 
-	/*
+	/**
 	 * 사용자 정보 조회
 	 * 접근: 관리자만 가능
-	 * */
+	 */
 	@GetMapping("/user/{email}")
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	public ResponseEntity<UserDto> getUserInfo(@PathVariable String email) {
