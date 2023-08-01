@@ -15,7 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class LoginResponseDto {
 
-	private Long id;
+	private Integer id;
 	private String email;
 	private String name;
 	private String nickname;

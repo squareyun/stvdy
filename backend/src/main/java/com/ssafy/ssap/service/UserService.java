@@ -67,7 +67,7 @@ public class UserService {
 	/**
 	 * email로 id(pk)값 찾기
 	 */
-	public Long getUserIdByUsername(String email) {
+	public Integer getUserIdByUsername(String email) {
 		Optional<User> optionalUser = userRepository.findOneWithAuthoritiesByEmail(email);
 		return optionalUser.map(User::getId).orElse(null);
 	}
