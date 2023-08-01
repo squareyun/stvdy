@@ -81,6 +81,7 @@ const router = createRouter({
         },
       ],
     },
+    /// 화상 채팅 방관련 router
     {   // 화상 채팅 방 생성
       path: '/room',
       name: 'roomAdd',
