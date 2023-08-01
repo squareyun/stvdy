@@ -33,13 +33,13 @@
     }
   })
   // endHour와 timeSet이 둘다 0이면 안됨.
-  if(endHour.value === 0 && endMinute.value === 0 ){
-    alert("타이머가 0일 수는 없습니다. \n다시 설정 해주세요.")
-    endHour.value = 0
-    endMinute.value = 1
-  }
+  // if(endHour.value === 0 && endMinute.value === 0 ){
+  //   alert("타이머가 0일 수는 없습니다. \n다시 설정 해주세요.")
+  //   endHour.value = 0
+  //   endMinute.value = 1
+  // }
   watch(endHour, (newendHour) => {
-    if (newendHour === 0 && endMinute.value === 0) {
+    if (timeSet && newendHour === 0 && endMinute.value === 0) {
       alert("타이머가 0일 수는 없습니다. \n다시 설정 해주세요.");
       console.log(typeof newendHour)
       console.log(typeof endMinute.value)
@@ -48,7 +48,7 @@
     }
   })
   watch(endMinute, (newendMinute) => {
-    if (endHour.value === 0 && newendMinute === 0) {
+    if (timeSet && endHour.value === 0 && newendMinute === 0) {
       alert("타이머가 0일 수는 없습니다. \n다시 설정 해주세요.");
       console.log(typeof endHour.value)
       console.log(typeof newendMinute)
@@ -110,7 +110,7 @@
 
 <template>
   <!-- <router-link :to="{name: 'ArticleDetailView',params: {id: article.id }}"></router-link> -->
-  <div id="join">
+  <div id="join" style="color: white;">
     <div id="img-div">
     </div>
     <div id="join-dialog">
