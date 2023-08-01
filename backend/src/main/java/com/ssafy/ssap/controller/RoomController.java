@@ -31,7 +31,7 @@ public class RoomController {
         String token = null;
         try {
             //session, connection 생성 후 token 받아오기
-            token = roomService.makeSession(roomCreateDto);
+            token = roomService.makeSession();
 
             //세션 생성 성공 시 db에 입력
             Integer roomId = roomService.create(roomCreateDto);

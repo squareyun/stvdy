@@ -2,7 +2,6 @@ package com.ssafy.ssap.domain.user;
 
 import lombok.*;
 import jakarta.persistence.*;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.util.Set;
 
@@ -18,7 +17,7 @@ public class User {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(name = "email", length = 50, unique = true)
     private String email;
