@@ -44,7 +44,22 @@ async function postAnswer(value) {
   } catch (error) {
     alertStore.error(error);
   }
+}
 
+async function editAnswer(id) {
+  console.log(id)
+}
+
+async function deleteAnswer(id) {
+  let isDelAsr = confirm("답변을 삭제할까요?")
+  if (isDelAsr) {
+    try {
+      await questionsStore.deleteAnswer(id);
+      alertStore.success('답변이 삭제되었습니다.')
+    } catch (error) {
+      alertStore.error(error);
+    }
+  }
 }
 
 
@@ -77,12 +92,15 @@ async function postAnswer(value) {
       </Field>
       <button>답변 등록하기</button>
     </Form>
-    <!-- v-for를 이용하여 질문ID를 Foreign key로 갖는 답변들을 이곳에 순환시킴 -->
     <div v-if="answers.length">
       <tr v-for="asr in answers" :key="asr.id">
         <div v-if="asr.question_id == question.id">
           <td>작성자 PK : {{ asr.user_id }}</td>
           <td>답변 내용: {{ asr.detail }}</td>
+          <span v-if="asr.user_id === localUser.id">
+            <button @click="editAnswer(asr.id)">수정하기</button>
+            <button @click="deleteAnswer(asr.id)">삭제하기</button>
+          </span>
         </div>
       </tr>
     </div>

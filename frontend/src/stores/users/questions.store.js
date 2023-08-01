@@ -7,7 +7,14 @@ const baseUrl = `${import.meta.env.VITE_API_URL}/questions`
 export const useQuestionsStore = defineStore({
   id: 'questions',
   state: () => ({
-    questions: {},
+    questions: [
+      { id: 1, title: 'test-title1', user_id: 1 },
+      { id: 2, title: 'test-title2', user_id: 2 },
+      { id: 3, title: 'test-title3', user_id: 1 },
+      { id: 4, title: 'test-title4', user_id: 2 },
+      { id: 5, title: 'test-title5', user_id: 1 },
+      { id: 6, title: 'test-title6', user_id: 2 },
+    ],
     question: {},
     pickedQtn: {},
     answers: [
@@ -30,14 +37,6 @@ export const useQuestionsStore = defineStore({
     },
     async getAll() {
       // test codes below
-      this.questions = [
-        { id: 1, title: 'test-title1', user_id: 1 },
-        { id: 2, title: 'test-title2', user_id: 2 },
-        { id: 3, title: 'test-title3', user_id: 1 },
-        { id: 4, title: 'test-title4', user_id: 2 },
-        { id: 5, title: 'test-title5', user_id: 1 },
-        { id: 6, title: 'test-title6', user_id: 2 },
-      ]
       console.log('baseUrl/question/getAll')
     },
     async getById(qtnId) {
@@ -68,8 +67,10 @@ export const useQuestionsStore = defineStore({
     async delete(id) {
       console.log('baseUrl/question/{id}')
     },
-
     async createAnswer(answer) {
+      console.log('baseUrl/answer/{answer}')
+    },
+    async deleteAnswer(answer) {
       console.log('baseUrl/answer/{answer}')
     },
   },
