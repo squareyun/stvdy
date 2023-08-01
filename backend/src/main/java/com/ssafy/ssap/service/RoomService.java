@@ -40,11 +40,10 @@ public class RoomService {
      * OpenVidu variables
      */
     private OpenVidu openVidu;
-    private Session session;
-//    private Map<String, Session> mapSessions = new ConcurrentHashMap<>();
-//    private Map<String, Map<String, OpenViduRole>> mapSessionNamesTokens = new ConcurrentHashMap<>();
-//    private String OPENVIDU_URL;
-//    private String SECRET;
+    private Map<String, Session> mapSessions = new ConcurrentHashMap<>();
+    private Map<String, Map<String, OpenViduRole>> mapSessionNamesTokens = new ConcurrentHashMap<>();
+    private String OPENVIDU_URL;
+    private String SECRET;
 
     /**
      * 스터디룸 생성
@@ -57,7 +56,6 @@ public class RoomService {
                 .quota(roomCreateDto.getQuota())
                 .isPrivacy(roomCreateDto.getIsPrivacy())
                 .isValid(true)
-                .sessionId(session.getSessionId())
                 .password(roomCreateDto.getPassword())
                 .endTime(LocalDateTime.now().plusHours(roomCreateDto.getEndHour()).plusMinutes(roomCreateDto.getEndMinute()))
                 .imagePath(roomCreateDto.getImagePath())
@@ -100,7 +98,7 @@ public class RoomService {
     public String makeSession(RoomCreateDto roomCreateDto) throws ParseException, OpenViduJavaClientException, OpenViduHttpException {
         System.out.println("makeSession 진입");
 //        JSONObject sessionJSON = (JSONObject) new JSONParser().parse(roomCreateDto.getTitle());
-//        String sessionName = roomCreateDto.getTitle();
+        String sessionName = roomCreateDto.getTitle();
         OpenViduRole role = OpenViduRole.MODERATOR;
 //        String serverData = "{\"serverData\": \""+roomCreateDto.getUserNo()+"\"}";
 //        System.out.println("serverData = "+serverData);
@@ -112,23 +110,27 @@ public class RoomService {
 
         JSONObject responseJson = new JSONObject();
 
+        Session session = null;
         try {
             //openvidu-roles-java에선 생성자에서 처리하는 부분
             openVidu = new OpenVidu("http://localhost:4443/","MY_SECRET");
-//            SessionProperties properties =
             session = this.openVidu.createSession();
             String token = session.createConnection(connectionProperties).getToken();
             System.out.println("session is "+session);
             System.out.println("token is "+token);
 
-//            this.mapSessions.put(sessionName, session);
-//            this.mapSessionNamesTokens.put(sessionName, new ConcurrentHashMap<>());
-//            this.mapSessionNamesTokens.get(sessionName).put(token, role);
+            this.mapSessions.put(sessionName, session);
+            this.mapSessionNamesTokens.put(sessionName, new ConcurrentHashMap<>());
+            this.mapSessionNamesTokens.get(sessionName).put(token, role);
 
             return token;
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
             throw e;
         }
 
+    }
+
+    public Long findRoomId(Long roomcode) {
+        return 0L;
     }
 }
