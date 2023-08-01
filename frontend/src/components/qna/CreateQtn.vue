@@ -9,15 +9,23 @@ const schema = Yup.object().shape({
   title: Yup.string().required('제목을 작성해주세요.'),
 })
 let question = {};
+let editFlag = false;
 const questionsStore = useQuestionsStore();
 if (questionsStore.question.id === questionsStore.pickedQtn) {
   questionsStore.pickedQtn = null;
   question = ref(questionsStore.question)
+  editFlag = true;
 }
 
 async function onSubmit(values) {
   try {
-    await questionsStore.create(values);
+    if (editFlag) {
+      console.log('go edit!')
+      await questionsStore.update(question.id, values);
+    } else {
+      console.log('go create!')
+      await questionsStore.create(values);
+    }
   } catch (error) {
     console.log(error);
   }
@@ -43,7 +51,7 @@ async function onSubmit(values) {
           </Field>
         </div>
         <div class="form-group">
-          <button class="" :disabled="isSubmitting">
+          <button :disabled="isSubmitting">
             등록하기
           </button>
           <router-link to="question">취소하기</router-link>
