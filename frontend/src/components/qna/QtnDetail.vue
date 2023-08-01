@@ -62,6 +62,10 @@ async function deleteAnswer(id) {
   }
 }
 
+async function awardAnswer(id) {
+  console.log(id)
+}
+
 
 </script>
 
@@ -97,6 +101,11 @@ async function deleteAnswer(id) {
         <div v-if="asr.question_id == question.id">
           <td>작성자 PK : {{ asr.user_id }}</td>
           <td>답변 내용: {{ asr.detail }}</td>
+          <button v-if="question.user_id === localUser.id &&
+            asr.user_id != localUser.id &&
+            question.best_answer === null" @click="awardAnswer(asr.id)">
+            채택하기
+          </button>
           <span v-if="asr.user_id === localUser.id">
             <button @click="editAnswer(asr.id)">수정하기</button>
             <button @click="deleteAnswer(asr.id)">삭제하기</button>

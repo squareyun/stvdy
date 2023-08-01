@@ -1,6 +1,4 @@
 import { defineStore } from 'pinia'
-import { fetchWrapper } from '@/helpers'
-import router from '@/router'
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/questions`
 
@@ -8,12 +6,48 @@ export const useQuestionsStore = defineStore({
   id: 'questions',
   state: () => ({
     questions: [
-      { id: 1, title: 'test-title1', user_id: 1 },
-      { id: 2, title: 'test-title2', user_id: 2 },
-      { id: 3, title: 'test-title3', user_id: 1 },
-      { id: 4, title: 'test-title4', user_id: 2 },
-      { id: 5, title: 'test-title5', user_id: 1 },
-      { id: 6, title: 'test-title6', user_id: 2 },
+      {
+        id: 1,
+        title: 'test-title1',
+        user_id: 1,
+        detail: 'Open Your Eyes',
+        best_answer: null,
+      },
+      {
+        id: 2,
+        title: 'test-title2',
+        user_id: 2,
+        detail: 'You are welcome',
+        best_answer: null,
+      },
+      {
+        id: 3,
+        title: 'test-title3',
+        user_id: 1,
+        detail: 'It is ok it is',
+        best_answer: null,
+      },
+      {
+        id: 4,
+        title: 'test-title4',
+        user_id: 2,
+        detail: 'When the night got cold',
+        best_answer: null,
+      },
+      {
+        id: 5,
+        title: 'test-title5',
+        user_id: 1,
+        detail: 'So what can I say',
+        best_answer: null,
+      },
+      {
+        id: 6,
+        title: 'test-title6',
+        user_id: 2,
+        detail: 'There is no need to prey',
+        best_answer: null,
+      },
     ],
     question: {},
     pickedQtn: {},
