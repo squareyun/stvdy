@@ -10,10 +10,7 @@ import TopBar from '@/components/TopBar.vue'
     <TopBar id="topbar" />
     <Alert />
   </header>
-  
-  <div>
-    <!-- <AppView /> -->
-  </div>
+
   <RouterView />
 </template>
 

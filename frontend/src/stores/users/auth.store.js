@@ -12,11 +12,11 @@ export const useAuthStore = defineStore({
     // 유저가 로그인 상태를 유지할 수 있도록 로컬스토리지로부터 상태를 초기화
     isLogin: false,
     isValidToken: false,
-    user: {},
+    // user: {},
     returnUrl: null,
   }),
   actions: {
-    async userLogin(values) {
+    async login(values) {
       const user = {
         email: values.email,
         password: values.password,
@@ -26,33 +26,19 @@ export const useAuthStore = defineStore({
         user,
         (data) => {
           if (values.keeplog === true) isLogin = true
-          console.log(data)
+
+          this.isLogin = true
+          this.isValidToken = true
+          sessionStorage.setItem('access-token', data.data['token'])
+          // sessionStorage.setItem('refresh-token', refreshToken)
         },
         (error) => {
           console.log(error)
+
+          this.isLogin = false
+          this.isValidToken = false
         },
       )
-      // try {
-      //   // baseUrl/users/login/{requestBody}
-      //   const user = await fetchWrapper.post(`${baseUrl}/authenticate`, {
-      //     email,
-      //     password,
-      //     keeplog,
-      //   })
-
-      //   // update pinia state
-      //   this.user = user
-
-      //   // 페이지 새로고침을해도 유저가 로그인을 유지하도록 유저 디테일과 jwt를 로컬스토리지에 저장 -> 일단은 로그인유지를 클릭시에만 가능
-      //   if (keeplog === true) {
-      //     localStorage.setItem('user', JSON.stringify(user))
-      //   }
-      //   // 기본 페이지로 리다이렉트
-      //   router.push('/')
-      // } catch (error) {
-      //   const alertStore = useAlertStore()
-      //   alertStore.error(error)
-      // }
     },
     async passwordreset(username, email) {
       try {
