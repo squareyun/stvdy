@@ -15,4 +15,5 @@ fakeBackend()
 const app = createApp(App)
 
 // app.config.globalProperties.axios = axios
+// app.config.globalProperties.router = router
 app.use(createPinia()).use(router).mount('#app')

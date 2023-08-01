@@ -1,10 +1,12 @@
 <script setup>
 import { Form, Field } from 'vee-validate'
 import { useAuthStore } from '@/stores'
+import { useUsersStore } from '@/stores'
 import router from '@/router'
 import * as Yup from 'yup'
 
 const authStore = useAuthStore()
+const userStore = useUsersStore()
 
 const schema = Yup.object().shape({
   email: Yup.string().email('*올바른 입력이 필요합니다.'),
@@ -13,10 +15,13 @@ const schema = Yup.object().shape({
 
 const onSubmit = async (values) => {
   values.keeplog = values.keeplog === 'keeplog'
+  await authStore.login(values)
 
-  authStore.userLogin(values)
-  // const { username, password, keeplog } = values
-  // await authStore.login(username, password, keeplog)
+  let token = sessionStorage.getItem('access-token')
+  if (authStore.isLogin) {
+    await userStore.getInfo(token)
+    router.push('/home')
+  }
 }
 </script>
 
