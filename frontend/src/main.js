@@ -7,7 +7,7 @@ import App from './App.vue'
 import router from './router'
 import axios from 'axios'
 
-axios.defaults.baseURL = 'http://localhost:8080'
+axios.defaults.baseURL = 'http://54.180.9.43:8080'
 
 import { fakeBackend } from './helpers'
 fakeBackend()
