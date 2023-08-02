@@ -20,7 +20,7 @@
   // const mainStreamManager = ref(undefined)
   let mainStreamManager = ref(undefined)
   const publisher = ref(undefined)
-  const subscribers = ref([])
+  const subscribers = ref([]) //
 
   // Join form
   const mySessionId = ref(decodeURIComponent(store.mySessionId))  // 인코딩값을 디코딩한 해줘서 받아야만 작동가능함
