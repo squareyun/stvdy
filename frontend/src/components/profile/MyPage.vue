@@ -1,22 +1,19 @@
 <script setup>
-import { useAuthStore } from '@/stores'
-import { Form, Field } from 'vee-validate'
-import * as Yup from 'yup'
-import router from '@/router'
-import { storeToRefs } from 'pinia'
-import { useUsersStore, useAlertStore } from '@/stores'
-import { onMounted, computed, ref } from 'vue'
+import { useUsersStore } from '@/stores'
+import { ref } from 'vue'
 import Deactivate from '@/components/profile/Deactivate.vue'
 import { RouterLink, RouterView } from 'vue-router'
 
 const usersStore = useUsersStore()
-const localUser = computed(() => {
-  console.log(usersStore.user)
-  usersStore.user
+const localUser = ref({
+  id: 1,
+  username: 'testName',
+  realname: 'realName',
+  email: 'testmail@naver.com',
 })
-
-// const localUser = ref(JSON.parse(localStorage.getItem('user')));
-// const userID = JSON.parse(localStorage.getItem('user')).id
+// const localUser1 = usersStore.user;
+// console.log(localUser.id)
+// const { localUser } = ref(localUser1)
 </script>
 
 <template>
