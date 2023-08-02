@@ -20,12 +20,6 @@ export const useUsersStore = defineStore({
       await getUser(
         token,
         async (data) => {
-          this.user = {
-            email: data.data.email,
-            realname: data.data.name,
-            username: data.data.nickname,
-          }
-
           await AuthStore.setValid(true)
         },
         async (error) => {
@@ -36,6 +30,14 @@ export const useUsersStore = defineStore({
       )
     },
 
+    async setInfo(user) {
+      this.user = {
+        id: user.id,
+        email: user.email,
+        realname: user.name,
+        username: user.nickname,
+      }
+    },
     async varificationEmail(email) {
       await fetchWrapper.get(`${baseUrl}/varifyemail`, email)
       // baseUrl/users/register/{email}

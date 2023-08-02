@@ -1,19 +1,20 @@
 <script setup>
-import { useAuthStore } from '@/stores'
-import { Form, Field } from 'vee-validate'
-import * as Yup from 'yup'
-import router from '@/router'
-import { storeToRefs } from 'pinia'
-import { useUsersStore, useAlertStore } from '@/stores'
-import { onMounted, ref } from 'vue'
+import { useUsersStore } from '@/stores'
+import { ref } from 'vue'
 import Deactivate from '@/components/profile/Deactivate.vue'
 import { RouterLink, RouterView } from 'vue-router'
 
 const usersStore = useUsersStore()
-const localUser = usersStore.user
+const localUser = ref({
+  id: 1,
+  username: 'testName',
+  realname: 'realName',
+  email: 'testmail@naver.com'
+})
+// const localUser1 = usersStore.user;
+// console.log(localUser.id)
+// const { localUser } = ref(localUser1)
 
-// const localUser = ref(JSON.parse(localStorage.getItem('user')));
-// const userID = JSON.parse(localStorage.getItem('user')).id
 </script>
 
 <template>
@@ -21,17 +22,10 @@ const localUser = usersStore.user
     <div style="color: white">
       프로필
       <div>
-        <img
-          id="profile-bg-img"
-          src=""
-          alt="" />
+        <img id="profile-bg-img" src="" alt="" />
         <div>
           <span>
-            <img
-              id="profile-img"
-              src="LoginBanner.png"
-              alt=""
-              width="100" />
+            <img id="profile-img" src="LoginBanner.png" alt="" width="100" />
           </span>
           <span v-if="localUser">
             {{ localUser.username }}#{{ localUser.id }}
