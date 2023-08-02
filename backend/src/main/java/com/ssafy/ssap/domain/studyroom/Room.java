@@ -21,7 +21,7 @@ public class Room {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(length = 20)
     @NotNull
@@ -30,8 +30,8 @@ public class Room {
     @Column(columnDefinition = "TINYINT(8)")
     private int quota;
 
-    @Column(name = "is_privacy", columnDefinition = "bit")
-    @ColumnDefault("0")
+    @Column(name = "is_privacy", columnDefinition = "TINYINT(1)")
+    @ColumnDefault("false")
     private Boolean isPrivacy;
 
     @Column(length = 45)
@@ -42,22 +42,16 @@ public class Room {
     @NotNull
     private LocalDateTime endTime;
 
-    @Column(name = "is_valid", columnDefinition = "bit")
-    @ColumnDefault("1")
+    @Column(name = "is_valid", columnDefinition = "TINYINT(1)")
+    @ColumnDefault("true")
     private Boolean isValid;
 
-    @Column(name = "session_id", length = 30)
-    private String sessionId;
-
-    @Lob
-    @Column(name = "image_path")
+    @Column(name = "image_path", length = 45)
     private String imagePath;
 
     private String rule;
 
-    @Builder.Default
     @OneToMany(mappedBy = "room")
     private List<Participants> participantsList = new ArrayList<>();
-
 
 }

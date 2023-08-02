@@ -20,10 +20,10 @@ public class Participants {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    @Column(name = "is_out", columnDefinition = "bit")
-    @ColumnDefault("0")
+    @Column(name = "is_out", columnDefinition = "TINYINT(1)")
+    @ColumnDefault("false")
     private Boolean isOut;
 
     @ManyToOne(fetch = LAZY)
