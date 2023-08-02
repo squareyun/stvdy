@@ -29,14 +29,10 @@ export const useAuthStore = defineStore({
       await loginAuth(
         user,
         async (data) => {
-          // if (values.keeplog === true) isLogin = true
-
-          // this.isLogin = true
-          // this.isValidToken = true
           const token = data.data.token
 
           if (values.keeplog) localStorage.setItem('access-token', token)
-          sessionStorage.setItem('access-token', token)
+          else sessionStorage.setItem('access-token', token)
 
           const usersStore = useUsersStore()
           await usersStore.getInfo(token)

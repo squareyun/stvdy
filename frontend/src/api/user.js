@@ -4,9 +4,8 @@ const hello = async (success, fail) => {
   await axios.get(`/users/hello`).then(success).catch(fail)
 }
 
-const getUser = async (success, fail) => {
-  axios.defaults.headers['Authorization'] =
-    'Bearer ' + sessionStorage.getItem('access-token')
+const getUser = async (token, success, fail) => {
+  axios.defaults.headers['Authorization'] = 'Bearer ' + token
   await axios.get(`/users/user`).then(success).catch(fail)
 }
 
