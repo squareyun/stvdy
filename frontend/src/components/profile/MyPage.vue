@@ -1,24 +1,17 @@
 <script setup>
+import { onMounted, computed } from 'vue'
 import { useUsersStore } from '@/stores'
-import { ref } from 'vue'
 import Deactivate from '@/components/profile/Deactivate.vue'
 import { RouterLink, RouterView } from 'vue-router'
 
 const usersStore = useUsersStore()
-const localUser = ref({
-  id: 1,
-  username: 'testName',
-  realname: 'realName',
-  email: 'testmail@naver.com',
-})
-// const localUser1 = usersStore.user;
-// console.log(localUser.id)
-// const { localUser } = ref(localUser1)
+const localUser = usersStore.user
 </script>
 
 <template>
   <div>
     <div style="color: white">
+      {{ localUser }}
       프로필
       <div>
         <img

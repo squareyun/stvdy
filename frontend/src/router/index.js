@@ -152,7 +152,7 @@ router.beforeEach(async (to) => {
 
   // 로컬 스토리지의 유저 로그인 정보가 있는지 받아오는 스토어
   const authStore = useAuthStore()
-  const userStore = useUsersStore()
+  const usersStore = useUsersStore()
 
   let token = localStorage.getItem('access-token')
   console.log(1, token)
@@ -161,7 +161,7 @@ router.beforeEach(async (to) => {
 
   console.log(2, token)
   if (!(typeof token == 'undefined' || token == null || token == ''))
-    await userStore.getInfo(token)
+    await usersStore.getInfo(token)
 
   // public 라우터이면 유저 정보를 확인하지 않아 무한 반복 방지
   // 없으면 끝도 없이 유저 정보 검사후 이동을 반복

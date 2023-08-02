@@ -4,8 +4,6 @@ import { useAlertStore, useUsersStore } from '@/stores'
 import { loginAuth } from '@/api/auth'
 import router from '@/router'
 
-const baseUrl = `${import.meta.env.VITE_API_URL}/users`
-
 export const useAuthStore = defineStore({
   id: 'auth',
   state: () => ({
