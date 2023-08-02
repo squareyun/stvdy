@@ -24,6 +24,7 @@
 
   // Join form
   const mySessionId = ref(decodeURIComponent(store.mySessionId))  // 인코딩값을 디코딩한 해줘서 받아야만 작동가능함
+  // const mySessionId = ref(store.mySessionId)
   // 만약 인코딩해서 받은 값이 아니라면, 디코딩하지 않은 상태로 받기 위함.
   if (store.mySessionId === encodeURIComponent(store.mySessionId)) {
     mySessionId.value = store.mySessionId
@@ -34,6 +35,7 @@
   /////////////////////채팅창을 위한 부분임.
   const inputMessage = ref("")
   const messages = ref([])
+  const isChatContainer = ref(true)   /// 채팅창!!!!!
   ///////////////////
   ///////////////////카메라 및 오디오 설정을 위한 부분임
   const muted = ref(false)       // 기본은 음소거 비활성화
@@ -50,10 +52,11 @@
 
 
   onBeforeMount(() => {
+    console.log('!!!!!!!!!!!!!!!!',mySessionId.value)
     joinSession()
   })
 
-  // vue2에서의 methods 부분을 vue3화 시키기
+  // vue2에서의 methods 부분을 vue3화 handleUnload
   function joinSession() {
     // --- 1) Get an OpenVidu object ---
     OV.value = new OpenVidu()
@@ -124,7 +127,9 @@
   }
 
   function leaveSession(){
+
     const confirmLeave = confirm("이 페이지를 떠나시겠습니까? 세션이 종료됩니다.")
+    if(!confirmLeave) return
     if(session.value && confirmLeave) session.value.disconnect()
     
     // Empty all properties...
@@ -332,12 +337,12 @@
       />
     </div>
     <!-- 내 캠 -->
-    <div id="main-video">
+    <div id="mainVideo">
       <UserVideo :stream-manager="mainStreamManagerComputed" />
       <!-- <user-video v-if="selectedCamera || selectedAudio" :stream-manager="mainStreamManagerComputed" /> -->
     </div>
     <!-- 모든 캠 -->
-    <div id="video-container">
+    <div id="videoContainer">
       <UserVideo :stream-manager="publisherComputed" @click.native="updateMainVideoStreamManager(publisher)" />
       <UserVideo
         v-for="sub in subscribersComputed"
@@ -348,9 +353,9 @@
     </div>
     <!-- 방에 들어갔을 때 같이 보이게 될 채팅창 -->
     <!-- 나중에 <chat-winow />로 넘길수 있도록 해보자. -->
-    <div id="chat-container">
-      <div id="chat-window">
-        <ul id="chat-history">
+    <div id="chatContainer" v-if="isChatContainer">
+      <div id="chatWindow">
+        <ul id="chatHistory">
           <li v-for="(message, index) in messages" :key="index">
             <strong>{{message.username}}:</strong> {{message.message}}
           </li>

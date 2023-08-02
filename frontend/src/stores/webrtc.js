@@ -12,7 +12,8 @@ export const webRtcStore = defineStore({
     endHour : 0,
     endMinute : 0,
     quota : 16,
-    isPraivacy : false,
+    isPassword : false,
+    isPrivacy : false, // 이건 방에 대한게 아닌 방장외 전부 캠 오프와 관련된 거임.
     password : null,
   }),
   actions: {
@@ -21,8 +22,8 @@ export const webRtcStore = defineStore({
       this.myUserName = newUserName;
     },
     updateMySessionId(newSessionId) {
-      console.log(newSessionId)
       this.mySessionId = newSessionId;
+      console.log('#####', this.mySessionId)
     },
     updateEndHour(newEndHour){
       console.log(newEndHour)
@@ -32,9 +33,17 @@ export const webRtcStore = defineStore({
       console.log(newEndMinute)
       this.endMinute = newEndMinute
     },
-    updateIsPravacy(newisPraivacy){
-      console.log(newisPraivacy)
-      this.isPraivacy = newisPraivacy
+    updateIsPassword(newisPassword){
+      console.log(newisPassword)
+      this.isPassword = newisPassword
+      if (!this.isPassword) {
+        this.password = null
+      }
+      console.log(this.password)
+    },
+    updateIsPrivacy(newisPrivacy){
+      console.log(newisPrivacy)
+      this.isPrivacy = newisPrivacy
     },
     updatePassword(newPassword){
       this.password = newPassword
@@ -42,6 +51,7 @@ export const webRtcStore = defineStore({
     },
     updateQuota(newQuota){
       this.quota = newQuota
+      console.log(this.quota)
     },
     // joinSession(router){
     //   axios({
@@ -78,7 +88,12 @@ export const webRtcStore = defineStore({
             roomNo: encodeURIComponent(this.mySessionId),  // 인코딩해서 보내줘야만 작동함
           },
         })
-    }
+    },
+    // joinSession(){
+    //   // 새로운 탭에서 경로를 엽니다.
+    //   const newTabUrl = `/room/${this.mySessionId}`;
+    //   window.open(newTabUrl, '_blank');
+    // }
     //////////닉네임 받기 위한 getmySessionId
     // getmySessionId(context){
     //   axios({

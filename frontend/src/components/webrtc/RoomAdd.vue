@@ -22,10 +22,14 @@
   const endMinute = ref(store.endMinute)
   const timeSet = ref(false)
   // 방 비공개 관련 내용
-  const isPrivacy = ref(store.isPraivacy)
+  const isPassword = ref(store.isPassword)
   const password = ref(store.password)
   // 방 인원설정 관련 내용
   const quota = ref(store.quota)
+  
+  // 방 참여자들의 캠 전체 비활성화 여부를 의미
+  const isPrivacy = ref(store.isPrivacy)
+
 
   //tiemSet이 flase면 종료시간 초기화.
   watch(timeSet, (newtimeSet) => {
@@ -68,15 +72,23 @@
     }
   })
 
-  watch(isPrivacy,(newisPrivacy) => {
+  watch(isPassword,(newisPassword) => {
+    const isPasswordSpan = document.getElementById("isPasswordSpan")
+    if(newisPassword){
+      isPasswordSpan.innerText = "설정"
+    }else{
+      isPasswordSpan.innerText = "미설정"
+    }
+  })
+  watch(isPrivacy,(newisPrivacySpan) => {
     const isPrivacySpan = document.getElementById("isPrivacySpan")
-    if(newisPrivacy){
+    if(newisPrivacySpan){
       isPrivacySpan.innerText = "설정"
     }else{
       isPrivacySpan.innerText = "미설정"
     }
   })
-  // isPrivacy가 변동되면 store의 isPrivacy도 변동
+  // isPassword가 변동되면 store의 isPassword도 변동
   
   // 방 생성에 사용할 함수들
   function updateMyuserName(event) {
@@ -99,8 +111,13 @@
     endMinute.value = Number(event.target.value)
   }
   
-  function updateIsPravacy(event) {
-    store.updateIsPravacy(event.target.checked)
+  function updateIsPassword(event) {
+    store.updateIsPassword(event.target.checked)
+    isPassword.value = event.target.checked
+    password.value = store.password
+  }
+  function updateIsPrivacy(event) {
+    store.updateIsPrivacy(event.target.checked)
     isPrivacy.value = event.target.checked
   }
 
@@ -113,29 +130,29 @@
   function updateQuota(event){
     store.updateQuota(Number(event.target.value))
     quota.value = Number(event.target.value)
-    console.log(quota.value)
   }
 
   // 방 참가를 위한 함수
-  // function joinSession() {
-  //   if(!store.myUserName || !store.mySessionId){
-  //     alert("이름과 방제목을 작성해주세요.")
-  //     return
-  //   }
-  //   router.push({
-  //     name:'roomJoin',
-  //     params: { 
-  //       roomNo: encodeURIComponent(mySessionId.value),  // 인코딩해서 보내줘야만 작동함
-  //     },
-  //   })
-  // },
   function joinSession() {
     if(!store.myUserName || !store.mySessionId){
       alert("이름과 방제목을 작성해주세요.")
       return
     }
-    store.joinSession(router)
+    router.push({
+      name:'roomJoin',
+      params: { 
+        roomNo: encodeURIComponent(mySessionId.value),  // 인코딩해서 보내줘야만 작동함
+      },
+    })
   }
+  // function joinSession() {
+  //   if(!store.myUserName || !store.mySessionId){
+  //     alert("이름과 방제목을 작성해주세요.")
+  //     return
+  //   }
+  //   // store.joinSession(router)  // 이 코드 대신 아래 코드를 추가했음.
+  //   store.joinSession()  // 이 코드 대신 아래 코드를 추가했음.
+  // }
 </script>
 
 <template>
@@ -154,15 +171,21 @@
         <!-- 비공개 설정 -->
         <!-- <p>
           <label for="">비공개 여부</label>
-          <input type="checkbox" :checked="isPrivacy" @change="updateIsPravacy">
-          <span id="isPrivacySpan">공개</span>
+          <input type="checkbox" :checked="isPassword" @change="updateIsPassword">
+          <span id="isPasswordSpan">공개</span>
         </p> -->
         <!-- 비밀번호 설정여부 -->
         <p>
           <label for="">비밀번호 여부</label>
-          <input type="checkbox" :checked="isPrivacy" @change="updateIsPravacy">
+          <input type="checkbox" :checked="isPassword" @change="updateIsPassword">
+          <span id="isPasswordSpan">미설정</span>
+          <input v-if="isPassword" type="text" :value="password" @keyup="updatePassword">
+        </p>
+        <!-- 프라이버시 설정여부 -->
+        <p>
+          <label for="">프라이버시 여부</label>
+          <input type="checkbox" :checked="isPrivacy" @change="updateIsPrivacy">
           <span id="isPrivacySpan">미설정</span>
-          <input v-if="isPrivacy" type="text" :value="password" @keyup="updatePassword">
         </p>
         <!-- 방 종료 시간 작성 -->
         <p>
