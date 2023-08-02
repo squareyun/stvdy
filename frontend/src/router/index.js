@@ -155,8 +155,13 @@ router.beforeEach(async (to) => {
   const userStore = useUsersStore()
 
   let token = localStorage.getItem('access-token')
-  if (!token) token = sessionStorage.getItem('access-token')
-  if (token) await userStore.getInfo(token)
+  console.log(1, token)
+  if (typeof token == 'undefined' || token == null || token == '')
+    token = sessionStorage.getItem('access-token')
+
+  console.log(2, token)
+  if (!(typeof token == 'undefined' || token == null || token == ''))
+    await userStore.getInfo(token)
 
   // public 라우터이면 유저 정보를 확인하지 않아 무한 반복 방지
   // 없으면 끝도 없이 유저 정보 검사후 이동을 반복

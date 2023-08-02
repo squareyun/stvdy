@@ -1,39 +1,38 @@
 import { defineStore } from 'pinia'
-import { useRouter } from "vue-router"
+import { useRouter } from 'vue-router'
 import axios from 'axios'
-
 
 export const webRtcStore = defineStore({
   id: 'webrtc',
   state: () => ({
-    mySessionId : null,
+    mySessionId: null,
     // myUserName : null,
-    myUserName : '우르릉쾅쾅쾅',
-    endHour : 0,
-    endMinute : 0,
-    quota : 16,
-    isPassword : false,
-    isPrivacy : false, // 이건 방에 대한게 아닌 방장외 전부 캠 오프와 관련된 거임.
-    password : null,
+    myUserName: '우르릉쾅쾅쾅',
+    endHour: 0,
+    endMinute: 0,
+    quota: 16,
+    isPassword: false,
+    isPrivacy: false, // 이건 방에 대한게 아닌 방장외 전부 캠 오프와 관련된 거임.
+    password: null,
   }),
   actions: {
     updateMyUserName(newUserName) {
       console.log(newUserName)
-      this.myUserName = newUserName;
+      this.myUserName = newUserName
     },
     updateMySessionId(newSessionId) {
-      this.mySessionId = newSessionId;
+      this.mySessionId = newSessionId
       console.log('#####', this.mySessionId)
     },
-    updateEndHour(newEndHour){
+    updateEndHour(newEndHour) {
       console.log(newEndHour)
       this.endHour = newEndHour
     },
-    updateEndMinute(newEndMinute){
+    updateEndMinute(newEndMinute) {
       console.log(newEndMinute)
       this.endMinute = newEndMinute
     },
-    updateIsPassword(newisPassword){
+    updateIsPassword(newisPassword) {
       console.log(newisPassword)
       this.isPassword = newisPassword
       if (!this.isPassword) {
@@ -41,22 +40,22 @@ export const webRtcStore = defineStore({
       }
       console.log(this.password)
     },
-    updateIsPrivacy(newisPrivacy){
+    updateIsPrivacy(newisPrivacy) {
       console.log(newisPrivacy)
       this.isPrivacy = newisPrivacy
     },
-    updatePassword(newPassword){
+    updatePassword(newPassword) {
       this.password = newPassword
-      console.log('메롱',this.password)
+      console.log('메롱', this.password)
     },
-    updateQuota(newQuota){
+    updateQuota(newQuota) {
       this.quota = newQuota
       console.log(this.quota)
     },
     // joinSession(router){
     //   axios({
     //     method: 'post',
-    //     url: 'http://localhost:8080/rooms/add/',
+    //     url: 'http://54.180.9.43:8080/rooms/add/',
     //     data : {
     //       // userNo: this.userNo,
     //       // title: this.title,
@@ -71,7 +70,7 @@ export const webRtcStore = defineStore({
     //   .then(()=>{
     //     router.push({
     //       name:'roomJoin',
-    //       params: { 
+    //       params: {
     //         roomNo: encodeURIComponent(this.mySessionId),  // 인코딩해서 보내줘야만 작동함
     //       },
     //     })
@@ -80,14 +79,13 @@ export const webRtcStore = defineStore({
     //     console.log(err)
     //   })
     // }
-    joinSession(router){
-
-        router.push({
-          name:'roomJoin',
-          params: { 
-            roomNo: encodeURIComponent(this.mySessionId),  // 인코딩해서 보내줘야만 작동함
-          },
-        })
+    joinSession(router) {
+      router.push({
+        name: 'roomJoin',
+        params: {
+          roomNo: encodeURIComponent(this.mySessionId), // 인코딩해서 보내줘야만 작동함
+        },
+      })
     },
     // joinSession(){
     //   // 새로운 탭에서 경로를 엽니다.
@@ -98,7 +96,7 @@ export const webRtcStore = defineStore({
     // getmySessionId(context){
     //   axios({
     //     method: 'get',
-    //     url: 'http://localhost:8080/rooms/add/',
+    //     url: 'http://54.180.9.43:8080/rooms/add/',
     //     headers: store.getters.authHeader,
     //   })
     //     .then((res) => {
@@ -111,7 +109,7 @@ export const webRtcStore = defineStore({
     // },
     ////////// userNo(int), title(String), endHour(int), endMinute(int), quota(int), isPrivacy(Boolean)을 보내기 위함
     // createRoom(userNo, title, endHour, endMinute, quota, isPrivacy) {
-    //   axios.post('http://localhost:8080/rooms/add/', {
+    //   axios.post('http://54.180.9.43:8080/rooms/add/', {
     //     userNo: userNo,
     //     title: title,
     //     endHour: endHour,
@@ -129,14 +127,11 @@ export const webRtcStore = defineStore({
     //       // POST 요청에 실패한 경우, 에러 처리를 원하는 대로 추가합니다.
     //     });
     // },
-    
   },
-  mutations:{
+  mutations: {
     // GETMYSESSIONID(state, datas){
     //   state.mySessionId = datas.nickName
     // }
-    JOINSESSION(state, data){
-
-    }
-  }
+    JOINSESSION(state, data) {},
+  },
 })

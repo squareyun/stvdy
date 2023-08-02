@@ -12,7 +12,7 @@
   axios.defaults.headers.post["Content-Type"] = "application/json;charset=utf-8";
   // 추후 배포와 관련해서 이부분에 대해서 설정을 할 필요가 있게 될것.
   const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000/';
-  // const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080/';
+  // const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://54.180.9.43:8080/';
 
   // OpenVidu objects
   const OV = ref(undefined)
@@ -329,12 +329,7 @@
   <div id="session" v-if="session" style="color: white;">
     <div id="session-header">
       <h1 id="session-title">{{ mySessionId }}</h1>
-      <input
-        type="button"
-        id="buttonLeaveSession"
-        @click="leaveSession"
-        value="Leave session"
-      />
+      <input type="button" id="buttonLeaveSession" @click="leaveSession" value="Leave session" />
     </div>
     <!-- 내 캠 -->
     <div id="mainVideo">
@@ -344,12 +339,8 @@
     <!-- 모든 캠 -->
     <div id="videoContainer">
       <UserVideo :stream-manager="publisherComputed" @click.native="updateMainVideoStreamManager(publisher)" />
-      <UserVideo
-        v-for="sub in subscribersComputed"
-        :key="sub.stream.connection.connectionId"
-        :stream-manager="sub"
-        @click.native="updateMainVideoStreamManager(sub)"
-      />
+      <UserVideo v-for="sub in subscribersComputed" :key="sub.stream.connection.connectionId" :stream-manager="sub"
+        @click.native="updateMainVideoStreamManager(sub)" />
     </div>
     <!-- 방에 들어갔을 때 같이 보이게 될 채팅창 -->
     <!-- 나중에 <chat-winow />로 넘길수 있도록 해보자. -->
@@ -357,7 +348,7 @@
       <div id="chatWindow">
         <ul id="chatHistory">
           <li v-for="(message, index) in messages" :key="index">
-            <strong>{{message.username}}:</strong> {{message.message}}
+            <strong>{{ message.username }}:</strong> {{ message.message }}
           </li>
         </ul>
       </div>
@@ -381,6 +372,4 @@
   </div>
 </template>
 
-<style>
-
-</style>
+<style></style>

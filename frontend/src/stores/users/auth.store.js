@@ -29,7 +29,7 @@ export const useAuthStore = defineStore({
       await loginAuth(
         user,
         async (data) => {
-          const token = data.data.token
+          const token = data.data.jwt.accessToken
 
           if (values.keeplog) localStorage.setItem('access-token', token)
           else sessionStorage.setItem('access-token', token)
