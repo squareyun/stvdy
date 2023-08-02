@@ -19,6 +19,16 @@ public class RedisUtil {
 	 * key: userEmail
 	 * value: authNum
 	 */
+	public boolean isAuthNumValid(String email, String enteredAuthNumber) {
+		String storedAuthNumber = getData(email);
+		return storedAuthNumber != null && storedAuthNumber.equals(enteredAuthNumber);
+	}
+
+	public void setDataExpire(String key, String authNumber) {
+		ValueOperations<String, String> valueOperations = redisAuthNumTemplate.opsForValue();
+		valueOperations.set(key, authNumber, EXPIRATION_TIME, TimeUnit.MINUTES);
+	}
+
 	public String getData(String key) {
 		ValueOperations<String, String> valueOperations = redisAuthNumTemplate.opsForValue();
 		return valueOperations.get(key);
@@ -26,11 +36,6 @@ public class RedisUtil {
 
 	public boolean existData(String key) {
 		return Boolean.TRUE.equals(redisAuthNumTemplate.hasKey(key));
-	}
-
-	public void setDataExpire(String key, String authNum) {
-		ValueOperations<String, String> valueOperations = redisAuthNumTemplate.opsForValue();
-		valueOperations.set(key, authNum, EXPIRATION_TIME, TimeUnit.MINUTES);
 	}
 
 	public void deleteData(String key) {

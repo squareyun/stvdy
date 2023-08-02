@@ -65,11 +65,31 @@ public class UserService {
 	}
 
 	/**
-	 * email로 id(pk)값 찾기
+	 * email로 id(pk)값 조회
 	 */
 	public Integer getUserIdByUsername(String email) {
 		Optional<User> optionalUser = userRepository.findOneWithAuthoritiesByEmail(email);
 		return optionalUser.map(User::getId).orElse(null);
+	}
+
+	public boolean isPasswordMatch(String userEmail, String password) {
+		User user = userRepository.findByEmail(userEmail);
+		return passwordEncoder.matches(password, user.getPassword());
+	}
+
+	/**
+	 * 비밀번호 변경
+	 */
+	public void updatePassword(String userEmail, String currentPassword, String newPassword) {
+		if (isPasswordMatch(userEmail, currentPassword)) {
+			User user = userRepository.findOneWithAuthoritiesByEmail(userEmail)
+				.orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
+			String encodedPassword = passwordEncoder.encode(newPassword);
+			user.setPassword(encodedPassword);
+			userRepository.save(user);
+		} else {
+			throw new IllegalArgumentException("기존 비밀번호가 일치하지 않습니다.");
+		}
 	}
 
 }
