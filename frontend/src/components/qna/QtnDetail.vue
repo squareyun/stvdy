@@ -13,7 +13,6 @@ const localUser = ref(JSON.parse(localStorage.getItem('user')));
 const { answers } = storeToRefs(questionsStore);
 
 
-
 function QtnUpdate(value) {
   questionsStore.pickedQtn = value;
   router.push('CreateQtn')
@@ -47,8 +46,20 @@ async function postAnswer(value) {
   }
 }
 
-async function editAnswer(id) {
+async function editAnswer(id, detail) {
   console.log(id)
+  const editSpace = document.getElementById(id);
+  const editTextarea = document.createElement("textarea");
+  const cancelButton = document.createElement("button");
+  // const testFunction = document.createAttribute("onclick");
+  // testFunction.value = `deleteAnswer${id}`
+  cancelButton.setAttribute(onClick, `deleteAnswer${id}`);
+  editTextarea.innerText = detail;
+  cancelButton.innerText = "취소"
+  // removeChild???? 
+  editSpace.appendChild(editTextarea);
+  editSpace.appendChild(cancelButton);
+  console.log(detail)
 }
 
 async function deleteAnswer(id) {
@@ -113,8 +124,9 @@ async function awardAnswer(id) {
             question.best_answer === null" @click="awardAnswer(asr.id)">
             채택하기
           </button>
+          <span :id="asr.id"></span>
           <span v-if="asr.user_id === localUser.id">
-            <button @click="editAnswer(asr.id)">수정하기</button>
+            <button @click="editAnswer(asr.id, asr.detail)">수정하기</button>
             <button @click="deleteAnswer(asr.id)">삭제하기</button>
           </span>
         </div>
