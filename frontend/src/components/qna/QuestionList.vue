@@ -21,7 +21,13 @@ function sortActivated() {
 
 async function showDetail(value) {
   await questionsStore.getById(value);
+  questionsStore.pickedQtn = value;
   router.push({ name: 'qtndetail' });
+}
+
+function newQuestion() {
+  questionsStore.pickedQtn = null;
+  router.push({ name: 'createqtn' });
 }
 
 </script>
@@ -29,7 +35,7 @@ async function showDetail(value) {
 <template>
   <div style="color:white">
     질문 게시판.vue
-    <router-link to="createqtn">질문 작성하기</router-link>
+    <button @click="newQuestion">질문 작성하기</button>
     <form action="">
       <label><input type="radio" name="listSort" value="newest" @click="sortMostRecent">최신순</label>
       <label><input type="radio" name="listSort" value="noAnswer" @click="sortNoAnswer">답변없음</label>

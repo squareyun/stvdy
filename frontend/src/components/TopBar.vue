@@ -34,13 +34,19 @@ const logout = async () => {
       id="to-home">
       <p id="time"></p>
     </router-link>
-    <span id="test">
+    <span>
       <router-link
         to="mypage"
         style="background: white">
         마이페이지
       </router-link>
       <button @click="logout">LOGOUT</button>
+      <form action="">
+        <input
+          type="text"
+          placeholder="zzz" />
+        <button type="submit">검색</button>
+      </form>
     </span>
   </div>
   <!-- TOP BAR에 Notification dropdown(my page로 가는 경로 필), searchbar 들어가야함 -->

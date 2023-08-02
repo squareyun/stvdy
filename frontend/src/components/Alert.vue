@@ -12,10 +12,9 @@ const { alert } = storeToRefs(alertStore);
     <div>
       <div class="alert" :class="alert.type">
         <button @click="alertStore.clear()" class="btn">&times;</button>
-        {{  alert.message  }}
-        This is an alert box
+        {{ alert.message }}
+        Alert box입니다.
       </div>
     </div>
   </div>
-
 </template>
