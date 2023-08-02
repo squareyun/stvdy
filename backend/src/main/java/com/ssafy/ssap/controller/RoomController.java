@@ -127,22 +127,35 @@ public class RoomController {
     }
 
     @Transactional
-    @GetMapping("/{roomno}")
-    public String join(@PathVariable Integer roomNo){
+    @PostMapping("/{roomno}")
+    public String join(@PathVariable Integer roomNo, @RequestBody Map<String,String> map) throws Exception {
         /**
-         * 1. 룸넘버로 세션아이디 쿼리조회
-         * 2. 세션아이디 반환
-         *  2-1. 세션아이디 반환 전 여분 자리가 있는지 확인. 자리가 없으면 null토큰(자리없음에러?) 반환
-         * 3. participants 테이블 insert
-         * 4. room_log 테이블 insert
+         * 1. 해당하는 룸넘버가 입장가능한지 조회 (비밀번호, 정원(+강퇴당했었는지?))
+         * 2. 룸넘버로 세션아이디 쿼리조회
+         * 3. 세션아이디로 커넥션 생성 및 입장토큰 획득 ->프론트로 리턴
+         * 4. participants 테이블 insert
+         * 5. room_log 테이블 insert
          */
-        String token="";
+        String token=null;
+        String sessionId;
+        String password = map.get("password");
+        Integer userId = Integer.parseInt(map.get("userId"));
+        if( roomService.checkValid(roomNo, password)){ //1번 단계
+            //OPENVIDU > session 접속을 위한 token 생성
+            sessionId = roomService.getSessionIdByRoomNo(roomNo); //2번 단계
+            token = roomService.joinSession(sessionId); //3번 단계
+
+            //DB처리
+            roomService.addParticipant(roomNo,"참여자"); //4번
+            roomService.addRoomLog(roomNo,userId); //5번
+        }
+
         return token;
     }
 
-    @GetMapping("/code/{roomcode}")
-    public String joinByCode(@PathVariable Integer roomcode){
-        Integer roomId = roomService.findRoomId(roomcode);
-        return join(roomId);
-    }
+//    @GetMapping("/code/{roomcode}")
+//    public String joinByCode(@PathVariable Integer roomcode){
+//        Integer roomId = roomService.findRoomId(roomcode);
+//        return join(roomId);
+//    }
 }

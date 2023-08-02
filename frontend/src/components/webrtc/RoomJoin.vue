@@ -1,5 +1,5 @@
 <script setup>
-  import { ref, computed, onBeforeMount } from 'vue'
+  import { ref, computed, onBeforeMount, watch } from 'vue'
   import axios from 'axios'
   import { OpenVidu } from "openvidu-browser";
   import UserVideo from "@/components/webrtc/UserVideo.vue";
@@ -20,10 +20,11 @@
   // const mainStreamManager = ref(undefined)
   let mainStreamManager = ref(undefined)
   const publisher = ref(undefined)
-  const subscribers = ref([])
+  const subscribers = ref([]) //
 
   // Join form
   const mySessionId = ref(decodeURIComponent(store.mySessionId))  // 인코딩값을 디코딩한 해줘서 받아야만 작동가능함
+  // const mySessionId = ref(store.mySessionId)
   // 만약 인코딩해서 받은 값이 아니라면, 디코딩하지 않은 상태로 받기 위함.
   if (store.mySessionId === encodeURIComponent(store.mySessionId)) {
     mySessionId.value = store.mySessionId
@@ -34,6 +35,7 @@
   /////////////////////채팅창을 위한 부분임.
   const inputMessage = ref("")
   const messages = ref([])
+  const isChatContainer = ref(true)   /// 채팅창!!!!!
   ///////////////////
   ///////////////////카메라 및 오디오 설정을 위한 부분임
   const muted = ref(false)       // 기본은 음소거 비활성화
@@ -50,10 +52,11 @@
 
 
   onBeforeMount(() => {
+    console.log('!!!!!!!!!!!!!!!!',mySessionId.value)
     joinSession()
   })
 
-  // vue2에서의 methods 부분을 vue3화 시키기
+  // vue2에서의 methods 부분을 vue3화 handleUnload
   function joinSession() {
     // --- 1) Get an OpenVidu object ---
     OV.value = new OpenVidu()
@@ -120,12 +123,14 @@
           console.log("There was an error connecting to the session:", error.code, error.message);
         })
     })
-
-    window.addEventListener("beforeunload", leaveSession)
+    window.addEventListener("beforeunload",leaveSession);
   }
 
   function leaveSession(){
-    if(session.value) session.value.disconnect()
+
+    const confirmLeave = confirm("이 페이지를 떠나시겠습니까? 세션이 종료됩니다.")
+    if(!confirmLeave) return
+    if(session.value && confirmLeave) session.value.disconnect()
     
     // Empty all properties...
     session.value = undefined;
@@ -139,7 +144,7 @@
     
     // 메인페이지로 넘어감
     router.push({
-      name:'roomAdd',
+      name:'roomAdd',// 임시로 roomAdd로 보냄.
       // params: { 
       //   roomNo: mySessionId.value,
       // },
@@ -290,9 +295,11 @@
     try {
         const newStream = await navigator.mediaDevices.getUserMedia(newConstraints);
         const newVideoTrack = newStream.getVideoTracks()[0];
+
         await publisher.value.replaceTrack(newVideoTrack);
     } catch (error) {
         console.error("Error replacing video track:", error);
+
     }
   }
 
@@ -315,64 +322,63 @@
     }
   }
 
-  
 </script>
 
 <template>
   <!-- session이 true일때! 즉, 방에 들어갔을 때 -->
-  <div id="session" v-if="session">
-      <div id="session-header">
-        <h1 id="session-title">{{ mySessionId }}</h1>
-        <input
-          type="button"
-          id="buttonLeaveSession"
-          @click="leaveSession"
-          value="Leave session"
-        />
-      </div>
-      <!-- 내 캠 -->
-      <div id="main-video">
-        <UserVideo :stream-manager="mainStreamManagerComputed" />
-        <!-- <user-video v-if="selectedCamera || selectedAudio" :stream-manager="mainStreamManagerComputed" /> -->
-      </div>
-      <!-- 모든 캠 -->
-      <div id="video-container">
-        <UserVideo :stream-manager="publisherComputed" @click.native="updateMainVideoStreamManager(publisher)" />
-        <UserVideo
-          v-for="sub in subscribersComputed"
-          :key="sub.stream.connection.connectionId"
-          :stream-manager="sub"
-          @click.native="updateMainVideoStreamManager(sub)"
-        />
-      </div>
-      <!-- 방에 들어갔을 때 같이 보이게 될 채팅창 -->
-      <!-- 나중에 <chat-winow />로 넘길수 있도록 해보자. -->
-      <div id="chat-container">
-        <div id="chat-window">
-          <ul id="chat-history">
-            <li v-for="(message, index) in messages" :key="index">
-              <strong>{{message.username}}:</strong> {{message.message}}
-            </li>
-          </ul>
-        </div>
-        <form id="chat-write">
-          <input type="text" placeholder="전달할 내용을 입력하세요." v-model="inputMessage">
-          <button @click="sendMessage">전송</button>
-        </form>
-      </div>
-      <!-- 캠활성화, 음소거 버튼 -->
-      <button id="camera-activate" @click="handleCameraBtn">캠 비활성화</button>
-      <button id="mute-activate" @click="handleMuteBtn">음소거 활성화</button>
-      <!-- 캠,오디오 선택 옵션 -->
-      <div>
-        <select name="cameras" @change="handleCameraChange">
-          <option disabled>사용할 카메라를 선택하세요</option>
-        </select>
-        <select name="audios" @change="handleAudioChange">
-          <option disabled>사용할 마이크를 선택하세요</option>
-        </select>
-      </div>
+  <div id="session" v-if="session" style="color: white;">
+    <div id="session-header">
+      <h1 id="session-title">{{ mySessionId }}</h1>
+      <input
+        type="button"
+        id="buttonLeaveSession"
+        @click="leaveSession"
+        value="Leave session"
+      />
     </div>
+    <!-- 내 캠 -->
+    <div id="mainVideo">
+      <UserVideo :stream-manager="mainStreamManagerComputed" />
+      <!-- <user-video v-if="selectedCamera || selectedAudio" :stream-manager="mainStreamManagerComputed" /> -->
+    </div>
+    <!-- 모든 캠 -->
+    <div id="videoContainer">
+      <UserVideo :stream-manager="publisherComputed" @click.native="updateMainVideoStreamManager(publisher)" />
+      <UserVideo
+        v-for="sub in subscribersComputed"
+        :key="sub.stream.connection.connectionId"
+        :stream-manager="sub"
+        @click.native="updateMainVideoStreamManager(sub)"
+      />
+    </div>
+    <!-- 방에 들어갔을 때 같이 보이게 될 채팅창 -->
+    <!-- 나중에 <chat-winow />로 넘길수 있도록 해보자. -->
+    <div id="chatContainer" v-if="isChatContainer">
+      <div id="chatWindow">
+        <ul id="chatHistory">
+          <li v-for="(message, index) in messages" :key="index">
+            <strong>{{message.username}}:</strong> {{message.message}}
+          </li>
+        </ul>
+      </div>
+      <form id="chat-write">
+        <input type="text" placeholder="전달할 내용을 입력하세요." v-model="inputMessage">
+        <button @click="sendMessage">전송</button>
+      </form>
+    </div>
+    <!-- 캠활성화, 음소거 버튼 -->
+    <button id="camera-activate" @click="handleCameraBtn">캠 비활성화</button>
+    <button id="mute-activate" @click="handleMuteBtn">음소거 활성화</button>
+    <!-- 캠,오디오 선택 옵션 -->
+    <div>
+      <select name="cameras" @change="handleCameraChange">
+        <option disabled>사용할 카메라를 선택하세요</option>
+      </select>
+      <select name="audios" @change="handleAudioChange">
+        <option disabled>사용할 마이크를 선택하세요</option>
+      </select>
+    </div>
+  </div>
 </template>
 
 <style>
