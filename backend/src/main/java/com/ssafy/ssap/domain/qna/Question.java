@@ -53,6 +53,7 @@ public class Question {
     @JsonIgnore
     private QuestionCategoryNs category;
 
+    @Builder.Default
     @OneToMany(mappedBy = "question")
     List<Answer> answerList = new ArrayList<>();
 

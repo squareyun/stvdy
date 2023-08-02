@@ -46,11 +46,15 @@ public class Room {
     @ColumnDefault("1")
     private Boolean isValid;
 
+    @Column(name = "session_id", length = 30)
+    private String sessionId;
+
     @Column(name = "image_path", length = 45)
     private String imagePath;
 
     private String rule;
 
+    @Builder.Default
     @OneToMany(mappedBy = "room")
     private List<Participants> participantsList = new ArrayList<>();
 
