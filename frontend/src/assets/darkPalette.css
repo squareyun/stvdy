@@ -1,0 +1,19 @@
+:root {
+  --background-up: #282a36;
+  --background-down: #1b1f2c;
+  --background-window: #44475a;
+  --topbar-basic: #282a36;
+  --topbar-time: #f8f8f280;
+  --hl-purple: #bd93f9;
+  --hl-purple-o: #a27aff;
+  --hl-green: #56fd7f;
+  --hl-warn: #ff5555;
+  --hl-light: #f8f8f2;
+  --font100: #202020;
+  --font80: #202020cc;
+  --font50: #20202080;
+  --font30: #2020204d;
+  --font25: #20202040;
+  --font20: #20202033;
+  --font10: #2020201a;
+}
