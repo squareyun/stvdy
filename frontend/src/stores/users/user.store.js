@@ -2,8 +2,6 @@ import { defineStore } from 'pinia'
 import { fetchWrapper } from '@/helpers'
 import { useAuthStore } from '@/stores'
 import { getUser } from '@/api/user'
-import router from '@/router'
-import jwtDecode from 'jwt-decode'
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/users`
 
@@ -37,6 +35,7 @@ export const useUsersStore = defineStore({
         realname: user.name,
         username: user.nickname,
       }
+      console.log(this.user)
     },
     async varificationEmail(email) {
       await fetchWrapper.get(`${baseUrl}/varifyemail`, email)
@@ -92,5 +91,8 @@ export const useUsersStore = defineStore({
       //   // baseUrl/users/register/{requestBody} // success/fail로 응답받음
       // },
     },
+  },
+  persist: {
+    enabled: true,
   },
 })

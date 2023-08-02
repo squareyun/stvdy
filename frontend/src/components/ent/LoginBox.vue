@@ -6,7 +6,6 @@ import router from '@/router'
 import * as Yup from 'yup'
 
 const authStore = useAuthStore()
-const userStore = useUsersStore()
 
 const schema = Yup.object().shape({
   email: Yup.string().email('*올바른 입력이 필요합니다.'),
