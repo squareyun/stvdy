@@ -4,6 +4,7 @@ import SideBar from '@/components/SideBar.vue'
 
 <template>
   <main>
+    <!-- <TheWelcome /> -->
     <SideBar />
     <router-view />
   </main>

@@ -1,7 +1,9 @@
 import { defineStore } from 'pinia'
 import { fetchWrapper } from '@/helpers'
 import { useAuthStore } from '@/stores'
+import { getUser } from '@/api/user'
 import router from '@/router'
+import jwtDecode from 'jwt-decode'
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/users`
 
@@ -12,14 +14,33 @@ export const useUsersStore = defineStore({
     user: {},
   }),
   actions: {
-    async register(user) {
-      await fetchWrapper.post(`${baseUrl}/register`, user)
-      // baseUrl/users/register/{requestBody} // success/fail로 응답받음
+    async getInfo(token) {
+      const AuthStore = useAuthStore()
+
+      await getUser(
+        token,
+        async (data) => {
+          this.user = {
+            email: data.data.email,
+            realname: data.data.name,
+            username: data.data.nickname,
+          }
+
+          await AuthStore.setValid(true)
+        },
+        async (error) => {
+          console.log(error)
+
+          await AuthStore.setValid(false)
+        },
+      )
     },
+
     async varificationEmail(email) {
       await fetchWrapper.get(`${baseUrl}/varifyemail`, email)
       // baseUrl/users/register/{email}
     },
+
     async getAll() {
       this.users = { loading: true }
       try {
@@ -64,6 +85,10 @@ export const useUsersStore = defineStore({
       if (id === authStore.user.id) {
         authStore.logout()
       }
+      // async register(user) {
+      //   await fetchWrapper.post(`${baseUrl}/register`, user)
+      //   // baseUrl/users/register/{requestBody} // success/fail로 응답받음
+      // },
     },
   },
 })

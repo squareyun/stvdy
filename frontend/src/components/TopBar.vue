@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted } from 'vue'
+import { mapState } from 'vuex'
 import { useAuthStore } from '@/stores'
 
 onMounted(() => {

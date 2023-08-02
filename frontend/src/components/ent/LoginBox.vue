@@ -1,22 +1,25 @@
 <script setup>
 import { Form, Field } from 'vee-validate'
 import { useAuthStore } from '@/stores'
+import { useUsersStore } from '@/stores'
+import router from '@/router'
 import * as Yup from 'yup'
 
+const authStore = useAuthStore()
+const userStore = useUsersStore()
+
 const schema = Yup.object().shape({
-  username: Yup.string().email('*올바른 입력이 필요합니다.'),
+  email: Yup.string().email('*올바른 입력이 필요합니다.'),
   password: Yup.string().required('*올바른 입력이 필요합니다.'),
 })
 
 const onSubmit = async (values) => {
-  const authStore = useAuthStore()
-  if (values.keeplog === 'keeplogon') {
-    values.keeplog = true
-  } else {
-    values.keeplog = false
+  values.keeplog = values.keeplog === 'keeplog'
+  await authStore.login(values)
+
+  if (authStore.isLogin) {
+    router.push('/')
   }
-  const { username, password, keeplog } = values
-  await authStore.login(username, password, keeplog)
 }
 </script>
 
@@ -31,14 +34,14 @@ const onSubmit = async (values) => {
         v-slot="{ errors, isSubmitting }">
         <p class="field-name">
           &nbsp;&nbsp;이메일
-          <span class="error-yup">{{ errors.username }}</span>
+          <span class="error-yup">{{ errors.email }}</span>
           &nbsp;
         </p>
         <Field
-          name="username"
+          name="email"
           type="text"
           class="field"
-          :class="{ 'is-invalid': errors.username }" />
+          :class="{ 'is-invalid': errors.email }" />
         <p class="field-name">
           &nbsp;&nbsp;비밀번호
           <span class="error-yup">{{ errors.password }}</span>
@@ -55,7 +58,7 @@ const onSubmit = async (values) => {
           <Field
             name="keeplog"
             type="checkbox"
-            value="keeplogon"
+            value="keeplog"
             class="form-control" />
           <button
             id="login-button"
