@@ -138,7 +138,7 @@ router.beforeEach(async (to) => {
 
   // 로그인 없이도 접근 가능한 라우터
   // 접근 하려는 라우터가 public 인지 확인
-  const publicPages = [
+  const testPages = [
     '/about',
     '/regist',
     '/passwordReset',
@@ -146,29 +146,34 @@ router.beforeEach(async (to) => {
     '/room/123',
     '/webrtc',
   ] // 손 좀 대겠습니다. 기존 ['/about', '/regist', '/passwordReset', ]
-  const authRequired = !publicPages.includes(to.path)
+  const authRequired = !testPages.includes(to.path)
+  const loginLogics = ['/about', '/regist', '/passwordReset']
 
   // 로컬 스토리지의 유저 로그인 정보가 있는지 받아오는 스토어
   const authStore = useAuthStore()
   const userStore = useUsersStore()
 
   let token = localStorage.getItem('access-token')
-  console.log(token)
-  token = sessionStorage.getItem('access-token')
-  console.log(token)
-  if (token) {
-    await userStore.getInfo(token)
-  }
+  if (!token) token = sessionStorage.getItem('access-token')
+  if (token) await userStore.getInfo(token)
+
   // public 라우터이면 유저 정보를 확인하지 않아 무한 반복 방지
   // 없으면 끝도 없이 유저 정보 검사후 이동을 반복
-  if (authRequired && !authStore.isLogin) {
-    console.log('no user')
-    console.log(authRequired)
-    console.log(to.path)
-    authStore.returnUrl = to.fullPath
+  if (authStore.isLogin) {
+    if (loginLogics.includes(to.path)) {
+      console.log(to.path)
+      authStore.returnUrl = to.fullPath
 
-    // 로그인 페이지로 넘김
-    return '/about'
+      return '/'
+    }
+  } else {
+    if (authRequired) {
+      console.log(authRequired)
+      console.log(to.path)
+      authStore.returnUrl = to.fullPath
+
+      return '/about'
+    }
   }
 })
 

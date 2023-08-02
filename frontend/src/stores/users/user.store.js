@@ -18,6 +18,7 @@ export const useUsersStore = defineStore({
       const AuthStore = useAuthStore()
 
       await getUser(
+        token,
         async (data) => {
           this.user = {
             email: data.data.email,
