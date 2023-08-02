@@ -29,7 +29,7 @@ const localUser = usersStore.user
           <span>
             <img
               id="profile-img"
-              src="LoginBanner.png"
+              src="/LoginBanner.png"
               alt=""
               width="100" />
           </span>
