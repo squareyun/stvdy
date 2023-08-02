@@ -5,9 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ParticipantsRepository extends JpaRepository<Participants, Integer> {
+public interface ParticipantsRepository extends JpaRepository<Participants, Long> {
 
-    void deleteByRoomId(Integer roomId);
-
-    Long countByRoomIdAndIsOut(Integer roomId, boolean isOut);
 }

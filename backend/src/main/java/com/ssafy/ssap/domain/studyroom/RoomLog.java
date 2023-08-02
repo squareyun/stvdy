@@ -1,6 +1,5 @@
 package com.ssafy.ssap.domain.studyroom;
 
-import com.ssafy.ssap.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +21,7 @@ public class RoomLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(name = "room_title", length = 45)
     private String roomTitle;
@@ -36,9 +35,5 @@ public class RoomLog {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "room_id")
     private Room room;
-
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
 
 }
