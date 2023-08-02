@@ -9,15 +9,21 @@
   const store = webRtcStore()
   const router = useRouter()
 
-  document.addEventListener('keydown', function (event) {
-  const key_f5 = 116; // 116 = F5
-  const key_r = 82; // 82 = R
-  if ((key_f5 === event.keyCode) || (event.ctrlKey && key_r === event.keyCode)) {
-    event.preventDefault();
-    alert('이 페이지는 F5키와 Ctrl + R로 새로 고침되지 않습니다.');
-    return false;
+  ///////////////////////////////////////////
+  // 새로고침 방지!
+  document.addEventListener('keydown', preventRefresh)
+  function preventRefresh(event) {
+    const key_f5 = 116; // 116 = F5
+    const key_r = 82; // 82 = R
+    if ((key_f5 === event.keyCode) || (event.ctrlKey && key_r === event.keyCode)) {
+      event.preventDefault();
+      // alert('이 페이지는 F5키와 Ctrl + R로 새로 고침되지 않습니다.');
+      alert('이 페이지는 새로 고침되지 않습니다.');
+      return false;
+    }
   }
-});
+  ///////////////////////////////////////////
+
 
 
   axios.defaults.headers.post["Content-Type"] = "application/json;charset=utf-8";
@@ -46,7 +52,7 @@
   /////////////////////채팅창을 위한 부분임.
   const inputMessage = ref("")
   const messages = ref([])
-  const isChatContainer = ref(true)   /// 채팅창!!!!!
+  // const isChatContainer = ref(true)   /// 채팅창!!!!!
   ///////////////////
   ///////////////////카메라 및 오디오 설정을 위한 부분임
   const muted = ref(false)       // 기본은 음소거 비활성화
@@ -145,35 +151,7 @@
     // window.addEventListener("beforeunload",leaveSession);
   }
 
-  // function leaveSession(){
 
-  //   const confirmLeave = confirm("이 페이지를 떠나시겠습니까? 회의가 종료됩니다.")
-  //   console.log('나갈거야!!!!!',confirmLeave)
-  //   if(!confirmLeave){
-  //     alert('안나감ㅋㅋㅋㅋㅋ')
-  //     return
-  //   }
-  //   else if(session.value && confirmLeave){
-  //     session.value.disconnect()
-  //     // Empty all properties...
-  //     session.value = undefined;
-  //     mainStreamManager.value = undefined;
-  //     publisher.value = undefined;
-  //     subscribers.value = [];
-  //     OV.value = undefined;
-
-  //     // Remove beforeunload listener
-  //     window.removeEventListener("beforeunload", leaveSession)
-      
-  //     // 메인페이지로 넘어감
-  //     router.push({
-  //       name:'roomAdd',// 임시로 roomAdd로 보냄.
-  //       // params: { 
-  //       //   roomNo: mySessionId.value,
-  //       // },
-  //     })
-  //   }   
-  // }
   function leaveSession(){
 
     // const confirmLeave = confirm("이 페이지를 떠나시겠습니까? 회의가 종료됩니다.")
@@ -190,6 +168,7 @@
 
     // Remove beforeunload listener
     window.removeEventListener("beforeunload", leaveSession)
+    document.removeEventListener('keydown', preventRefresh)
     
     // 메인페이지로 넘어감
     router.push({
@@ -251,7 +230,9 @@
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
       const cameras = devices.filter((device) => device.kind === 'videoinput');
+      console.log('카메라들',cameras)
       const audios = devices.filter((device) => device.kind === 'audioinput');
+      console.log('마이크들',audios)
       // const audios = undefined
 
       const cameraSelect = document.querySelector('select[name="cameras"]');
@@ -340,12 +321,16 @@
             deviceId: { exact: deviceId },
         },
     };
-
+    // 카메라 비활성화 조건을 추가합니다.
+    if (camerOff.value) {
+      newConstraints.video = false;
+    }
     try {
-        const newStream = await navigator.mediaDevices.getUserMedia(newConstraints);
-        const newVideoTrack = newStream.getVideoTracks()[0];
-
-        await publisher.value.replaceTrack(newVideoTrack);
+      const newStream = await navigator.mediaDevices.getUserMedia(newConstraints);
+      const newVideoTrack = newStream.getVideoTracks()[0];
+      await publisher.value.replaceTrack(newVideoTrack);
+    // mainStreamManager를 업데이트하여 선택한 카메라를 메인 비디오로 설정
+      mainStreamManager.value = publisher.value
     } catch (error) {
         console.error("Error replacing video track:", error);
 
@@ -371,29 +356,87 @@
     }
   }
 
+
+  /////////////////////////
+  // 탭 메뉴 관련
+  const funcTabs = ref(['참여멤버', '메시지', '그라운드 룰', '공유'])
+  const activeFuncTab = ref(0)
+
+  function changeTab(index) {
+    activeFuncTab.value = index
+    console.log(myUserName.value)
+  }
+
 </script>
 
+<!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  -->
+<!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  -->
+<!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  -->
+<!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  -->
+
 <template>
-    <!-- session이 true일때! 즉, 방에 들어갔을 때 -->
-    <div id="session" v-if="session" style="color: white;">
-      <div id="session-header">
-        <h1 id="session-title">{{ mySessionId }}</h1>
-        <input type="button" id="buttonLeaveSession" @click="leaveSession" value="Leave session" />
+  <!-- session이 true일때! 즉, 방에 들어갔을 때 -->
+  <!-- <div id="session" v-if="session" style="color: white;"> -->
+  <div id="session" style="color: white;">
+    <div>
+      <!-- 화상이 보이는 곳 -->
+      <div id="camScreen"> 
+        <div id="session-header">
+          <h1 id="session-title">{{ mySessionId }}</h1>
+          <input type="button" id="buttonLeaveSession" @click="leaveSession" value="Leave session" />
+        </div>
+        <!-- 선택 캠 -->
+        <div id="mainVideo">
+          <UserVideo :stream-manager="mainStreamManagerComputed" />
+        </div>
+        <!-- 모든 캠 -->
+        <div id="videoContainer">
+          <UserVideo :stream-manager="publisherComputed" @click.native="updateMainVideoStreamManager(publisher)" />
+          <UserVideo v-for="sub in subscribersComputed" :key="sub.stream.connection.connectionId" :stream-manager="sub"
+            @click.native="updateMainVideoStreamManager(sub)" />
+        </div>
       </div>
-      <!-- 내 캠 -->
-      <div id="mainVideo">
-        <UserVideo :stream-manager="mainStreamManagerComputed" />
-        <!-- <user-video v-if="selectedCamera || selectedAudio" :stream-manager="mainStreamManagerComputed" /> -->
+      <!-- 캠 및 오디오 관련 -->
+      <div id="deviceDiv">
+        <!-- 캠활성화, 음소거 버튼 -->
+        <button id="camera-activate" @click="handleCameraBtn">캠 비활성화</button>
+        <button id="mute-activate" @click="handleMuteBtn">음소거 활성화</button>
+        <!-- 캠,오디오 선택 옵션 -->
+        <div>
+          <select name="cameras" @change="handleCameraChange">
+            <option disabled>사용할 카메라를 선택하세요</option>
+          </select>
+          <select name="audios" @change="handleAudioChange">
+            <option disabled>사용할 마이크를 선택하세요</option>
+          </select>
+        </div>
       </div>
-      <!-- 모든 캠 -->
-      <div id="videoContainer">
-        <UserVideo :stream-manager="publisherComputed" @click.native="updateMainVideoStreamManager(publisher)" />
-        <UserVideo v-for="sub in subscribersComputed" :key="sub.stream.connection.connectionId" :stream-manager="sub"
-          @click.native="updateMainVideoStreamManager(sub)" />
+    </div>
+  </div>
+    <!-- 화상회 부가기능이 보이는 곳 -->
+    <div id="functionTab" style="color: white;">
+      <div id="tabs">
+        <ul id="functionUl" style="display: flex;">
+          <li v-for="(tab, index) in funcTabs" :key="index" id="tab{{index}}" :class="{ 'active': activeFuncTab === index }" @click="changeTab(index)">
+            {{ tab }}
+          </li>
+        </ul>
+        <div v-if="activeFuncTab === 0">참여멤버</div>
+        <div v-if="activeFuncTab === 1">메시지</div>
+        <div v-if="activeFuncTab === 2">그라운드 룰</div>
+        <div v-if="activeFuncTab === 3">공유</div>
       </div>
-      <!-- 방에 들어갔을 때 같이 보이게 될 채팅창 -->
+      <!-- 참여 멤버 -->
+      <div v-if="activeFuncTab === 0">
+        <ul>
+          <li>{{ myUserName }}</li>
+          <li v-for="(sub, index) in subscribersComputed" :key="index">
+            {{ JSON.parse(sub.stream.connection.data).clientData }}
+          </li>
+        </ul>
+      </div>
       <!-- 나중에 <chat-winow />로 넘길수 있도록 해보자. -->
-      <div id="chatContainer" v-if="isChatContainer">
+      <div id="chatContainer" v-if="activeFuncTab === 1">
         <div id="chatWindow">
           <ul id="chatHistory">
             <li v-for="(message, index) in messages" :key="index">
@@ -406,19 +449,45 @@
           <button @click="sendMessage">전송</button>
         </form>
       </div>
-      <!-- 캠활성화, 음소거 버튼 -->
-      <button id="camera-activate" @click="handleCameraBtn">캠 비활성화</button>
-      <button id="mute-activate" @click="handleMuteBtn">음소거 활성화</button>
-      <!-- 캠,오디오 선택 옵션 -->
-      <div>
-        <select name="cameras" @change="handleCameraChange">
-          <option disabled>사용할 카메라를 선택하세요</option>
-        </select>
-        <select name="audios" @change="handleAudioChange">
-          <option disabled>사용할 마이크를 선택하세요</option>
-        </select>
-      </div>
+      <!-- 그라운드 룰 -->
+      <div></div>
+      <!-- 공유 -->
+      <div></div>
     </div>
+    
 </template>
 
-<style></style>
+<style scoped>
+  #session {
+    display: flex;
+    width: 100%;
+    height: 100%;
+  }
+
+  #camScreen {
+    width: 60%;
+    height: 95%;
+    
+  }
+
+  #functionTab {
+    width: 40%;
+    height: 100%;
+    
+  }
+
+  #deviceDiv {
+    width: 100%;
+    height: 5%;
+    
+  }
+  #functionUl {
+    cursor: pointer;
+    display: inline-block;
+    padding: 10px;
+  }
+  li.active {
+    font-weight: bold;
+    color: blue;
+  }
+</style>
