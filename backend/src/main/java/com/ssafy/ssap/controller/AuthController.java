@@ -35,12 +35,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/users")
 public class AuthController {
-	private static final Logger logger = LoggerFactory.getLogger(RoomController.class);
+	private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 	private final TokenProvider tokenProvider;
 	private final AuthenticationManagerBuilder authenticationManagerBuilder;
 	private final UserService userService;
 	private final EmailService emailService;
 
+	/**
+	 * 로그인
+	 */
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDto loginRequestDto) {
 		Map<String, Object> resultMap = new HashMap<>();
@@ -62,6 +65,7 @@ public class AuthController {
 			resultMap.put("user", loginResponseDto);
 			resultMap.put("jwt", new TokenDto(jwt));
 
+			logger.info("로그인 성공: userEmail = {}", loginResponseDto.getEmail());
 			status = HttpStatus.ACCEPTED;
 			return new ResponseEntity<>(resultMap, httpHeaders, status);
 		} catch (Exception e) {
@@ -73,6 +77,9 @@ public class AuthController {
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);
 	}
 
+	/**
+	 * 이메일 인증번호 전송
+	 */
 	@GetMapping("/join/{email}")
 	public ResponseEntity<?> sendEmailPath(@PathVariable String email) {
 		Map<String, Object> resultMap = new HashMap<>();
@@ -80,11 +87,11 @@ public class AuthController {
 
 		try {
 			if (!emailService.sendEmail(email)) {
-				logger.debug("{}이미 존재하는 사용자", email);
+				logger.warn("인증번호 전송 실패: 이미 존재하는 사용자");
 				resultMap.put("message", "Already exists");
 				status = HttpStatus.CONFLICT;
 			} else {
-				logger.debug("{} 인증번호 전송 성공", email);
+				logger.info("인증번호 전송 성공: userEmail = {}", email);
 				resultMap.put("message", MessageFormat.SUCCESS);
 				status = HttpStatus.ACCEPTED;
 			}

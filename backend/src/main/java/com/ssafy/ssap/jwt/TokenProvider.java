@@ -25,10 +25,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.extern.log4j.Log4j2;
 
 @Component
-@Log4j2
 public class TokenProvider implements InitializingBean {
 
 	private final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
@@ -89,13 +87,13 @@ public class TokenProvider implements InitializingBean {
 			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
 			return true;
 		} catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-			logger.info("잘못된 JWT 서명입니다.");
+			logger.error("잘못된 JWT 서명입니다.");
 		} catch (ExpiredJwtException e) {
-			logger.info("만료된 JWT 토큰입니다.");
+			logger.error("만료된 JWT 토큰입니다.");
 		} catch (UnsupportedJwtException e) {
-			logger.info("지원되지 않는 JWT 토큰입니다.");
+			logger.error("지원되지 않는 JWT 토큰입니다.");
 		} catch (IllegalArgumentException e) {
-			logger.info("JWT 토큰이 잘못되었습니다.");
+			logger.error("JWT 토큰이 잘못되었습니다.");
 		}
 		return false;
 	}
