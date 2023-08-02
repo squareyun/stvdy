@@ -8,6 +8,8 @@ import com.ssafy.ssap.dto.RoomCreateDto;
 import com.ssafy.ssap.repository.*;
 import io.openvidu.java.client.*;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +18,7 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class RoomService {
-
+    private final Logger logger = LoggerFactory.getLogger(RoomService.class);
     private final RoomRepository roomRepository;
     private final ParticipantsRepository participantsRepository;
     private final ParticipantsRoleNsRepository participantsRoleNsRepository;
@@ -64,8 +66,13 @@ public class RoomService {
         participantsRepository.save(participants);
     }
 
+    public void addParticipant(Integer roomNo, String role) {
+        Room room = roomRepository.findById(roomNo).orElse(null);
+        addParticipant(room,role);
+    }
+
     public void addRoomLog(Room room, Integer userId){
-        User user = userRepository.findById((long)userId).get();
+        User user = userRepository.findById((long)userId).orElse(null);
         // 접속 기록 추가
         RoomLog roomLog = RoomLog.builder()
                 .roomTitle(room.getTitle())
@@ -74,6 +81,12 @@ public class RoomService {
                 .user(user)
                 .build();
         roomLogRepository.save(roomLog);
+    }
+
+    public void addRoomLog(Integer roomNo, Integer userId) {
+        Room room = roomRepository.findById(roomNo).orElse(null);
+        if(room==null) logger.error(roomNo+"에 해당하는 방이 DB에 존재하지 않음");
+        addRoomLog(room,userId);
     }
 
     /**
@@ -95,7 +108,7 @@ public class RoomService {
         String token;
         try {
             openVidu = new OpenVidu(OPENVIDU_URL,SECRET);
-            session = this.openVidu.createSession();
+            session = this.openVidu.createSession(); //오픈비두 서버에 세션 생성
             token = joinSession(session.getSessionId()); //joinSession에서 connection 생성
             return token;
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
@@ -103,13 +116,20 @@ public class RoomService {
         }
     }
 
+    public String getSessionIdByRoomNo(Integer roomNo) {
+        Room room = roomRepository.findById(roomNo).orElse(null);
+        if(room==null) logger.error(roomNo+"에 해당하는 방이 DB에 존재하지 않음");
+        return room.getSessionId();
+    }
+
     public String joinSession(String sessionId) {
-        String token;
+        //이미 열려있는 세션에 참가하고 토큰 반환
+        String token=null;
 
         //입장 요청한 session이 존재하는지 확인 (무조건 존재해야함!)
         Session session = openVidu.getActiveSession(sessionId);
         if (session == null) {
-            System.out.println("No kidding me");
+            logger.error("session Id not matching");
             return null;
         }
 
@@ -118,7 +138,7 @@ public class RoomService {
             ConnectionProperties connectionProperties = new ConnectionProperties.Builder().type(ConnectionType.WEBRTC).build();
             token = session.createConnection(connectionProperties).getToken();
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
-            throw new RuntimeException(e);
+            logger.error("can't build connection properties or get token from it");
         }
 
         return token;
@@ -127,4 +147,34 @@ public class RoomService {
     public Integer findRoomId(Integer roomcode) {
         return 0;
     }
+
+    public boolean checkValid(Integer roomNo, String password) throws RuntimeException {
+        //방 입장이 가능한지 확인하는 메소드
+
+        Room room = roomRepository.findById(roomNo).orElse(null);
+        if(room==null) {
+            throw new RuntimeException("ERROR: can't find room matching roomNo");
+        }
+
+        if(participantsRepository.countByRoomIdAndIsOut(roomNo,false) >= room.getQuota()){
+            //check quota
+            logger.trace(roomNo+" room is full");
+            return false;
+        } else{
+            logger.trace(roomNo+" room is not full");
+        }
+        if ( !room.getPassword().isBlank() && !password.isBlank() ){
+            logger.trace("roomPassword, 입력password 둘 다 존재");
+            //check password
+            if(!room.getPassword().equals(password)){
+                logger.trace("password 불일치"+room.getPassword()+" / "+password);
+                return false;
+            } else{
+                logger.trace("password 일치");
+            }
+        }
+        return true;
+    }
+
 }
+
