@@ -21,7 +21,7 @@ public class RoomLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(name = "room_title", length = 45)
     private String roomTitle;
