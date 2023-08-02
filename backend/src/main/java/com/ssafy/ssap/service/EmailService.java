@@ -62,5 +62,4 @@ public class EmailService {
 
 		return true;
 	}
-
 }
