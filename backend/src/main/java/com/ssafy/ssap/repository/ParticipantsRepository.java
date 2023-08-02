@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface ParticipantsRepository extends JpaRepository<Participants, Integer> {
 
     void deleteByRoomId(Integer roomId);
+
+    Long countByRoomIdAndIsOut(Integer roomId, boolean isOut);
 }
