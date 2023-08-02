@@ -1,18 +1,24 @@
 <script setup>
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { mapState } from 'vuex'
 import { useAuthStore } from '@/stores'
 
-onMounted(() => {
+const times = () => {
   var now = new Date()
   var month = now.getMonth()
   var day = now.getDate()
   var hour = now.getHours()
   // var min = now.getMinutes()
   var min = String(now.getMinutes()).padStart(2, '0')
+  var sec = String(now.getSeconds()).padStart(2, '0')
+
   document.getElementById(
     'time',
-  ).innerHTML = `${month}월 ${day}일 ${hour}:${min} Welcome to Stvdy !!`
+  ).innerHTML = `${month}월 ${day}일 ${hour}:${min}:${sec} Welcome to Stvdy !!`
+}
+
+onMounted(() => {
+  setInterval(times, 1000)
 })
 
 const logout = async () => {
@@ -28,7 +34,7 @@ const logout = async () => {
       id="to-home">
       <p id="time"></p>
     </router-link>
-    <span>
+    <span id="test">
       <router-link
         to="mypage"
         style="background: white">
@@ -41,6 +47,11 @@ const logout = async () => {
 </template>
 
 <style scoped>
+#test {
+  position: fixed;
+  right: 0;
+  top: 0;
+}
 #topbar {
   background-color: var(--topbar-basic);
   width: 100vw;
@@ -55,6 +66,7 @@ const logout = async () => {
 }
 
 #time {
+  font-family: consolas, 'ASDGothic';
   color: var(--topbar-time);
   font-size: 0.9rem;
   margin: 0;

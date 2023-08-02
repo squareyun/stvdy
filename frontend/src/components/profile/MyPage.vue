@@ -1,37 +1,45 @@
 <script setup>
-import { useAuthStore } from '@/stores';
-import { Form, Field } from 'vee-validate';
-import * as Yup from 'yup';
+import { useAuthStore } from '@/stores'
+import { Form, Field } from 'vee-validate'
+import * as Yup from 'yup'
 import router from '@/router'
-import { storeToRefs } from 'pinia';
-import { useUsersStore, useAlertStore } from '@/stores';
-import { onMounted, ref } from 'vue';
-import Deactivate from '@/components/profile/Deactivate.vue';
-import { RouterLink, RouterView } from 'vue-router';
+import { storeToRefs } from 'pinia'
+import { useUsersStore, useAlertStore } from '@/stores'
+import { onMounted, ref } from 'vue'
+import Deactivate from '@/components/profile/Deactivate.vue'
+import { RouterLink, RouterView } from 'vue-router'
 
+const usersStore = useUsersStore()
+const localUser = usersStore.user
 
-const localUser = ref(JSON.parse(localStorage.getItem('user')));
-const userID = JSON.parse(localStorage.getItem('user')).id;
-
-
+// const localUser = ref(JSON.parse(localStorage.getItem('user')));
+// const userID = JSON.parse(localStorage.getItem('user')).id
 </script>
-
 
 <template>
   <div>
-    <div style="color:white">
+    <div style="color: white">
       프로필
       <div>
-        <img id="profile-bg-img" src="" alt="">
+        <img
+          id="profile-bg-img"
+          src=""
+          alt="" />
         <div>
           <span>
-            <img id="profile-img" src="LoginBanner.png" alt="" width="100">
+            <img
+              id="profile-img"
+              src="LoginBanner.png"
+              alt=""
+              width="100" />
           </span>
-          <span v-if="localUser">{{ localUser.username }}#{{ localUser.id }} </span>
+          <span v-if="localUser">
+            {{ localUser.username }}#{{ localUser.id }}
+          </span>
           <span v-else>Loading...</span>
-          <br>
+          <br />
           <label>본명</label>
-          <span v-if="localUser"> {{ localUser.realname }} </span>
+          <span v-if="localUser">{{ localUser.realname }}</span>
           <span v-else>Loading...</span>
         </div>
         <div>
@@ -75,12 +83,11 @@ const userID = JSON.parse(localStorage.getItem('user')).id;
       </div>
 
       <a href="">대표 이미지 변경</a>
-      <router-link to='/changeusername'>별명 변경</router-link>
-      <router-link to='/changepwd'>비밀번호 변경</router-link>
+      <router-link to="/changeusername">별명 변경</router-link>
+      <router-link to="/changepwd">비밀번호 변경</router-link>
     </div>
     <RouterView />
     <Deactivate />
-
   </div>
 </template>
 
