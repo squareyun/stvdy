@@ -34,7 +34,7 @@ const logout = async () => {
       id="to-home">
       <p id="time"></p>
     </router-link>
-    <span>
+    <span id="test">
       <router-link
         to="mypage"
         style="background: white">
