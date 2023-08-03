@@ -98,6 +98,13 @@ const router = createRouter({
       name: 'roomJointmp',
       component: () => import('@/views/RoomView.vue'),
     },
+    
+    //// 메인화면입장 시
+    {
+      path: '/main',
+      name: 'main',
+      component: () => import('@/views/MainView.vue'),
+    },
   ],
 })
 

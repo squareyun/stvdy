@@ -1,17 +1,24 @@
 <script setup>
-  import { ref, computed, onUpdated, watch } from 'vue'
+  import { ref, computed, onUpdated, watch, onMounted } from 'vue'
   import { useRouter } from "vue-router"
-  import { webRtcStore } from "@/stores"
+  import { usewebRtcStore } from "@/stores"
+  import { useUsersStore } from "@/stores"
   import axios from 'axios' 
   // import { storeToRefs } from "pinia";
 
+  const usersStore = useUsersStore()
+  const localUser = usersStore.user
+  console.log(localUser)
 
-  const store = webRtcStore()
+  const store = usewebRtcStore()
+  const userstore = useUsersStore()
   const router = useRouter()
   
   // 방 생성에 사용할 변수들 
   const myUserName = ref(store.myUserName)
+  // const myUserName = ref(userstore.user.username)
   const mySessionId = ref(store.mySessionId)
+  
   
   // 방 시간 관련 내용
   // const hours = ref([...Array(24).keys()].map(hour=> hour.toString()))
@@ -30,7 +37,6 @@
   // 방 참여자들의 캠 전체 비활성화 여부를 의미
   const isPrivacy = ref(store.isPrivacy)
 
-
   //tiemSet이 flase면 종료시간 초기화.
   watch(timeSet, (newtimeSet) => {
     if (!newtimeSet) {
@@ -45,7 +51,6 @@
       store.updateEndMinute(0);
       endMinute.value = 1;
     }
-    // console.log(timeSet.value)
   })
   // endHour와 timeSet이 둘다 0이면 안됨.
   if(timeSet.value && endHour.value === 0 && endMinute.value === 0 ){
@@ -56,8 +61,6 @@
   watch(endHour, (newendHour) => {
     if (timeSet.value && newendHour === 0 && endMinute.value === 0) {
       alert("타이머가 0일 수는 없습니다. \n다시 설정 해주세요.");
-      console.log(typeof newendHour)
-      console.log(typeof endMinute.value)
       endHour.value = 0
       endMinute.value = 1
     }
@@ -65,8 +68,6 @@
   watch(endMinute, (newendMinute) => {
     if (timeSet.value && endHour.value === 0 && newendMinute === 0) {
       alert("타이머가 0일 수는 없습니다. \n다시 설정 해주세요.");
-      console.log(typeof endHour.value)
-      console.log(typeof newendMinute)
       endHour.value = 0
       endMinute.value = 1
     }
@@ -97,7 +98,6 @@
   }
 
   function updateMysessionId(event) {
-    console.log(event.target.value)
     store.updateMySessionId(event.target.value)
     mySessionId.value = event.target.value
   }
@@ -124,7 +124,6 @@
   function updatePassword(event){
     store.updatePassword(event.target.value)
     password.value = event.target.value
-    console.log(password.value)
   }
 
   function updateQuota(event){
@@ -133,26 +132,25 @@
   }
 
   // 방 참가를 위한 함수
-  function joinSession() {
-    if(!store.myUserName || !store.mySessionId){
-      alert("이름과 방제목을 작성해주세요.")
-      return
-    }
-    router.push({
-      name:'roomJoin',
-      params: { 
-        roomNo: encodeURIComponent(mySessionId.value),  // 인코딩해서 보내줘야만 작동함
-      },
-    })
-  }
   // function joinSession() {
   //   if(!store.myUserName || !store.mySessionId){
   //     alert("이름과 방제목을 작성해주세요.")
   //     return
   //   }
-  //   // store.joinSession(router)  // 이 코드 대신 아래 코드를 추가했음.
-  //   store.joinSession()  // 이 코드 대신 아래 코드를 추가했음.
+  //   router.push({
+  //     name:'roomJoin',
+  //     params: { 
+  //       roomNo: encodeURIComponent(mySessionId.value),  // 인코딩해서 보내줘야만 작동함
+  //     },
+  //   })
   // }
+  function joinSession() {
+    if(!store.myUserName || !store.mySessionId){
+      alert("이름과 방제목을 작성해주세요.")
+      return
+    }
+    store.joinSession(router)  // 이 코드 대신 아래 코드를 추가했음.
+  }
 </script>
 
 <template>
