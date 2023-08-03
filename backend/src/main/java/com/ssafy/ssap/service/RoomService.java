@@ -32,7 +32,9 @@ public class RoomService {
      * OpenVidu variables
      */
     private OpenVidu openVidu;
+    @SuppressWarnings("FieldCanBeLocal")
     private final String OPENVIDU_URL = "http://localhost:4443/";
+    @SuppressWarnings("FieldCanBeLocal")
     private final String SECRET = "MY_SECRET";
 
     /**
@@ -88,10 +90,15 @@ public class RoomService {
         roomLogRepository.save(roomLog);
     }
 
+    @SuppressWarnings("DataFlowIssue")
     public void addRoomLog(Integer roomNo, Integer userId) {
-        Room room = roomRepository.findById(roomNo).orElse(null);
-        if(room==null) logger.error(roomNo+"에 해당하는 방이 DB에 존재하지 않음");
-        addRoomLog(room,userId);
+        try{
+            Room room = roomRepository.findById(roomNo).orElse(null);
+            addRoomLog(room, userId);
+        } catch(NullPointerException e){
+            logger.error("roomNo와 Room객체 매칭 실패");
+            throw e;
+        }
     }
 
     /**
@@ -126,6 +133,7 @@ public class RoomService {
         }
     }
 
+    @SuppressWarnings("DataFlowIssue")
     public String getSessionIdByRoomNo(Integer roomNo) {
         Room room = roomRepository.findById(roomNo).orElse(null);
         if(room==null) logger.error(roomNo+"에 해당하는 방이 DB에 존재하지 않음");
@@ -162,36 +170,39 @@ public class RoomService {
         //방 입장이 가능한지 확인하는 메소드
 
         Room room = roomRepository.findById(roomNo).orElse(null);
-        if(room==null) {
-            throw new RuntimeException("ERROR: can't find room matching roomNo");
-        }
 
-        if(participantsRepository.countByRoomIdAndIsOut(roomNo,false) >= room.getQuota()){
-            //check quota
-            logger.trace(roomNo+" room is full");
-            return false;
-        } else{
-            logger.trace(roomNo+" room is not full");
-        }
-        if ( !room.getPassword().isBlank() && !password.isBlank() ){
-            logger.trace("roomPassword, 입력password 둘 다 존재");
-            //check password
-            if(!room.getPassword().equals(password)){
-                logger.trace("password 불일치"+room.getPassword()+" / "+password);
+        try {
+            //noinspection DataFlowIssue
+            if (participantsRepository.countByRoomIdAndIsOut(roomNo, false) >= room.getQuota()) {
+                //check quota
+                logger.trace(roomNo + " room is full");
                 return false;
-            } else{
-                logger.trace("password 일치");
+            } else {
+                logger.trace(roomNo + " room is not full");
             }
+            if (!room.getPassword().isBlank() && !password.isBlank()) {
+                logger.trace("roomPassword, 입력password 둘 다 존재");
+                //check password
+                if (!room.getPassword().equals(password)) {
+                    logger.trace("password 불일치" + room.getPassword() + " / " + password);
+                    return false;
+                } else {
+                    logger.trace("password 일치");
+                }
+            }
+            return true;
+        } catch (NullPointerException e){
+            logger.error("roomNo와 room 객체 매칭 실패");
+            throw e;
         }
-        return true;
     }
 
     public void changeHost(Map<String, Integer> changeInfo) {
-        /**
-         * changeInfo.get("roomNo"), changeInfo.get("currentUserNo"), changeInfo.get("nextUserNo")
-         * participants테이블의 room_id = roomNo and user_id = nextUserNo 조건에 해당하는 유저의 role을 `방장`으로 바꾼다.
-         * + 권한부여
-         * room_id = roomNo and user_id = currentUserNo에 해당하는 유저의 role을 일반으로 바꾼다.
+        /*
+          changeInfo.get("roomNo"), changeInfo.get("currentUserNo"), changeInfo.get("nextUserNo")
+          participants테이블의 room_id = roomNo and user_id = nextUserNo 조건에 해당하는 유저의 role을 `방장`으로 바꾼다.
+          + 권한부여
+          room_id = roomNo and user_id = currentUserNo에 해당하는 유저의 role을 일반으로 바꾼다.
          */
         Integer roomNo = changeInfo.get("roomNo");
         Integer currentUserNo = changeInfo.get("currentUserNo");
@@ -203,6 +214,7 @@ public class RoomService {
         ParticipantsRoleNs role_host = participantsRoleNsRepository.findByName("호스트");
 
         try{
+            //noinspection DataFlowIssue
             if(currentHost.getRole()==role_host && nextHost.getRole()!=role_host){
                 currentHost.setRole(nextHost.getRole());
                 participantsRepository.save(currentHost);
@@ -211,10 +223,27 @@ public class RoomService {
                 logger.info("호스트 role 변경 완료. partiNo "+currentUserNo+" to "+currentHost.getRole().toString()+", partiNo "+nextUserNo+" to "+nextHost.getRole().toString());
             }
         } catch (NullPointerException e) {
-            logger.error("참여자/호스트의 user_id가 매칭되지 않음.");
-            throw new RuntimeException(e);
+            logger.error("user_id와 참여자/호스트 매칭 실패");
+            throw e;
         }
 
+    }
+
+    public void assignStaff(Integer participantNo) {
+        Participants assignee = participantsRepository.findById(participantNo).orElse(null);
+
+        try{
+            //noinspection DataFlowIssue
+            if(assignee.getRole() == participantsRoleNsRepository.findByName("참여자")){
+                assignee.setRole(participantsRoleNsRepository.findByName("스태프"));
+                participantsRepository.save(assignee);
+            } else{
+                logger.error("스태프로 임명 가능한 role이 아님");
+            }
+        }catch (NullPointerException e){
+            logger.error("participantNo와 참여자 매칭 실패");
+            throw e;
+        }
     }
 }
 
