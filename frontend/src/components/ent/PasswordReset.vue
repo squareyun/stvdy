@@ -76,7 +76,7 @@ const onSubmit = async (values) => {
   background-color: transparent;
 
   color: var(--font100);
-  transition: color 0.45s;
+  transition: color 0.4s;
 
   font-size: 1.2rem;
   font-weight: 700;
@@ -86,6 +86,6 @@ const onSubmit = async (values) => {
 
 #confirm:hover {
   color: var(--hl-green);
-  transition: color 0.45s;
+  transition: color 0.4s;
 }
 </style>

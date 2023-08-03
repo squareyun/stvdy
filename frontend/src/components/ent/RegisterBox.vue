@@ -159,7 +159,7 @@ async function onSubmit(values) {
   background-color: transparent;
 
   color: var(--hl-green);
-  transition: color 0.45s;
+  transition: color 0.4s;
   font-size: 1rem;
 
   cursor: pointer;
@@ -167,7 +167,7 @@ async function onSubmit(values) {
 
 #transmit-button:hover {
   color: var(--font100);
-  transition: color 0.45s;
+  transition: color 0.4s;
 }
 
 #confirm {
@@ -179,7 +179,7 @@ async function onSubmit(values) {
   background-color: transparent;
 
   color: var(--font100);
-  transition: color 0.45s;
+  transition: color 0.4s;
   font-size: 1.2rem;
   font-weight: 700;
 
@@ -188,6 +188,6 @@ async function onSubmit(values) {
 
 #confirm:hover {
   color: var(--hl-green);
-  transition: color 0.45s;
+  transition: color 0.4s;
 }
 </style>

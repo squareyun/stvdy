@@ -127,12 +127,12 @@ input[type='checkbox'] {
 
 #login-button:hover > svg > path {
   fill: var(--hl-green);
-  transition: fill 0.45s;
+  transition: fill 0.4s;
 }
 
 path {
   fill: var(--font100);
-  transition: fill 0.45s;
+  transition: fill 0.4s;
 }
 
 #options {
@@ -144,13 +144,13 @@ path {
 
 .link {
   color: var(--font80);
-  transition: color 0.45s;
+  transition: color 0.4s;
 
   text-underline-offset: 4px;
 }
 
 .link:hover {
   color: var(--hl-green);
-  transition: color 0.45s;
+  transition: color 0.4s;
 }
 </style>
