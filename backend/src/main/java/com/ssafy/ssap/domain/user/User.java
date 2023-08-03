@@ -1,6 +1,15 @@
 package com.ssafy.ssap.domain.user;
 
+import static jakarta.persistence.FetchType.*;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+
+import org.hibernate.annotations.CreationTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,7 +19,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,17 +43,40 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(name = "email", length = 50, unique = true)
+	@NotNull
+	@Column(name = "email", length = 45, unique = true)
 	private String email;
 
+	@NotNull
 	@Column(name = "password", length = 100)
 	private String password;
 
-	@Column(name = "name", length = 50)
+	@NotNull
+	@Column(name = "name", length = 20)
 	private String name;
 
-	@Column(name = "nickname", length = 50)
+	@NotNull
+	@Column(name = "nickname", length = 45)
 	private String nickname;
+
+	@NotNull
+	@ManyToOne(fetch = LAZY)
+	@JoinColumn(name = "state")
+	@JsonIgnore
+	private UserStateNs state;
+
+	@NotNull
+	@CreationTimestamp
+	@Column(name = "regist_time", columnDefinition = "timestamp")
+	private LocalDateTime registTime;
+
+	@Builder.Default
+	@OneToMany(mappedBy = "user")
+	List<Interest> interestList = new ArrayList<>();
+
+	@CreationTimestamp
+	@Column(name = "state_time", columnDefinition = "timestamp")
+	private LocalDateTime stateTime;
 
 	@Column(name = "activated")
 	private boolean activated;

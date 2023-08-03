@@ -16,7 +16,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class Participants {
+public class Participant {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +28,7 @@ public class Participants {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "role")
-    private ParticipantsRoleNs role;
+    private ParticipantRoleNs role;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "room_id")
