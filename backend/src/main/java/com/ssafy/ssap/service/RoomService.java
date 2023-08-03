@@ -204,21 +204,20 @@ public class RoomService {
           + 권한부여
           room_id = roomNo and user_id = currentUserNo에 해당하는 유저의 role을 일반으로 바꾼다.
          */
-        Integer roomNo = changeInfo.get("roomNo");
         Integer currentUserNo = changeInfo.get("currentUserNo");
         Integer nextUserNo = changeInfo.get("nextUserNo");
-        logger.info("roomNo:"+roomNo+"/userNo:"+currentUserNo+"/participantsNo:"+nextUserNo);
+        logger.info("userNo"+currentUserNo+"/participantsNo:"+nextUserNo);
 
-        Participants currentHost = participantsRepository.findByUser_idAndRoom_id(currentUserNo, roomNo).orElse(null);
-        Participants nextHost = participantsRepository.findByUser_idAndRoom_id(nextUserNo, roomNo).orElse(null);
-        ParticipantsRoleNs role_host = participantsRoleNsRepository.findByName("호스트");
+        Participants currentHost = participantsRepository.findById(currentUserNo).orElse(null);
+        Participants nextHost = participantsRepository.findById(nextUserNo).orElse(null);
+        final ParticipantsRoleNs ROLE_HOST = participantsRoleNsRepository.findByName("호스트");
 
         try{
             //noinspection DataFlowIssue
-            if(currentHost.getRole()==role_host && nextHost.getRole()!=role_host){
+            if(currentHost.getRole()==ROLE_HOST && nextHost.getRole()!=ROLE_HOST){
                 currentHost.setRole(nextHost.getRole());
                 participantsRepository.save(currentHost);
-                nextHost.setRole(role_host);
+                nextHost.setRole(ROLE_HOST);
                 participantsRepository.save(nextHost);
                 logger.info("호스트 role 변경 완료. partiNo "+currentUserNo+" to "+currentHost.getRole().toString()+", partiNo "+nextUserNo+" to "+nextHost.getRole().toString());
             }

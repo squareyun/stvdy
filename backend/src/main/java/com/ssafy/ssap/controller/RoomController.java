@@ -64,7 +64,7 @@ public class RoomController {
 
     @PutMapping("/host")
     public void changeHost(@RequestBody Map<String, Integer> changeInfo){
-        /* roomNo, currentUserNo, nextUserNo */
+        /* currentUserNo, nextUserNo */
         logger.debug("host 변경 controller 호출");
         roomService.changeHost(changeInfo);
     }
