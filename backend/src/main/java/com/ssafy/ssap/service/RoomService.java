@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -37,13 +39,14 @@ public class RoomService {
      * 스터디룸 생성
      */
     @Transactional
-    public Integer create(RoomCreateDto roomCreateDto) {
+    public Integer create(RoomCreateDto roomCreateDto, Session session) {
         // 방 추가
         Room room = Room.builder()
                 .title(roomCreateDto.getTitle())
                 .quota(roomCreateDto.getQuota())
                 .isPrivacy(roomCreateDto.getIsPrivacy())
                 .isValid(true)
+                .sessionId(session.getSessionId())
                 .password(roomCreateDto.getPassword())
                 .endTime(LocalDateTime.now().plusHours(roomCreateDto.getEndHour()).plusMinutes(roomCreateDto.getEndMinute()))
                 .imagePath(roomCreateDto.getImagePath())
@@ -102,15 +105,21 @@ public class RoomService {
         roomRepository.setValidToZeroByRoomId(roomNo);
     }
 
-    public String makeSession() {
+    public Map<String,Object> makeSession() {
         //session 생성, connection 생성, 토큰 생성
+        Map<String, Object> resultMap = new HashMap<>();
         Session session;
         String token;
         try {
             openVidu = new OpenVidu(OPENVIDU_URL,SECRET);
             session = this.openVidu.createSession(); //오픈비두 서버에 세션 생성
+            logger.info("session created, "+session+" / "+session.getSessionId());
             token = joinSession(session.getSessionId()); //joinSession에서 connection 생성
-            return token;
+            logger.info("connection created, "+token);
+
+            resultMap.put("session",session);
+            resultMap.put("token",token);
+            return resultMap;
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
             throw new RuntimeException(e);
         }

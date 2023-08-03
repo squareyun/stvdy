@@ -3,6 +3,7 @@ package com.ssafy.ssap.controller;
 import com.ssafy.ssap.common.MessageFormat;
 import com.ssafy.ssap.dto.RoomCreateDto;
 import com.ssafy.ssap.service.RoomService;
+import io.openvidu.java.client.Session;
 import lombok.RequiredArgsConstructor;
 import jakarta.transaction.Transactional;
 
@@ -27,21 +28,18 @@ public class RoomController {
 
     @PostMapping("/add")
     public ResponseEntity<String> add(@RequestBody RoomCreateDto roomCreateDto) {
-        HttpStatus status;
-        String token = null;
         try {
-            //session, connection 생성 후 token 받아오기
-            token = roomService.makeSession();
+            //session, connection 생성
+            Map<String, Object> resultMap = roomService.makeSession();
 
             //세션 생성 성공 시 db에 입력
-            Integer roomId = roomService.create(roomCreateDto);
-            logger.debug("{} 스터디룸 생성 성공", roomId);
-            status = HttpStatus.ACCEPTED;
+            Integer roomId = roomService.create(roomCreateDto, (Session) resultMap.get("session"));
+            logger.info("{} 스터디룸 생성 성공", roomId);
+            return new ResponseEntity<>((String) resultMap.get("token"), HttpStatus.ACCEPTED); //testedit
         } catch (Exception e) {
             logger.error("스터디룸 생성 실패: ", e);
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(token, status); //testedit
     }
 
     @DeleteMapping("/{roomno}")
@@ -128,7 +126,7 @@ public class RoomController {
 
     @Transactional
     @PostMapping("/{roomno}")
-    public String join(@PathVariable Integer roomNo, @RequestBody Map<String,String> map) throws Exception {
+    public String join(@PathVariable Integer roomNo, @RequestBody Map<String,String> map) {
         /**
          * 1. 해당하는 룸넘버가 입장가능한지 조회 (비밀번호, 정원(+강퇴당했었는지?))
          * 2. 룸넘버로 세션아이디 쿼리조회

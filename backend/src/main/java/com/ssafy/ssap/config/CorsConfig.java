@@ -29,6 +29,15 @@ public class CorsConfig {
 		// Register CORS configuration for "/mypage/**" pattern
 		source.registerCorsConfiguration("/mypage/**", myPageConfig);
 
+		//스터디룸 관련 CORS설정
+		CorsConfiguration roomsConfig = new CorsConfiguration();
+		roomsConfig.setAllowCredentials(true);
+		roomsConfig.addAllowedOriginPattern("*");
+		roomsConfig.addAllowedHeader("*");
+		roomsConfig.addAllowedMethod("*");
+
+		source.registerCorsConfiguration("/rooms/**",roomsConfig);
+
 		return new CorsFilter(source);
 	}
 }
