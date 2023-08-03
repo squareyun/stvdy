@@ -4,9 +4,9 @@
   import { OpenVidu } from "openvidu-browser";
   import UserVideo from "@/components/webrtc/UserVideo.vue";
   import { useRouter } from "vue-router"
-  import { webRtcStore } from "@/stores"
+  import { usewebRtcStore } from "@/stores"
 
-  const store = webRtcStore()
+  const store = usewebRtcStore()
   const router = useRouter()
 
   ///////////////////////////////////////////
@@ -28,7 +28,8 @@
 
   axios.defaults.headers.post["Content-Type"] = "application/json;charset=utf-8";
   // 추후 배포와 관련해서 이부분에 대해서 설정을 할 필요가 있게 될것.
-  const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000/';
+  // const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000/';
+  const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080/';
   // const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://54.180.9.43:8080/';
 
   // OpenVidu objects
@@ -68,10 +69,21 @@
   ///////////////////
 
 
+  // onBeforeMount(() => {
+  //   console.log('!!!!!!!!!!!!!!!!',mySessionId.value)
+  //   window.addEventListener("beforeunload",leaveSession);
+  //   joinSession()
+  // })
   onBeforeMount(() => {
-    console.log('!!!!!!!!!!!!!!!!',mySessionId.value)
-    window.addEventListener("beforeunload",leaveSession);
-    joinSession()
+    window.addEventListener("beforeunload",leaveSession)
+    // mySessionId가 없으면 잘못된 접근이므로 
+    if(mySessionId.value !== null && mySessionId.value !== undefined && mySessionId.value !== 'null'){
+      joinSession()
+    }
+    else{
+      alert('잘못된 접근으로 방에서 나갑니다.')
+      leaveSession()
+    }
   })
 
   //// 페이지 벗어나면 
@@ -131,7 +143,8 @@
             // publishVideo: true, // Whether you want to start publishing with your video enabled or not
             publishAudio: !muted.value, // Whether you want to start publishing with your audio unmuted or not
             publishVideo: !camerOff.value, // Whether you want to start publishing with your video enabled or not
-            resolution: "640x480", // The resolution of your video
+            // resolution: "640x480", // The resolution of your video
+            resolution: "160x120", // The resolution of your video
             frameRate: 30, // The frame rate of your video
             insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
             mirror: false, // Whether to mirror your local video or not
@@ -184,29 +197,59 @@
     mainStreamManager.value = stream
   }
 
+  //// 방 참여에 있어 방을 생성해주고, 방에 참석할 수 있게 해주는 것.
   /**
   * --------------------------------------------
   * GETTING A TOKEN FROM YOUR APPLICATION SERVER
   * --------------------------------------------
   */
+   //// Edited code with Beom's code
   async function getToken(mySessionId) {
-    const sessionId = await createSession(mySessionId);
-    return await createToken(sessionId);
+    // const userNo = store.userNo
+    const userNo = Math.floor(0,500) // 임시로 랜덤 값으로 보내는 중
+    const endHour = store.endHour
+    const endMinute = store.endMinute
+    const quota = store.quota
+    const isPrivacy = store.isPrivacy
+    const password = store.password
+    const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/add', {userNo: userNo, title: mySessionId, endHour: endHour, endMinute: endMinute, quota: quota, isPrivacy: isPrivacy, password: password, iamgePath:"imgURL", rule:"rule Text which is veruy long"}, {
+    headers: { 'Content-Type': 'application/json', },
+    });
+    console.log('이것이 리스폰스데이터',response.data)
+    return response.data;
+  }
+  async function joinRoom(mySessionId) {
+    // const userNo = store.userNo
+    const roomNo = Math.floor(0,500)  // roomNo -> 방 id 를 의미
+    const userNo = Math.floor(0,500) // 임시로 랜덤 값으로 보내는 중
+    const password = store.password
+    const response = await axios.post(APPLICATION_SERVER_URL + roomNo, {userNo: userNo, title: mySessionId, password: password}, {
+    headers: { 'Content-Type': 'application/json', },
+    });
+    console.log('이것이 리스폰스데이터',response.data)
+    return response.data;
   }
 
-  async function createSession(sessionId) {
-    const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions', { customSessionId: sessionId, userNo: 53, endHour: 1, endMinute: 30, quota: 16, isPrivacy: false}, {
-      headers: { 'Content-Type': 'application/json', },
-    });
-    return response.data; // The sessionId
-  }
+  // async function getToken(mySessionId) {
+  //   const sessionId = await createSession(mySessionId);
+  //   return await createToken(sessionId);
+  // }
 
-  async function createToken(sessionId) {
-    const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions/' + sessionId + '/connections', {}, {
-      headers: { 'Content-Type': 'application/json', },
-    });
-    return response.data; // The token
-  }
+  // async function createSession(sessionId) {
+  //   const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions', { customSessionId: sessionId, userNo: 53, endHour: 1, endMinute: 30, quota: 16, isPrivacy: false}, {
+  //     headers: { 'Content-Type': 'application/json', },
+  //   });
+  //   console.log('이건 createSession',response.data)
+  //   return response.data; // The sessionId
+  // }
+
+  // async function createToken(sessionId) {
+  //   const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions/' + sessionId + '/connections', {}, {
+  //     headers: { 'Content-Type': 'application/json', },
+  //   });
+  //   console.log('이건 createToken',response.data)
+  //   return response.data; // The token
+  // }
 
   // 채팅창 구현을 위한 함수 제작
   ///////////////////////////
@@ -223,7 +266,10 @@
     }
   }
 
-
+  ///////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////
+  ///////기타 기능
   // 캠, 오디오 등 기기와 관련된 함수
   // 카메라와 오디오를 가져옴.
   async function getMedia() {
@@ -379,21 +425,23 @@
   <!-- <div id="session" v-if="session" style="color: white;"> -->
   <div id="session" style="color: white;">
     <div>
+      <div id="session-header">
+        <h1 id="session-title">{{ mySessionId }}</h1>
+        <input type="button" id="buttonLeaveSession" @click="leaveSession" value="Leave session" />
+      </div>
       <!-- 화상이 보이는 곳 -->
       <div id="camScreen"> 
-        <div id="session-header">
-          <h1 id="session-title">{{ mySessionId }}</h1>
-          <input type="button" id="buttonLeaveSession" @click="leaveSession" value="Leave session" />
+        
+        <!-- 모든 캠 -->
+        <div id="videoContainer">
+          <!-- <UserVideo :stream-manager="publisherComputed" @click.native="updateMainVideoStreamManager(publisher)" :style="{width: '10%', height: '5%'}"/> -->
+          <UserVideo :stream-manager="publisherComputed" @click.native="updateMainVideoStreamManager(publisher)" />
+          <UserVideo v-for="sub in subscribersComputed" :key="sub.stream.connection.connectionId" :stream-manager="sub"
+            @click.native="updateMainVideoStreamManager(sub)" />
         </div>
         <!-- 선택 캠 -->
         <div id="mainVideo">
           <UserVideo :stream-manager="mainStreamManagerComputed" />
-        </div>
-        <!-- 모든 캠 -->
-        <div id="videoContainer">
-          <UserVideo :stream-manager="publisherComputed" @click.native="updateMainVideoStreamManager(publisher)" />
-          <UserVideo v-for="sub in subscribersComputed" :key="sub.stream.connection.connectionId" :stream-manager="sub"
-            @click.native="updateMainVideoStreamManager(sub)" />
         </div>
       </div>
       <!-- 캠 및 오디오 관련 -->
@@ -465,26 +513,22 @@
   }
 
   #camScreen {
-    width: 60%;
+    /* display: flex;
+    flex-wrap: wrap; */
     height: 95%;
-    
   }
-
-  #functionTab {
-    width: 40%;
-    height: 100%;
-    
+  #videoContainer{
+    display: flex;
+    flex-wrap: wrap;
   }
 
   #deviceDiv {
     width: 100%;
     height: 5%;
-    
   }
   #functionUl {
     cursor: pointer;
     display: inline-block;
-    padding: 10px;
   }
   li.active {
     font-weight: bold;
