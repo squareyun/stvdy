@@ -62,13 +62,9 @@ public class RoomController {
 
     @PutMapping("/host")
     public void changeHost(@RequestBody Map<String, Integer> changeInfo){
-        /**
-         * changeInfo.get("roomNo"), changeInfo.get("userNo"), changeInfo.get("participantsNo")
-         * participants테이블의 room_id = roomNo and user_id = participantsNo 조건에 해당하는 유저의 role을 `방장`으로 바꾼다.
-         * + 권한부여
-         * room_id = roomNo and user_id = userNo에 해당하는 유저의 role을 일반으로 바꾼다.
-         */
-        System.out.println(changeInfo.toString());
+        /* roomNo, currentUserNo, nextUserNo */
+        logger.debug("host 변경 controller 호출");
+        roomService.changeHost(changeInfo);
     }
 
     @PutMapping("/role")
@@ -125,7 +121,7 @@ public class RoomController {
     }
 
     @Transactional
-    @PostMapping("/{roomno}")
+    @PostMapping("/{roomNo}")
     public String join(@PathVariable Integer roomNo, @RequestBody Map<String,String> map) {
         /**
          * 1. 해당하는 룸넘버가 입장가능한지 조회 (비밀번호, 정원(+강퇴당했었는지?))
@@ -144,7 +140,7 @@ public class RoomController {
             token = roomService.joinSession(sessionId); //3번 단계
 
             //DB처리
-            roomService.addParticipant(roomNo,"참여자"); //4번
+            roomService.addParticipant(roomNo,"참여자", userId); //4번
             roomService.addRoomLog(roomNo,userId); //5번
         }
 

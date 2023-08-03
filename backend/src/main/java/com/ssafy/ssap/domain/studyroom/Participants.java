@@ -1,10 +1,8 @@
 package com.ssafy.ssap.domain.studyroom;
 
+import com.ssafy.ssap.domain.user.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -26,6 +24,7 @@ public class Participants {
     @ColumnDefault("0")
     private Boolean isOut;
 
+    @Setter
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "role")
     private ParticipantsRoleNs role;
@@ -34,4 +33,9 @@ public class Participants {
     @JoinColumn(name = "room_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Room room;
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "user_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private User user;
 }

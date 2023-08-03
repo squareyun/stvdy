@@ -54,25 +54,26 @@ public class RoomService {
                 .build();
         roomRepository.save(room);
 
-        addParticipant(room, "호스트");
+        addParticipant(room, "호스트", roomCreateDto.getUserNo());
         addRoomLog(room,roomCreateDto.getUserNo());
 
         return room.getId();
     }
 
-    public void addParticipant(Room room, String role){
+    public void addParticipant(Room room, String role, Integer userNo){
         // 참여자 추가 (방장)
         Participants participants = Participants.builder()
                 .isOut(false)
                 .role(participantsRoleNsRepository.findByName(role))
                 .room(room)
+                .user(userRepository.findById((long)userNo).orElse(null))
                 .build();
         participantsRepository.save(participants);
     }
 
-    public void addParticipant(Integer roomNo, String role) {
+    public void addParticipant(Integer roomNo, String role, Integer userNo) {
         Room room = roomRepository.findById(roomNo).orElse(null);
-        addParticipant(room,role);
+        addParticipant(room, role, userNo);
     }
 
     public void addRoomLog(Room room, Integer userId){
@@ -185,5 +186,35 @@ public class RoomService {
         return true;
     }
 
+    public void changeHost(Map<String, Integer> changeInfo) {
+        /**
+         * changeInfo.get("roomNo"), changeInfo.get("currentUserNo"), changeInfo.get("nextUserNo")
+         * participants테이블의 room_id = roomNo and user_id = nextUserNo 조건에 해당하는 유저의 role을 `방장`으로 바꾼다.
+         * + 권한부여
+         * room_id = roomNo and user_id = currentUserNo에 해당하는 유저의 role을 일반으로 바꾼다.
+         */
+        Integer roomNo = changeInfo.get("roomNo");
+        Integer currentUserNo = changeInfo.get("currentUserNo");
+        Integer nextUserNo = changeInfo.get("nextUserNo");
+        logger.info("roomNo:"+roomNo+"/userNo:"+currentUserNo+"/participantsNo:"+nextUserNo);
+
+        Participants currentHost = participantsRepository.findByUser_idAndRoom_id(currentUserNo, roomNo).orElse(null);
+        Participants nextHost = participantsRepository.findByUser_idAndRoom_id(nextUserNo, roomNo).orElse(null);
+        ParticipantsRoleNs role_host = participantsRoleNsRepository.findByName("호스트");
+
+        try{
+            if(currentHost.getRole()==role_host && nextHost.getRole()!=role_host){
+                currentHost.setRole(nextHost.getRole());
+                participantsRepository.save(currentHost);
+                nextHost.setRole(role_host);
+                participantsRepository.save(nextHost);
+                logger.info("호스트 role 변경 완료. partiNo "+currentUserNo+" to "+currentHost.getRole().toString()+", partiNo "+nextUserNo+" to "+nextHost.getRole().toString());
+            }
+        } catch (NullPointerException e) {
+            logger.error("참여자/호스트의 user_id가 매칭되지 않음.");
+            throw new RuntimeException(e);
+        }
+
+    }
 }
 
