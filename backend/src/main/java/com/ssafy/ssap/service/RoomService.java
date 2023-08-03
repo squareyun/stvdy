@@ -1,7 +1,6 @@
 package com.ssafy.ssap.service;
 
 import com.ssafy.ssap.domain.studyroom.Participants;
-import com.ssafy.ssap.domain.studyroom.ParticipantsRoleNs;
 import com.ssafy.ssap.domain.studyroom.Room;
 import com.ssafy.ssap.domain.studyroom.RoomLog;
 import com.ssafy.ssap.domain.user.User;
@@ -52,12 +51,12 @@ public class RoomService {
         roomRepository.save(room);
 
         addParticipant(room, "호스트");
-        addRoomLog(room,roomCreateDto.getUserNo());
+        addRoomLog(room, roomCreateDto.getUserNo());
 
         return room.getId();
     }
 
-    public void addParticipant(Room room, String role){
+    public void addParticipant(Room room, String role) {
         // 참여자 추가 (방장)
         Participants participants = Participants.builder()
                 .isOut(false)
@@ -69,11 +68,11 @@ public class RoomService {
 
     public void addParticipant(Integer roomNo, String role) {
         Room room = roomRepository.findById(roomNo).orElse(null);
-        addParticipant(room,role);
+        addParticipant(room, role);
     }
 
-    public void addRoomLog(Room room, Integer userId){
-        User user = userRepository.findById((long)userId).orElse(null);
+    public void addRoomLog(Room room, Integer userId) {
+        User user = userRepository.findById(userId).orElse(null);
         // 접속 기록 추가
         RoomLog roomLog = RoomLog.builder()
                 .roomTitle(room.getTitle())
@@ -86,8 +85,8 @@ public class RoomService {
 
     public void addRoomLog(Integer roomNo, Integer userId) {
         Room room = roomRepository.findById(roomNo).orElse(null);
-        if(room==null) logger.error(roomNo+"에 해당하는 방이 DB에 존재하지 않음");
-        addRoomLog(room,userId);
+        if (room == null) logger.error(roomNo + "에 해당하는 방이 DB에 존재하지 않음");
+        addRoomLog(room, userId);
     }
 
     /**
@@ -107,7 +106,7 @@ public class RoomService {
         Session session;
         String token;
         try {
-            openVidu = new OpenVidu(OPENVIDU_URL,SECRET);
+            openVidu = new OpenVidu(OPENVIDU_URL, SECRET);
             session = this.openVidu.createSession(); //오픈비두 서버에 세션 생성
             token = joinSession(session.getSessionId()); //joinSession에서 connection 생성
             return token;
@@ -118,13 +117,13 @@ public class RoomService {
 
     public String getSessionIdByRoomNo(Integer roomNo) {
         Room room = roomRepository.findById(roomNo).orElse(null);
-        if(room==null) logger.error(roomNo+"에 해당하는 방이 DB에 존재하지 않음");
+        if (room == null) logger.error(roomNo + "에 해당하는 방이 DB에 존재하지 않음");
         return room.getSessionId();
     }
 
     public String joinSession(String sessionId) {
         //이미 열려있는 세션에 참가하고 토큰 반환
-        String token=null;
+        String token = null;
 
         //입장 요청한 session이 존재하는지 확인 (무조건 존재해야함!)
         Session session = openVidu.getActiveSession(sessionId);
@@ -152,24 +151,24 @@ public class RoomService {
         //방 입장이 가능한지 확인하는 메소드
 
         Room room = roomRepository.findById(roomNo).orElse(null);
-        if(room==null) {
+        if (room == null) {
             throw new RuntimeException("ERROR: can't find room matching roomNo");
         }
 
-        if(participantsRepository.countByRoomIdAndIsOut(roomNo,false) >= room.getQuota()){
+        if (participantsRepository.countByRoomIdAndIsOut(roomNo, false) >= room.getQuota()) {
             //check quota
-            logger.trace(roomNo+" room is full");
+            logger.trace(roomNo + " room is full");
             return false;
-        } else{
-            logger.trace(roomNo+" room is not full");
+        } else {
+            logger.trace(roomNo + " room is not full");
         }
-        if ( !room.getPassword().isBlank() && !password.isBlank() ){
+        if (!room.getPassword().isBlank() && !password.isBlank()) {
             logger.trace("roomPassword, 입력password 둘 다 존재");
             //check password
-            if(!room.getPassword().equals(password)){
-                logger.trace("password 불일치"+room.getPassword()+" / "+password);
+            if (!room.getPassword().equals(password)) {
+                logger.trace("password 불일치" + room.getPassword() + " / " + password);
                 return false;
-            } else{
+            } else {
                 logger.trace("password 일치");
             }
         }

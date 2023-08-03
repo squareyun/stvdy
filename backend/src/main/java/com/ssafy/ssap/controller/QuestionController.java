@@ -54,8 +54,8 @@ public class QuestionController {
             resultMap.put("message", MessageFormat.SUCCESS);
             status = HttpStatus.ACCEPTED;
         } catch (Exception e) {
-            logger.error("질문 수정 실패: {}", e.getMessage());
-            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getClass().getSimpleName());
+            logger.error("질문 수정 실패: ", e);
+            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage());
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
