@@ -1,24 +1,17 @@
 <script setup>
-import { useAuthStore } from '@/stores'
-import { Form, Field } from 'vee-validate'
-import * as Yup from 'yup'
-import router from '@/router'
-import { storeToRefs } from 'pinia'
-import { useUsersStore, useAlertStore } from '@/stores'
-import { onMounted, ref } from 'vue'
+import { onMounted, computed } from 'vue'
+import { useUsersStore } from '@/stores'
 import Deactivate from '@/components/profile/Deactivate.vue'
 import { RouterLink, RouterView } from 'vue-router'
 
 const usersStore = useUsersStore()
 const localUser = usersStore.user
-
-// const localUser = ref(JSON.parse(localStorage.getItem('user')));
-// const userID = JSON.parse(localStorage.getItem('user')).id
 </script>
 
 <template>
   <div>
     <div style="color: white">
+      {{ localUser }}
       프로필
       <div>
         <img
@@ -27,11 +20,11 @@ const localUser = usersStore.user
           alt="" />
         <div>
           <span>
-            <img
+            <!-- <img
               id="profile-img"
               src="/LoginBanner.png"
               alt=""
-              width="100" />
+              width="100" /> -->
           </span>
           <span v-if="localUser">
             {{ localUser.username }}#{{ localUser.id }}
@@ -86,8 +79,8 @@ const localUser = usersStore.user
       <router-link to="/changeusername">별명 변경</router-link>
       <router-link to="/changepwd">비밀번호 변경</router-link>
     </div>
-    <RouterView />
-    <Deactivate />
+    <!-- <RouterView />
+    <Deactivate /> -->
   </div>
 </template>
 

@@ -4,8 +4,6 @@ import { useAlertStore, useUsersStore } from '@/stores'
 import { loginAuth } from '@/api/auth'
 import router from '@/router'
 
-const baseUrl = `${import.meta.env.VITE_API_URL}/users`
-
 export const useAuthStore = defineStore({
   id: 'auth',
   state: () => ({
@@ -30,12 +28,12 @@ export const useAuthStore = defineStore({
         user,
         async (data) => {
           const token = data.data.jwt.accessToken
-
           if (values.keeplog) localStorage.setItem('access-token', token)
           else sessionStorage.setItem('access-token', token)
 
           const usersStore = useUsersStore()
           await usersStore.getInfo(token)
+          await usersStore.setInfo(data.data.user)
 
           // sessionStorage.setItem('refresh-token', refreshToken)
         },

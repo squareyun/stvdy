@@ -6,6 +6,13 @@ import SideBar from '@/components/SideBar.vue'
   <main>
     <!-- <TheWelcome /> -->
     <SideBar />
-    <router-view />
+    <router-view id="contents" />
   </main>
 </template>
+
+<style>
+main {
+  position: relative;
+  margin: 0 auto;
+}
+</style>
