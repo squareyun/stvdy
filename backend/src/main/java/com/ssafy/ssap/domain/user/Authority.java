@@ -19,6 +19,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Authority {
 	@Id
-	@Column(name = "authority_name", length = 50)
+	@Column(name = "authority_name", length = 45)
 	private String authorityName;
 }

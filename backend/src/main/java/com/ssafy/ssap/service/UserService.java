@@ -1,5 +1,6 @@
 package com.ssafy.ssap.service;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -9,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.ssap.domain.user.Authority;
 import com.ssafy.ssap.domain.user.User;
+import com.ssafy.ssap.domain.user.UserStateNs;
 import com.ssafy.ssap.dto.user.LoginResponseDto;
 import com.ssafy.ssap.dto.user.UserDto;
 import com.ssafy.ssap.exception.DuplicateMemberException;
@@ -24,6 +26,9 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 
+	/**
+	 * 회원가입
+	 */
 	@Transactional
 	public UserDto join(UserDto userDto) {
 		if (userRepository.findOneWithAuthoritiesByEmail(userDto.getEmail()).orElse(null) != null) {
@@ -33,12 +38,16 @@ public class UserService {
 		Authority authority = Authority.builder()
 			.authorityName("ROLE_USER")
 			.build();
+		userDto.setState("사용자");
 
 		User user = User.builder()
 			.email(userDto.getEmail())
 			.password(passwordEncoder.encode(userDto.getPassword()))
 			.name(userDto.getName())
 			.nickname(userDto.getNickname())
+			.state(new UserStateNs(userDto.getState()))
+			.registTime(LocalDateTime.now())
+			.stateTime(LocalDateTime.now())
 			.authorities(Collections.singleton(authority))
 			.activated(true)
 			.build();
