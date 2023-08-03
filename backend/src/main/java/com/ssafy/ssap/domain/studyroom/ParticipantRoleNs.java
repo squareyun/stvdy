@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ParticipantsRoleNs {
+public class ParticipantRoleNs {
 
     @Id
     @Column(length = 10)
