@@ -1,7 +1,6 @@
 package com.ssafy.ssap.service;
 
-import com.ssafy.ssap.domain.studyroom.Participants;
-import com.ssafy.ssap.domain.studyroom.ParticipantsRoleNs;
+import com.ssafy.ssap.domain.studyroom.Participant;
 import com.ssafy.ssap.domain.studyroom.Room;
 import com.ssafy.ssap.domain.studyroom.RoomLog;
 import com.ssafy.ssap.domain.user.User;
@@ -21,8 +20,8 @@ import java.time.LocalDateTime;
 public class RoomService {
     private final Logger logger = LoggerFactory.getLogger(RoomService.class);
     private final RoomRepository roomRepository;
-    private final ParticipantsRepository participantsRepository;
-    private final ParticipantsRoleNsRepository participantsRoleNsRepository;
+    private final ParticipantRepository participantRepository;
+    private final ParticipantRoleNsRepository participantRoleNsRepository;
     private final RoomLogRepository roomLogRepository;
     private final UserRepository userRepository;
 
@@ -59,12 +58,12 @@ public class RoomService {
 
     public void addParticipant(Room room, String role){
         // 참여자 추가 (방장)
-        Participants participants = Participants.builder()
+        Participant participant = Participant.builder()
                 .isOut(false)
-                .role(participantsRoleNsRepository.findByName(role))
+                .role(participantRoleNsRepository.findByName(role))
                 .room(room)
                 .build();
-        participantsRepository.save(participants);
+        participantRepository.save(participant);
     }
 
     public void addParticipant(Integer roomNo, String role) {
@@ -97,7 +96,7 @@ public class RoomService {
     public void close(Integer roomNo) {
         // 방에 접속한 사람들의 room_log 데이터 업데이트
         roomLogRepository.updateSpendHourByAllRoomId(roomNo);
-        participantsRepository.deleteByRoomId(roomNo);
+        participantRepository.deleteByRoomId(roomNo);
 
         roomRepository.setValidToZeroByRoomId(roomNo);
     }
@@ -156,7 +155,7 @@ public class RoomService {
             throw new RuntimeException("ERROR: can't find room matching roomNo");
         }
 
-        if(participantsRepository.countByRoomIdAndIsOut(roomNo,false) >= room.getQuota()){
+        if(participantRepository.countByRoomIdAndIsOut(roomNo,false) >= room.getQuota()){
             //check quota
             logger.trace(roomNo+" room is full");
             return false;
