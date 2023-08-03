@@ -36,8 +36,8 @@ public class QuestionController {
             resultMap.put("message", MessageFormat.SUCCESS);
             status = HttpStatus.ACCEPTED;
         } catch (Exception e) {
-            logger.error("질문 생성 실패: ", e);
-            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage());
+            logger.error("질문 생성 실패: {}", e.getMessage());
+            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getClass().getSimpleName());
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
@@ -54,8 +54,8 @@ public class QuestionController {
             resultMap.put("message", MessageFormat.SUCCESS);
             status = HttpStatus.ACCEPTED;
         } catch (Exception e) {
-            logger.error("질문 수정 실패: ", e);
-            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage());
+            logger.error("질문 수정 실패: {}", e.getMessage());
+            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getClass().getSimpleName());
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
@@ -72,8 +72,8 @@ public class QuestionController {
             resultMap.put("message", MessageFormat.SUCCESS);
             status = HttpStatus.ACCEPTED;
         } catch (Exception e) {
-            logger.error("질문 삭제 실패: ", e);
-            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage());
+            logger.error("질문 삭제 실패: {}", e.getMessage());
+            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getClass().getSimpleName());
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
@@ -97,8 +97,8 @@ public class QuestionController {
             }
             status = HttpStatus.ACCEPTED;
         } catch (Exception e) {
-            logger.error("질문 조회 실패: ", e);
-            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage());
+            logger.error("질문 조회 실패: {}", e.getMessage());
+            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getClass().getSimpleName());
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
@@ -116,8 +116,8 @@ public class QuestionController {
             resultMap.put("message", MessageFormat.SUCCESS);
             status = HttpStatus.ACCEPTED;
         } catch (Exception e) {
-            logger.error("질문 검색 실패: ", e);
-            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage());
+            logger.error("질문 검색 실패: {}", e.getMessage());
+            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getClass().getSimpleName());
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
