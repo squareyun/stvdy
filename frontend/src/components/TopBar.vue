@@ -144,16 +144,26 @@ onMounted(() => {
   border: 1px solid var(--font30);
 }
 
+#search-input:focus {
+  outline: none !important;
+}
+
 #search-btn {
   position: fixed;
-  top: 11px;
+  top: 14px;
   right: 114px;
-  background-color: var(--hl-purple);
+  background-color: transparent;
 
   border: none;
-  border-radius: 17px;
-  height: 33px;
-  width: 70px;
+  border-left: 1px solid #b7b7b3;
+  height: 27px;
+  width: 50px;
+
+  cursor: pointer;
+}
+
+#search-btn > svg > path {
+  fill: var(--font50);
 }
 
 #alarms-btn {
@@ -165,7 +175,9 @@ onMounted(() => {
   width: 82px;
   height: 41px;
 
-  background-color: rgb(133, 133, 133);
+  background-image: url('/testProfile.png');
+  background-size: cover;
+  background-position: center;
   cursor: pointer;
 }
 
