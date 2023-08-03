@@ -97,7 +97,7 @@ public class QuestionController {
             }
             status = HttpStatus.ACCEPTED;
         } catch (Exception e) {
-            logger.error("질문 조회 실패: {}", e.getMessage());
+            logger.error("질문 단건 조회 실패", e);
             resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getClass().getSimpleName());
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
@@ -116,7 +116,7 @@ public class QuestionController {
             resultMap.put("message", MessageFormat.SUCCESS);
             status = HttpStatus.ACCEPTED;
         } catch (Exception e) {
-            logger.error("질문 검색 실패: {}", e.getMessage());
+            logger.error("질문 검색 실패", e);
             resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getClass().getSimpleName());
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }

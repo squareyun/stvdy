@@ -1,5 +1,6 @@
 package com.ssafy.ssap.domain.qna;
 
+import com.ssafy.ssap.domain.user.User;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -38,4 +39,9 @@ public class Likes {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @Nullable
     private Answer answer;
+
+    @NotNull
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 }
