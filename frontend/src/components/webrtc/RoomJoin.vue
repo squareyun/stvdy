@@ -49,7 +49,9 @@
   }
   const myUserName = ref(store.myUserName)
   
-  
+  // 방에서 최대 인원수
+  const quota = ref(store.quota)
+
   /////////////////////채팅창을 위한 부분임.
   const inputMessage = ref("")
   const messages = ref([])
@@ -438,6 +440,8 @@
           <UserVideo :stream-manager="publisherComputed" @click.native="updateMainVideoStreamManager(publisher)" />
           <UserVideo v-for="sub in subscribersComputed" :key="sub.stream.connection.connectionId" :stream-manager="sub"
             @click.native="updateMainVideoStreamManager(sub)" />
+          <!-- 이거는 빈 자리 검정박스 --><!--  --><!--  -->
+          <div v-for="i in ( quota  - subscribersComputed.length)" :key="i" class="blackbox"></div>
         </div>
         <!-- 선택 캠 -->
         <div id="mainVideo">
@@ -461,47 +465,48 @@
       </div>
     </div>
   </div>
-    <!-- 화상회 부가기능이 보이는 곳 -->
-    <div id="functionTab" style="color: white;">
-      <div id="tabs">
-        <ul id="functionUl" style="display: flex;">
-          <li v-for="(tab, index) in funcTabs" :key="index" id="tab{{index}}" :class="{ 'active': activeFuncTab === index }" @click="changeTab(index)">
-            {{ tab }}
-          </li>
-        </ul>
-        <div v-if="activeFuncTab === 0">참여멤버</div>
-        <div v-if="activeFuncTab === 1">메시지</div>
-        <div v-if="activeFuncTab === 2">그라운드 룰</div>
-        <div v-if="activeFuncTab === 3">공유</div>
-      </div>
-      <!-- 참여 멤버 -->
-      <div v-if="activeFuncTab === 0">
-        <ul>
-          <li>{{ myUserName }}</li>
-          <li v-for="(sub, index) in subscribersComputed" :key="index">
-            {{ JSON.parse(sub.stream.connection.data).clientData }}
-          </li>
-        </ul>
-      </div>
-      <!-- 나중에 <chat-winow />로 넘길수 있도록 해보자. -->
-      <div id="chatContainer" v-if="activeFuncTab === 1">
-        <div id="chatWindow">
-          <ul id="chatHistory">
-            <li v-for="(message, index) in messages" :key="index">
-              <strong>{{ message.username }}:</strong> {{ message.message }}
-            </li>
-          </ul>
-        </div>
-        <form id="chat-write">
-          <input type="text" placeholder="전달할 내용을 입력하세요." v-model="inputMessage">
-          <button @click="sendMessage">전송</button>
-        </form>
-      </div>
-      <!-- 그라운드 룰 -->
-      <div></div>
-      <!-- 공유 -->
-      <div></div>
+  <!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  -->
+  <!-- 화상회 부가기능이 보이는 곳 -->
+  <div id="functionTab" style="color: white;">
+    <div id="tabs">
+      <ul id="functionUl" style="display: flex;">
+        <li v-for="(tab, index) in funcTabs" :key="index" id="tab{{index}}" :class="{ 'active': activeFuncTab === index }" @click="changeTab(index)">
+          {{ tab }}
+        </li>
+      </ul>
+      <div v-if="activeFuncTab === 0">참여멤버</div>
+      <div v-if="activeFuncTab === 1">메시지</div>
+      <div v-if="activeFuncTab === 2">그라운드 룰</div>
+      <div v-if="activeFuncTab === 3">공유</div>
     </div>
+    <!-- 참여 멤버 -->
+    <div v-if="activeFuncTab === 0">
+      <ul>
+        <li>{{ myUserName }}</li>
+        <li v-for="(sub, index) in subscribersComputed" :key="index">
+          {{ JSON.parse(sub.stream.connection.data).clientData }}
+        </li>
+      </ul>
+    </div>
+    <!-- 나중에 <chat-winow />로 넘길수 있도록 해보자. -->
+    <div id="chatContainer" v-if="activeFuncTab === 1">
+      <div id="chatWindow">
+        <ul id="chatHistory">
+          <li v-for="(message, index) in messages" :key="index">
+            <strong>{{ message.username }}:</strong> {{ message.message }}
+          </li>
+        </ul>
+      </div>
+      <form id="chat-write">
+        <input type="text" placeholder="전달할 내용을 입력하세요." v-model="inputMessage">
+        <button @click="sendMessage">전송</button>
+      </form>
+    </div>
+    <!-- 그라운드 룰 -->
+    <div></div>
+    <!-- 공유 -->
+    <div></div>
+  </div>
     
 </template>
 
