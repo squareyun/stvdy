@@ -3,11 +3,13 @@ package com.ssafy.ssap.service;
 import com.ssafy.ssap.common.MessageFormat;
 import com.ssafy.ssap.domain.qna.Question;
 import com.ssafy.ssap.domain.qna.QuestionCategoryNs;
+import com.ssafy.ssap.domain.user.User;
 import com.ssafy.ssap.dto.QuestionCreateDto;
 import com.ssafy.ssap.dto.QuestionDetailResponseDto;
 import com.ssafy.ssap.dto.QuestionListResponseDto;
 import com.ssafy.ssap.repository.QueryRepository;
 import com.ssafy.ssap.repository.QuestionRepository;
+import com.ssafy.ssap.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,18 +24,22 @@ public class QuestionService {
 
     private final QuestionRepository questionRepository;
     private final QueryRepository queryRepository;
+    private final UserRepository userRepository;
 
     /**
      * 질문 생성
      */
     @Transactional
     public Integer create(QuestionCreateDto questionCreateDto) throws Exception {
+        User user = userRepository.getReferenceById(questionCreateDto.getUserNo());
+
         Question question = Question.builder()
                 .title(questionCreateDto.getTitle())
                 .detail(questionCreateDto.getContent())
                 .registTime(LocalDateTime.now())
                 .category(new QuestionCategoryNs(questionCreateDto.getCategory()))
                 .hit(0)
+                .user(user)
                 .build();
 
         questionRepository.save(question);
@@ -71,5 +77,9 @@ public class QuestionService {
 
     public QuestionDetailResponseDto detail(Integer questionNo) {
         return queryRepository.findQuestionById(questionNo);
+    }
+
+    public Boolean getIsLike(Integer userNo, Integer questionNo) {
+        return queryRepository.findLikesIsLikedQuestion(userNo, questionNo);
     }
 }
