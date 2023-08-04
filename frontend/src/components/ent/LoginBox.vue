@@ -125,13 +125,13 @@ input[type='checkbox'] {
   cursor: pointer;
 }
 
-#login-button:hover > svg > path {
-  fill: var(--hl-green);
+#login-button > svg > path {
+  fill: var(--font100);
   transition: fill 0.4s;
 }
 
-path {
-  fill: var(--font100);
+#login-button:hover > svg > path {
+  fill: var(--hl-green);
   transition: fill 0.4s;
 }
 

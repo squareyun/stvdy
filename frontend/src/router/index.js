@@ -12,6 +12,11 @@ const router = createRouter({
       component: () => import('../views/HomeView.vue'),
       children: [
         {
+          path: '',
+          name: 'main',
+          component: () => import('../components/ent/LoginBox.vue'),
+        },
+        {
           path: '/mypage',
           name: 'mypage',
           component: () => import('../components/profile/MyPage.vue'),
