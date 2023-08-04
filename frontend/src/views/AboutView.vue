@@ -34,7 +34,7 @@ div {
   color: var(--font100);
 }
 
-.field {
+.ents > form > .field {
   /* position: relative;
   top: 50px; */
   background-color: var(--hl-light);
@@ -53,12 +53,12 @@ div {
   border: 1px solid var(--font30);
 }
 
-.field:focus {
+.ents > form > .field:focus {
   outline: none;
   box-shadow: 0 0 0 1px var(--font80) inset;
 }
 
-.field-name {
+.ents > form > .field-name {
   position: relative;
   display: inline;
   margin-left: 31px;

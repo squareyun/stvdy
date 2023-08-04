@@ -50,6 +50,7 @@ body {
 
 body::-webkit-scrollbar {
   width: 10px;
+  border-left: 1px solid var(--hl-light30);
 }
 
 body::-webkit-scrollbar-thumb {

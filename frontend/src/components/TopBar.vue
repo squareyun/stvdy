@@ -17,7 +17,7 @@ const times = () => {
 }
 
 onMounted(() => {
-  setInterval(times, 1000)
+  setInterval(times, 500)
 })
 </script>
 
@@ -38,6 +38,8 @@ onMounted(() => {
   height: 55px;
 
   background-color: var(--background-up);
+  border: none;
+  border-bottom: 1px solid var(--hl-light30);
 
   z-index: 1;
 }

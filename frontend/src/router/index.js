@@ -31,12 +31,6 @@ const router = createRouter({
               name: 'changepwd',
               component: () => import('../components/profile/ChangePwd.vue'),
             },
-            {
-              path: '/changeusername',
-              name: 'changeusername',
-              component: () =>
-                import('../components/profile/ChangeUsername.vue'),
-            },
           ],
         },
         {

@@ -9,6 +9,9 @@ import * as Yup from 'yup'
 const usersStore = useUsersStore()
 const localUser = usersStore.user
 
+let nameWant = ''
+nameWant = localUser.username
+
 const schema = Yup.object().shape({
   username: Yup.string()
     .required('닉네임을 작성해주세요.')
@@ -40,7 +43,7 @@ const schema = Yup.object().shape({
             type="text"
             class="field"
             :class="{ 'is-invalid': errors.username }"
-            v-model="localUser.username" />
+            v-model="nameWant" />
           <button
             id="transmit-button"
             type="button"
@@ -51,7 +54,7 @@ const schema = Yup.object().shape({
           <Field
             name="realname"
             type="text"
-            class="field"
+            class="field disabled"
             :class="{ 'is-invalid': errors.realname }"
             v-model="localUser.realname"
             disabled />
@@ -59,7 +62,7 @@ const schema = Yup.object().shape({
           <Field
             name="email"
             type="email"
-            class="field"
+            class="field disabled"
             :class="{ 'is-invalid': errors.email }"
             v-model="localUser.email"
             disabled />
@@ -69,11 +72,10 @@ const schema = Yup.object().shape({
       <div id="edit-menu">
         <a href="">대표 이미지(스터디룸) 변경</a>
         <a href="">프로필 이미지 변경</a>
-        <router-link to="/changeusername">별명 변경</router-link>
         <router-link to="/changepwd">비밀번호 변경</router-link>
       </div>
     </div>
-    <!-- <RouterView /> -->
+    <RouterView />
     <Deactivate />
   </div>
 </template>
@@ -112,6 +114,8 @@ const schema = Yup.object().shape({
 #user-name {
   margin-top: 5px;
   margin-left: 210px;
+
+  color: var(--hl-light);
 }
 
 #edit-menu {
@@ -140,7 +144,7 @@ const schema = Yup.object().shape({
   width: 360px;
   height: 46px;
   border-radius: 10px;
-  border: 1px solid var(--hl-light50);
+  border: 1px solid var(--hl-light30);
 }
 
 .field:focus {
@@ -157,6 +161,7 @@ const schema = Yup.object().shape({
   font-size: 0.9rem;
 
   text-align: center;
+  color: var(--hl-light);
 
   background-color: var(--background-window);
 }
@@ -169,7 +174,7 @@ const schema = Yup.object().shape({
   border: 0;
   background-color: transparent;
 
-  color: var(--hl-green);
+  color: var(--hl-purple);
   transition: color 0.4s;
   font-size: 1rem;
 
@@ -177,22 +182,34 @@ const schema = Yup.object().shape({
 }
 
 #transmit-button:hover {
-  color: var(--font100);
+  color: var(--hl-light);
   transition: color 0.4s;
 }
 
 .error-yup {
   color: var(--hl-warn);
 }
-#edit-menu a {
+#edit-menu > a {
+  display: block;
   margin-bottom: 0.3rem;
 
   color: var(--hl-purple);
+  transition: color 0.4s;
+
   font-size: 1rem;
   text-decoration: none;
 }
 
-#edit-menu a {
-  display: block;
+#edit-menu > a:hover {
+  color: var(--hl-light);
+  transition: color 0.4s;
+}
+
+.others {
+  padding-top: 30px;
+}
+
+.disabled {
+  color: var(--hl-light50);
 }
 </style>
