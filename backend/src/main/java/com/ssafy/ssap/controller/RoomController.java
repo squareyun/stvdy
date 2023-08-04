@@ -58,7 +58,6 @@ public class RoomController {
             resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage());
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
-
         return new ResponseEntity<>(resultMap, status);
     }
 
@@ -155,4 +154,9 @@ public class RoomController {
 //        Integer roomId = roomService.findRoomId(roomcode);
 //        return join(roomId);
 //    }
+
+    @PostMapping("exit")
+    public void exit(@RequestBody Map<String, Integer>map){
+        roomService.exit(map);
+    }
 }
