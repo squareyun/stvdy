@@ -20,6 +20,7 @@ public class Participants {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Setter
     @Column(name = "is_out", columnDefinition = "bit")
     @ColumnDefault("0")
     private Boolean isOut;
