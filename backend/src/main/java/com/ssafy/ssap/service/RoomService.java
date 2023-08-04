@@ -104,13 +104,29 @@ public class RoomService {
     /**
      * 스터디룸 폐쇄
      */
+    @SuppressWarnings("DataFlowIssue")
     @Transactional
-    public void close(Integer roomNo) {
+    public void close(Integer roomNo) throws OpenViduJavaClientException, OpenViduHttpException {
         // 방에 접속한 사람들의 room_log 데이터 업데이트
         roomLogRepository.updateSpendHourByAllRoomId(roomNo);
         participantsRepository.deleteByRoomId(roomNo);
 
         roomRepository.setValidToZeroByRoomId(roomNo);
+
+        //OpenVIDU 세션 close
+        Room room = roomRepository.findById(roomNo).orElse(null);
+        Session session;
+        try{
+            String sessionId = room.getSessionId();
+            session = openVidu.getActiveSession(sessionId);
+            session.close();
+        } catch(NullPointerException e){
+            logger.error("can't find room by roomNo");
+            throw e;
+        } catch (OpenViduJavaClientException | OpenViduHttpException e2) {
+            logger.error("Openvidu session을 닫는 중 에러 발생");
+            throw e2;
+        }
     }
 
     public Map<String,Object> makeSession() {
@@ -124,7 +140,6 @@ public class RoomService {
             logger.info("session created, "+session+" / "+session.getSessionId());
             token = joinSession(session.getSessionId()); //joinSession에서 connection 생성
             logger.info("connection created, "+token);
-
             resultMap.put("session",session);
             resultMap.put("token",token);
             return resultMap;
