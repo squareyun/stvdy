@@ -2,6 +2,7 @@
 import { RouterLink, RouterView } from 'vue-router'
 import Alert from '@/components/Alert.vue'
 import TopBar from '@/components/TopBar.vue'
+// import AiAssist from '@/components/main/AiAssist.vue'
 // import AppView from '@/views/AppView.vue'
 </script>
 
