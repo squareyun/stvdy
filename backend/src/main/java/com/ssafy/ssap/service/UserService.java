@@ -122,4 +122,19 @@ public class UserService {
 		}
 	}
 
+	/**
+	 * 닉네임 변경
+	 */
+	@Transactional
+	public String updateNickname(String newNickname) {
+		String userEmail = getMyUserWithAuthorities().getEmail();
+		User user = userRepository.findOneWithAuthoritiesByEmail(userEmail)
+			.orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
+
+		user.setNickname(newNickname);
+		userRepository.save(user);
+
+		return user.getNickname();
+	}
+
 }
