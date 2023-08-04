@@ -28,6 +28,11 @@ public class Likes {
     @Column(name = "is_good", columnDefinition = "bit(1)")
     private Boolean isGood;
 
+    @NotNull
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @OneToOne(fetch = LAZY)
     @JoinColumn(name = "question_id", unique = false)
     @Nullable
@@ -39,9 +44,4 @@ public class Likes {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @Nullable
     private Answer answer;
-
-    @NotNull
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
 }

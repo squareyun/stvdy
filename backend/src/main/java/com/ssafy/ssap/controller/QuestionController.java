@@ -105,6 +105,24 @@ public class QuestionController {
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }
 
+    @GetMapping("/islike/{userNo}/{questionNo}")
+    public ResponseEntity<Map<String, Object>> detailIsLike(@PathVariable("userNo") Integer userNo, @PathVariable("questionNo") Integer questionNo) {
+        Map<String, Object> resultMap = new HashMap<>();
+        HttpStatus status = null;
+        try {
+            Boolean isLike = questionService.getIsLike(userNo, questionNo);
+            resultMap.put("message", MessageFormat.SUCCESS);
+            resultMap.put("isQuetionLiked", isLike);
+            status = HttpStatus.ACCEPTED;
+        } catch (Exception e) {
+            logger.error("질문 isLiked 조회 실패", e);
+            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getClass().getSimpleName());
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+
+        return new ResponseEntity<Map<String, Object>>(resultMap, status);
+    }
+
     @GetMapping("/list")
     public ResponseEntity<Map<String, Object>> add(@RequestParam(required = false) String keyword, @RequestParam(required = false) String nickname, Pageable pageable) {
         Map<String, Object> resultMap = new HashMap<>();

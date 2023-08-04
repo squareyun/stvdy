@@ -101,4 +101,18 @@ public class QueryRepository {
                 .where(question.id.eq(questionNo))
                 .fetchOne();
     }
+
+    public Boolean findLikesIsLikedQuestion(Integer userNo, Integer questionNo) {
+        if (userNo == null) {
+            return null;
+        }
+
+        QLikes likes = QLikes.likes;
+
+        return jpaQueryFactory.select(likes.isGood)
+                .from(likes)
+                .where(likes.question.id.eq(questionNo).and(likes.user.id.eq(userNo)))
+                .fetchOne();
+
+    }
 }

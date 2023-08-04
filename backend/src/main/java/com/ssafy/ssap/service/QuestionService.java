@@ -78,4 +78,8 @@ public class QuestionService {
     public QuestionDetailResponseDto detail(Integer questionNo) {
         return queryRepository.findQuestionById(questionNo);
     }
+
+    public Boolean getIsLike(Integer userNo, Integer questionNo) {
+        return queryRepository.findLikesIsLikedQuestion(userNo, questionNo);
+    }
 }
