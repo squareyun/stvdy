@@ -10,14 +10,14 @@ import java.time.LocalDateTime;
 @Getter
 public class QuestionListResponseDto {
 
-    private int id;
+    private Integer id;
     private String title;
     private String detail;
-    //    private Integer hit;
+    private Integer hit;
     private LocalDateTime regist_time;
-    //    private boolean bestSelected;
+    private Boolean bestSelected;
     private QuestionCategoryNs category;
-    //    private String userNickname;
+    private String userNickname;
     private Integer cntAnswer;
     private Integer questionScore;
 

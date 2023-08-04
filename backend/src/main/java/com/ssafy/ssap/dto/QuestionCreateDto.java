@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public class QuestionCreateDto {
 
-    private long userNo;
+    private int userNo;
     private String title;
     private String content;
     private String category;

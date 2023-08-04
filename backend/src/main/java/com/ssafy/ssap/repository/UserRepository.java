@@ -11,10 +11,10 @@ import com.ssafy.ssap.domain.user.UserStateNs;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
 
-	@EntityGraph(attributePaths = "authorities")
-	Optional<User> findOneWithAuthoritiesByEmail(String email);
+    @EntityGraph(attributePaths = "authorities")
+    Optional<User> findOneWithAuthoritiesByEmail(String email);
 
-	User findByEmail(String email);
+    User findByEmail(String email);
 
 	List<User> findByStateAndActivated(UserStateNs state, boolean activated);
 
