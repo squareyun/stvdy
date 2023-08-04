@@ -16,10 +16,13 @@
   
   // 방 생성에 사용할 변수들 
   const myUserName = ref(store.myUserName)
-  // const myUserName = ref(userstore.user.username)
+  // const myUserName = ref(localUser.username)
   const mySessionId = ref(store.mySessionId)
   
-  
+  // 방 이미지 관련 내용
+  const backImgFile = ref(store.backImgFile)
+  const imgPreviewUrl = ref(null)
+
   // 방 시간 관련 내용
   // const hours = ref([...Array(24).keys()].map(hour=> hour.toString()))
   const hours = ref([...Array(25).keys()])
@@ -131,7 +134,7 @@
     quota.value = Number(event.target.value)
   }
 
-  // 방 참가를 위한 함수
+  /////// 방 참가를 위한 함수
   // function joinSession() {
   //   if(!store.myUserName || !store.mySessionId){
   //     alert("이름과 방제목을 작성해주세요.")
@@ -140,7 +143,7 @@
   //   router.push({
   //     name:'roomJoin',
   //     params: { 
-  //       roomNo: encodeURIComponent(mySessionId.value),  // 인코딩해서 보내줘야만 작동함
+  //       roomName: encodeURIComponent(mySessionId.value),  // 인코딩해서 보내줘야만 작동함
   //     },
   //   })
   // }
@@ -151,16 +154,54 @@
     }
     store.joinSession(router)  // 이 코드 대신 아래 코드를 추가했음.
   }
+  function checkmyUserName(){
+    store.checkmyUserName()
+  }
+
+
+  // 이미지 업로드 및 미리보기 함수
+  function readInputImage(event){
+    // console.log(event.target.files[0])
+    store.updateBackImg(event.target.files[0])
+    backImgFile.value = event.target.files[0]
+
+    // 이미지 파일을 데이터 Url로 변환하기
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      imgPreviewUrl.value = event.target.result
+      console.log(backImgFile.value)
+      console.log(imgPreviewUrl.value)
+    }
+    reader.readAsDataURL(backImgFile.value)
+  }
+
+  const rule = ref(store.rule)
+  function updateRule(event){
+    store.updateRule(event.target.value)
+    rule.value = event.target.value
+  }
 </script>
 
 <template>
   <!-- <router-link :to="{name: 'ArticleDetailView',params: {id: article.id }}"></router-link> -->
   <div id="join" style="color: white;">
+    <button @click="checkmyUserName">유저정보 확인버튼</button>
     <div id="img-div">
     </div>
     <div id="join-dialog">
       <h1>스터디룸 생성하기</h1>
       <div>
+        <!-- 스터디룸 룰 작성 부분 -->
+        <p>
+          <textarea :value="rule" name="" id="" cols="35" rows="5" @input="updateRule"></textarea>
+        </p>
+        <!-- 이미지 파일 업로드 및 미리보기 -->
+        <p>
+          <input type="file" accept="image/*" @change="readInputImage" id="backImgFile" >
+          <div v-if="backImgFile">
+            <img :src="imgPreviewUrl" alt="imgPreview" style="max-width: 300px; max-height: 300px">
+          </div>
+        </p>
         <!-- 닉네임 설정은 백 연동 완료 이후 삭제해야 함 -->
         <p>
           <label>닉네임 설정: </label>

@@ -6,22 +6,41 @@ import axios from 'axios'
 export const usewebRtcStore = defineStore({
   id: 'webrtc',
   state: () => ({
-    userNo: null,
     // userNo: null,
-    mySessionId: '드루와',
-    myUserName : null,
+    // userNo: useUsersStore().user.id,
+    userNo: Math.floor(Math.random() * (200 - 1 + 1)) + 1,
+    mySessionId: '123',
+    // myUserName : null,
+    // myUserName : useUsersStore().user.username,
+    myUserName : Math.floor(Math.random() * (200 - 1 + 1)) + 1+'제발되라',
     endHour: 0,
     endMinute: 0,
     quota: 16,
     isPassword: false,
     isPrivacy: false, // 이건 방에 대한게 아닌 방장외 전부 캠 오프와 관련된 거임.
     password: null,
-    iamgePath: null,
-    rule: null,
+    imagePath: null,
+    rule: '모두 열공해서 합격합시다 Ψ(￣∀￣)Ψ',
+    backImgFile: null,
+
+    /// 참여시 사용할 것
+    inputPassword: null,
+
+    // realname: useUsersStore().user.realname,
+    realname: '홍길동'+ Math.floor(Math.random() * (200 - 1 + 1)) + 1,
+
+
+    //////////////////////////
+    // 메인페이지에서 사용되는 방 목록 관련
+    roomList: null,
 
   }),
   actions: {
-    
+    checkmyUserName(){
+      console.log(this.myUserName)
+      console.log(this.userNo)
+      console.log(this.realname)
+    },
     updateMyUserName(newUserName) {
       this.myUserName = newUserName
     },
@@ -48,7 +67,13 @@ export const usewebRtcStore = defineStore({
     },
     updateQuota(newQuota) {
       this.quota = newQuota
-      console.log(this.quota)
+    },
+    updateBackImg(newBackImgFile){
+      this.backImgFile = newBackImgFile
+      console.log(this.backImgFile)
+    },
+    updateRule(newRule){
+      this.rule = newRule
     },
     // joinSession(router){
     //   axios({
@@ -81,7 +106,7 @@ export const usewebRtcStore = defineStore({
       router.push({
         name: 'roomJoin',
         params: {
-          roomNo: encodeURIComponent(this.mySessionId), // 인코딩해서 보내줘야만 작동함
+          roomName: encodeURIComponent(this.mySessionId), // 인코딩해서 보내줘야만 작동함
         },
       })
     },
@@ -126,6 +151,25 @@ export const usewebRtcStore = defineStore({
     //       // POST 요청에 실패한 경우, 에러 처리를 원하는 대로 추가합니다.
     //     });
     // },
+
+
+
+    /////////////////////////////////////////////////
+    // 메인 페이지에서 사용되는 방 리스트 목록
+    // 방들 찾아옴.
+    async getRtcRooms() {
+      try{
+        // const response = axios.get('http://54.180.9.43:8080/rooms/list/')
+        const response = axios.get('http://localhost:8080/rooms/list/')
+        roomList.value = await response.data
+      }
+      catch(error){
+        console.error('방 리스트 받아오는 오류 발생: ', error)
+      }
+    }
+
+
+    
   },
   mutations: {
     GETMYSESSIONID(state, datas){

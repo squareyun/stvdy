@@ -71,11 +71,6 @@
   ///////////////////
 
 
-  // onBeforeMount(() => {
-  //   console.log('!!!!!!!!!!!!!!!!',mySessionId.value)
-  //   window.addEventListener("beforeunload",leaveSession);
-  //   joinSession()
-  // })
   onBeforeMount(() => {
     window.addEventListener("beforeunload",leaveSession)
     // mySessionId가 없으면 잘못된 접근이므로 
@@ -92,25 +87,30 @@
   onBeforeUnmount(()=>{
     leaveSession()
   })
-
   
+  // onMounted(() => {
+  //   addEmptyBox()
+  // }),
+
+  const isJoin = ref(false)
   // vue2에서의 methods 부분을 vue3화 handleUnload
   function joinSession() {
-    // --- 1) Get an OpenVidu object ---
+    // --- 1) Openvdiu object 가져오기
     OV.value = new OpenVidu()
     
-    // --- 2) Init a session ---
+    // --- 2) session 값 집어넣기
     session.value = OV.value.initSession()
+    console.log('이게뭐람',session.value)
 
-    // --- 3) Specify the actions when events take place in the session ---
-    // On every new Stream received...
+    // --- 3) 세션에서 이벤트가 발생할때 수행할 작업 지정
+    // new Stream 을 수신할 때마다 수행...
     session.value.on("streamCreated", ( {stream} )=> {
       // const subscriber = session.subscribe(stream)
       const subscriber = session.value.subscribe(stream)
       subscribers.value.push(subscriber)
     })
 
-    // On every Stream destroyed...
+    // 모든 스트림 파괴...
     session.value.on("streamDestroyed", ( {stream} ) => {
       const index = subscribers.value.indexOf(stream.streamManager, 0)
       if(index >= 0){
@@ -118,7 +118,7 @@
       }
     })
 
-    // On every asynchronous exception...
+    // 모두 asynchronous exception 처리 할거임...
     session.value.on("exception", ({ exception }) => {
       console.warn(exception);
     });
@@ -133,16 +133,21 @@
     });
 
 
-    getToken(mySessionId.value).then((token) => {
+    // 방 참가할때 사용하는 코드임
+    console.log('joinRoom들어가기전')
+    joinRoom(mySessionId.value).then((token) => {
+      console.log('joinRoom들어옴')
+      console.log(token)
+      console.log(myUserName.value)
+      console.log('참가중1')
       session.value.connect(token, {clientData: myUserName.value})
       .then(() => {
+        console.log()
+        isJoin.value = true
+        console.log('참가중2')
           let publisherTmp = OV.value.initPublisher(undefined, {
             audioSource: undefined, // The source of audio. If undefined default microphone
             videoSource: undefined, // The source of video. If undefined default webcam
-            // audioSource: audioSelect.value, // The source of audio. If undefined default microphone
-            // videoSource: cameraSelect.value, // The source of video. If undefined default webcam
-            // publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
-            // publishVideo: true, // Whether you want to start publishing with your video enabled or not
             publishAudio: !muted.value, // Whether you want to start publishing with your audio unmuted or not
             publishVideo: !camerOff.value, // Whether you want to start publishing with your video enabled or not
             // resolution: "640x480", // The resolution of your video
@@ -151,17 +156,56 @@
             insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
             mirror: false, // Whether to mirror your local video or not
           });
-
           mainStreamManager.value = publisherTmp
           publisher.value = publisherTmp
 
           session.value.publish(publisher.value)
           getMedia()  // 세션이 만들어졌을때 미디어 불러옴
+          addEmptyBox() // 빈 자리 메꾸기
         })
         .catch((error) => {
-          console.log("There was an error connecting to the session:", error.code, error.message);
+          console.log("session 커넥팅에 문제생김(joinRoom):", error.code, error.message);
         })
     })
+
+
+    /// 방 생성할 때 만드는 코드임
+    // getToken(mySessionId.value).then((token) => {
+    console.log('isJoin걸리기전')
+    if(isJoin.value) return
+    console.log('createToken들어오기전')
+    createToken(mySessionId.value).then((token) => {
+      console.log('createToken들어옴')
+      console.log(token)
+      console.log(myUserName.value)
+      
+      console.log('여긴가1')
+      session.value.connect(token, {clientData: myUserName.value})
+      .then(() => {
+        console.log('여긴가3')
+          let publisherTmp = OV.value.initPublisher(undefined, {
+            audioSource: undefined, // The source of audio. If undefined default microphone
+            videoSource: undefined, // The source of video. If undefined default webcam
+            publishAudio: !muted.value, // Whether you want to start publishing with your audio unmuted or not
+            publishVideo: !camerOff.value, // Whether you want to start publishing with your video enabled or not
+            // resolution: "640x480", // The resolution of your video
+            resolution: "160x120", // The resolution of your video
+            frameRate: 30, // The frame rate of your video
+            insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
+            mirror: false, // Whether to mirror your local video or not
+          });
+          mainStreamManager.value = publisherTmp
+          publisher.value = publisherTmp
+
+          session.value.publish(publisher.value)
+          getMedia()  // 세션이 만들어졌을때 미디어 불러옴
+          addEmptyBox() // 빈 자리 메꾸기
+        })
+        .catch((error) => {
+          console.log("session 커넥팅에 문제생김(createToken):", error.code, error.message);
+        })
+    })
+    // 여기에 추가할거야!!!!!!
 
     // window.addEventListener("beforeunload",leaveSession);
   }
@@ -189,7 +233,7 @@
     router.push({
       name:'roomAdd',// 임시로 roomAdd로 보냄.
       // params: { 
-      //   roomNo: mySessionId.value,
+      //   roomName: mySessionId.value,
       // },
     })
   }
@@ -206,39 +250,64 @@
   * --------------------------------------------
   */
    //// Edited code with Beom's code
-  async function getToken(mySessionId) {
-    // const userNo = store.userNo
-    const userNo = Math.floor(0,500) // 임시로 랜덤 값으로 보내는 중
+  async function createToken(mySessionId) {
+    const userNo = store.userNo
     const endHour = store.endHour
     const endMinute = store.endMinute
     const quota = store.quota
     const isPrivacy = store.isPrivacy
     const password = store.password
-    const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/add', {userNo: userNo, title: mySessionId, endHour: endHour, endMinute: endMinute, quota: quota, isPrivacy: isPrivacy, password: password, iamgePath:"imgURL", rule:"rule Text which is veruy long"}, {
-    headers: { 'Content-Type': 'application/json', },
+    const backImgFile = store.backImgFile
+    const rule = store.rule
+    
+    const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/add', 
+      {userNo: userNo, title: mySessionId, endHour: endHour, endMinute: endMinute, quota: quota, 
+        isPrivacy: isPrivacy, password: password, iamgePath: backImgFile, rule: rule}, 
+      {headers: { 'Content-Type': 'application/json', },
     });
-    console.log('이것이 리스폰스데이터',response.data)
+    console.log('이것이 리스폰스데이터 \n', response.data)
     return response.data;
   }
+
+
+  //////////// 방에 참석할때!
+  // 기존 방에 참석하기
   async function joinRoom(mySessionId) {
     // const userNo = store.userNo
-    const roomNo = Math.floor(0,500)  // roomNo -> 방 id 를 의미
-    const userNo = Math.floor(0,500) // 임시로 랜덤 값으로 보내는 중
-    const password = store.password
-    const response = await axios.post(APPLICATION_SERVER_URL + roomNo, {userNo: userNo, title: mySessionId, password: password}, {
+    const roomName = 18  // roomName -> 방 id 를 의미
+    const userNo = store.userNo // 임시로 랜덤 값으로 보내는 중
+    const inputPassword = store.inputPassword
+    const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/' + roomName, {userNo: userNo, title: mySessionId, password: inputPassword}, {
     headers: { 'Content-Type': 'application/json', },
     });
-    console.log('이것이 리스폰스데이터',response.data)
+    console.log('joinRoom 리스폰스데이터 잘 받음',response.data)
     return response.data;
   }
+
+  /////
+  // // 기존 방이 있는지 확인하고 토큰 받아서 joinSession 하기
+  // async function joinExistingSession(room) {
+  //   // const token = await joinRoom(mySessionId.value)
+  //   // joinSession(token, room);
+  //   try{
+  //     const token = await joinRoom(mySessionId.value)
+  //     joinSession(token, room);
+  //   }
+  //   catch(error){
+  //     console.error('방이 없는지 토큰 가져오는데 문제가 생겼는뎁쇼?', error);
+  //   }
+  // }
+
+
 
   // async function getToken(mySessionId) {
   //   const sessionId = await createSession(mySessionId);
+  //   console.log(mySessionId+'와 '+sessionId)
   //   return await createToken(sessionId);
   // }
-
+  
   // async function createSession(sessionId) {
-  //   const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions', { customSessionId: sessionId, userNo: 53, endHour: 1, endMinute: 30, quota: 16, isPrivacy: false}, {
+  //   const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions', { customSessionId: sessionId}, {
   //     headers: { 'Content-Type': 'application/json', },
   //   });
   //   console.log('이건 createSession',response.data)
@@ -252,6 +321,7 @@
   //   console.log('이건 createToken',response.data)
   //   return response.data; // The token
   // }
+  
 
   // 채팅창 구현을 위한 함수 제작
   ///////////////////////////
@@ -409,11 +479,38 @@
   // 탭 메뉴 관련
   const funcTabs = ref(['참여멤버', '메시지', '그라운드 룰', '공유'])
   const activeFuncTab = ref(0)
+  const roomRule = ref(store.rule)
 
   function changeTab(index) {
     activeFuncTab.value = index
     console.log(myUserName.value)
   }
+
+  /////////////////////////
+  // 빈 박스 추가하기
+  function addEmptyBox(){
+    const emptyBoxes = document.getElementById('videoContainer')
+    // div 태그인 자식 요소들만 삭제합니다.
+    Array.from(emptyBoxes.children).forEach(child => {
+      if (child.tagName.toLowerCase() === "div") {
+        emptyBoxes.removeChild(child);
+      }
+    });
+    console.log('으아ㅏ아아ㅏㄱ',subscribersComputed.value.length)
+    const boxNum = quota.value - subscribersComputed.value.length -1
+    for (let index = 0; index < boxNum; index++) {
+      const div = document.createElement('div')
+      div.style.border = "1px solid";
+      div.style.backgroundColor = "crimson";
+      div.style.width = "158px";
+      div.style.height = "118px";
+      // div.classList.add('blackbox')
+      emptyBoxes.appendChild(div);
+    }
+  }
+  // onMounted(() => {
+  //   addEmptyBox()
+  // }),
 
 </script>
 
@@ -441,7 +538,8 @@
           <UserVideo v-for="sub in subscribersComputed" :key="sub.stream.connection.connectionId" :stream-manager="sub"
             @click.native="updateMainVideoStreamManager(sub)" />
           <!-- 이거는 빈 자리 검정박스 --><!--  --><!--  -->
-          <div v-for="i in ( quota  - subscribersComputed.length)" :key="i" class="blackbox"></div>
+          <!-- <div v-for="(number, i) in ( quota  - subscribersComputed.length -1)" :key="i" class="blackbox"></div> -->
+          <!-- <div id="emptyBox"></div> -->
         </div>
         <!-- 선택 캠 -->
         <div id="mainVideo">
@@ -503,14 +601,22 @@
       </form>
     </div>
     <!-- 그라운드 룰 -->
-    <div></div>
+    <div v-if="activeFuncTab === 2">
+      {{ roomRule }}
+    </div>
     <!-- 공유 -->
-    <div></div>
+    <div v-if="activeFuncTab === 3"></div>
   </div>
     
 </template>
 
 <style scoped>
+  .blackbox{
+    border : 1px solid;
+    background-color: crimson;
+    width : 160px;
+    height: 120px;
+  }
   #session {
     display: flex;
     width: 100%;
@@ -525,6 +631,8 @@
   #videoContainer{
     display: flex;
     flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: space-between;
   }
 
   #deviceDiv {
