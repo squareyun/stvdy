@@ -25,7 +25,7 @@ import TopSearch from '@/components/TopSearch.vue'
 
   color: var(--hl-light);
 
-  background-color: rgba(170, 170, 170, 0.123);
+  /* background-color: rgba(170, 170, 170, 0.123); */
 }
 
 @media (max-width: 1360px) {
@@ -36,6 +36,7 @@ import TopSearch from '@/components/TopSearch.vue'
 
 .content-title {
   margin: 0;
+  color: var(--hl-light);
 }
 
 .content {

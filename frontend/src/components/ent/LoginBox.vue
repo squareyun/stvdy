@@ -25,7 +25,7 @@ const onSubmit = async (values) => {
 <template>
   <div>
     <h2 class="ents-title">"만나게 되어 반가워요"</h2>
-    <div>
+    <div class="ents">
       <Form
         autocomplete="off"
         @submit="onSubmit"

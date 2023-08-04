@@ -59,7 +59,7 @@ async function onSubmit(values) {
 <template>
   <div>
     <h2 class="ents-title">회원가입</h2>
-    <div>
+    <div class="ents">
       <Form
         autocomplete="off"
         @submit="onSubmit"
