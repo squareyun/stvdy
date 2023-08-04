@@ -1,5 +1,6 @@
 package com.ssafy.ssap.domain.qna;
 
+import com.ssafy.ssap.domain.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -38,6 +39,11 @@ public class Answer {
     @JoinColumn(name = "question_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Question question;
+
+    @NotNull
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @OneToOne(mappedBy = "answer")
     Likes likes;
