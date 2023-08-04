@@ -36,4 +36,18 @@ public class AnswerController {
         }
     }
 
+    @PutMapping("/{answerNo}")
+    public ResponseEntity<Map<String, Object>> update(@PathVariable("answerNo") Integer answerNo, @RequestBody AnswerCreateDto answerCreateDto) {
+        try {
+            Integer answerId = answerService.update(answerNo, answerCreateDto);
+            logger.debug("답변 {} 수정 성공", answerId);
+            return ResponseEntity.accepted()
+                    .body(Collections.singletonMap("message", MessageFormat.SUCCESS));
+        } catch (Exception e) {
+            logger.error("답변 수정 실패: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage()));
+        }
+    }
+
 }

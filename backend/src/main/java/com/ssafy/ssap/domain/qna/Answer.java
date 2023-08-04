@@ -55,4 +55,9 @@ public class Answer {
         this.question = question;
         question.answerList.add(this);
     }
+
+    public Integer update(String content) {
+        this.detail = content;
+        return id;
+    }
 }

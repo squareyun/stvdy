@@ -45,7 +45,7 @@ public class QuestionController {
     }
 
     @PutMapping("/{questionNo}")
-    public ResponseEntity<Map<String, Object>> add(@PathVariable("questionNo") Integer questionNo, @RequestBody QuestionCreateDto questionCreateDto) {
+    public ResponseEntity<Map<String, Object>> update(@PathVariable("questionNo") Integer questionNo, @RequestBody QuestionCreateDto questionCreateDto) {
         Map<String, Object> resultMap = new HashMap<>();
         HttpStatus status = null;
         try {
@@ -63,7 +63,7 @@ public class QuestionController {
     }
 
     @DeleteMapping("/{questionNo}")
-    public ResponseEntity<Map<String, Object>> add(@PathVariable("questionNo") Integer questionNo) {
+    public ResponseEntity<Map<String, Object>> delete(@PathVariable("questionNo") Integer questionNo) {
         Map<String, Object> resultMap = new HashMap<>();
         HttpStatus status = null;
         try {

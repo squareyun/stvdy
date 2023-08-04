@@ -1,5 +1,6 @@
 package com.ssafy.ssap.service;
 
+import com.ssafy.ssap.common.MessageFormat;
 import com.ssafy.ssap.domain.qna.Answer;
 import com.ssafy.ssap.domain.qna.Question;
 import com.ssafy.ssap.domain.user.User;
@@ -24,7 +25,9 @@ public class AnswerService {
     @Transactional
     public Integer create(AnswerCreateDto answersCreateDto) throws Exception {
         User user = userRepository.getReferenceById(answersCreateDto.getUserNo());
-        Question question = questionRepository.getReferenceById(answersCreateDto.getQuestionNo());
+
+        Question question = questionRepository.findById(answersCreateDto.getQuestionNo())
+                .orElseThrow(() -> new IllegalArgumentException(MessageFormat.NO_QUETION_ID));
 
         Answer answer = Answer.builder()
                 .detail(answersCreateDto.getContent())
@@ -38,4 +41,10 @@ public class AnswerService {
         return answer.getId();
     }
 
+    @Transactional
+    public Integer update(Integer answerNo, AnswerCreateDto answerCreateDto) throws Exception {
+        Answer answer = answerRepository.findById(answerNo)
+                .orElseThrow(() -> new IllegalArgumentException(MessageFormat.NO_ANSWER_ID));
+        return answer.update(answerCreateDto.getContent());
+    }
 }
