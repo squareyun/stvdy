@@ -1,24 +1,21 @@
-package com.ssafy.ssap.domain.user;
+package com.ssafy.ssap.domain.studyroom;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
-@Table(name = "authority")
 @Getter
-@Setter
-@Builder
+@Table(name = "participants_role_ns")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Authority {
+public class ParticipantRoleNs {
+
 	@Id
-	@Column(name = "authority_name", length = 45)
-	private String authorityName;
+	@Column(length = 10)
+	private String name;
 }
