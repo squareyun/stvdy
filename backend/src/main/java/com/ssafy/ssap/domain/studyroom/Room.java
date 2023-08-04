@@ -56,6 +56,6 @@ public class Room {
 
     @Builder.Default
     @OneToMany(mappedBy = "room")
-    private List<Participants> participantsList = new ArrayList<>();
+    private List<Participant> participantList = new ArrayList<>();
 
 }
