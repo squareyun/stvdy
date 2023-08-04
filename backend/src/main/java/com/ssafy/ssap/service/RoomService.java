@@ -214,6 +214,7 @@ public class RoomService {
         }
     }
 
+    @Transactional
     public void changeHost(Map<String, Integer> changeInfo) {
         /*
           changeInfo.get("roomNo"), changeInfo.get("currentUserNo"), changeInfo.get("nextUserNo")
@@ -233,9 +234,9 @@ public class RoomService {
             //noinspection DataFlowIssue
             if(currentHost.getRole()==ROLE_HOST && nextHost.getRole()!=ROLE_HOST){
                 currentHost.setRole(nextHost.getRole());
-                participantsRepository.save(currentHost);
+//                participantsRepository.save(currentHost);
                 nextHost.setRole(ROLE_HOST);
-                participantsRepository.save(nextHost);
+//                participantsRepository.save(nextHost);
                 logger.info("호스트 role 변경 완료. partiNo "+currentUserNo+" to "+currentHost.getRole().toString()+", partiNo "+nextUserNo+" to "+nextHost.getRole().toString());
             }
         } catch (NullPointerException e) {
@@ -252,7 +253,7 @@ public class RoomService {
             //noinspection DataFlowIssue
             if(assignee.getRole() == participantsRoleNsRepository.findByName("참여자")){
                 assignee.setRole(participantsRoleNsRepository.findByName("스태프"));
-                participantsRepository.save(assignee);
+//                participantsRepository.save(assignee);
             } else{
                 logger.error("스태프로 임명 가능한 role이 아님");
             }
@@ -273,7 +274,7 @@ public class RoomService {
         Integer roomNo = map.get("roomNo");
         Integer participantNo = map.get("participantNo");
 
-        RoomLog roomLog = roomLogRepository.findByRoom_idAndUser_id(roomNo, participantNo).orElse(null);
+        RoomLog roomLog = roomLogRepository.findByRoomIdAndUserId(roomNo, participantNo).orElse(null);
         Participants participants = participantsRepository.findById(participantNo).orElse(null);
 
         try{
