@@ -58,7 +58,6 @@ public class RoomController {
             resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage());
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
-
         return new ResponseEntity<>(resultMap, status);
     }
 
