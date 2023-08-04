@@ -51,6 +51,29 @@ public class MyPageController {
 	}
 
 	/**
+	 * 닉네임 변경
+	 */
+	@PutMapping("/nickname")
+	@PreAuthorize("hasAnyRole('USER','ADMIN')")
+	public ResponseEntity<Map<String, Object>> updateNickname(@RequestBody Map<String, String> map) {
+		Map<String, Object> resultMap = new HashMap<>();
+		HttpStatus status = null;
+		try {
+			String userNickname = userService.getMyUserWithAuthorities().getNickname();
+			userService.updateNickname(map.get("nickname"));
+			logger.info("닉네임 변경 성공: userNickname = {}", userNickname);
+			resultMap.put("message", MessageFormat.SUCCESS);
+			status = HttpStatus.ACCEPTED;
+		} catch (Exception e) {
+			logger.error("닉네임 변경 실패: ", e);
+			resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage());
+			status = HttpStatus.INTERNAL_SERVER_ERROR;
+		}
+
+		return new ResponseEntity<Map<String, Object>>(resultMap, status);
+	}
+
+	/**
 	 * 회원(본인) 정보 조회
 	 * 접근: 로그인한 유저, 관리자
 	 */
