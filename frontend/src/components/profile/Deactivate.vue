@@ -1,9 +1,10 @@
 <script setup>
-import { useAuthStore, useAlertStore } from '@/stores'
+import { useAuthStore, useAlertStore, useUsersStore } from '@/stores'
 import router from '@/router'
 import { ref } from 'vue'
 
-const user = ref(JSON.parse(localStorage.getItem('user')))
+const usersStore = useUsersStore()
+const localUser = usersStore.user
 
 async function deactivate() {
   let isDeact = confirm('계정을 삭제합니다. 진행하나요?')
@@ -22,14 +23,16 @@ async function deactivate() {
 </script>
 
 <template>
-  <div style="color: white">
-    <br />
-    회원탈퇴
-    <div>
-      본인은 {{ localUser.username }}#{{ localUser.id }} 계정을 삭제하겠습니다.
-    </div>
-    <div>
-      <button @click="deactivate">계정 삭제</button>
+  <div>
+    <p class="content-title">회원 탈퇴</p>
+    <div class="content">
+      <div>
+        본인은 {{ localUser.username }}#{{ localUser.id }} 계정을
+        삭제하겠습니다.
+      </div>
+      <div>
+        <button @click="deactivate">계정 삭제</button>
+      </div>
     </div>
   </div>
 </template>
