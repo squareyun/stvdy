@@ -4,8 +4,8 @@ import { Form, Field } from "vee-validate";
 
 const configuration = new Configuration({
   // 아래의 organization과 key는 절대 git에 commit 금지!!
-  organization: "org-P6R01iSM0pteoADPI2D2m0lq",
-  apiKey: "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",
+  organization: "",
+  apiKey: "",
   // 위의 organization과 key는 절대 git에 commit 금지!!
   // commit 전 공란으로 두기 - 차후 별도의 파일로 관리 예정
 });
@@ -26,6 +26,11 @@ async function onSubmit(values) {
   answerField.innerText = sampleQuestion.data.choices[0].message.content
 
 }
+
+const violationAI = await openai.createModeration({
+  input: "I want to fuck your mother!"
+})
+console.log(violationAI)
 
 
 
