@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -258,6 +260,45 @@ public class RoomService {
             logger.error("participantNo와 참여자 매칭 실패");
             throw e;
         }
+    }
+
+    @SuppressWarnings("DataFlowIssue")
+    @Transactional
+    public void exit(Map<String, Integer> map) {
+        /*
+        1. room_log 수정
+        2. participant 테이블 수정
+        3. openvidu connection close
+         */
+        Integer roomNo = map.get("roomNo");
+        Integer participantNo = map.get("participantNo");
+
+        RoomLog roomLog = roomLogRepository.findByRoom_idAndUser_id(roomNo, participantNo).orElse(null);
+        Participants participants = participantsRepository.findById(participantNo).orElse(null);
+
+        try{
+            //participant 테이블 수정 (is_Out 수정)
+            participants.setIsOut(true);
+            logger.debug("is_out 수정 완료");
+
+            //room_log 수정 (spend hour 갱신)
+            LocalDateTime time_start, time_end;
+            time_start = roomLog.getEnterTime();
+            time_end = LocalDateTime.now();
+            int spend_min = Math.toIntExact(ChronoUnit.MINUTES.between(time_start, time_end));
+            LocalTime spend_time = LocalTime.of(spend_min/60,spend_min%60);
+            roomLog.setSpendHour(spend_time);
+            logger.debug("room_log 갱신 완료");
+
+            //openvidu connection close -> 취소
+            //오래된 connection은 오픈비두에서 자체적으로 관리함.
+            //명시적으로 닫아주려면 Connection이나 ConnectionId를 DB등에 저장 및 관리하여야하여 오히려 보안성 저하하고 DB수정 필요
+
+        } catch(NullPointerException e){
+            logger.error("매칭되는 객체 없음");
+            throw e;
+        }
+        logger.debug("room/exit 트랜잭션 정상 완료");
     }
 }
 
