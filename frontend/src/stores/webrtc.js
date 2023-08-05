@@ -9,7 +9,7 @@ export const usewebRtcStore = defineStore({
     // userNo: null,
     userNo: useUsersStore().user.id,
     // userNo: Math.floor(Math.random() * (200 - 1 + 1)) + 1,
-    mySessionId: '123',
+    mySessionId: '제발되라 좀',
     // myUserName : null,
     myUserName : useUsersStore().user.username,
     // myUserName : Math.floor(Math.random() * (200 - 1 + 1)) + 1+'제발되라',
