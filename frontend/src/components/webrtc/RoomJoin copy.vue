@@ -181,7 +181,7 @@
     console.log('createToken들어오기전')
     createToken(mySessionId.value).then((token) => {
       console.log('createToken들어옴')
-      console.log('토큰임',token)
+      console.log(token)
       console.log(myUserName.value)
       
       console.log('여긴가1')
@@ -270,8 +270,6 @@
         isPrivacy: isPrivacy, password: password, iamgePath: backImgFile, rule: rule}, 
       {headers: { 'Content-Type': 'application/json', },
     });
-    console.log('메롱')
-    console.log('create할때',userNo, mySessionId, endHour, endMinute, quota, isPrivacy, password, backImgFile, rule)
     console.log('이것이 만든 방의 리스폰스데이터 \n', response.data)
     return response.data;
   }
@@ -286,14 +284,13 @@
     const inputPassword = store.inputPassword
     console.log('조인룸 안됨1???????')
     
-    console.log(roomNo, userNo, inputPassword)
     // const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/' + roomNo, {userNo: userNo, password: inputPassword}, {
     const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/' + roomNo, {userId: userNo, password: inputPassword}, {
     headers: { 'Content-Type': 'application/json', },
     });
     console.log('조인룸 안됨2???????')
     console.log('joinRoom 리스폰스데이터 잘 받음',response.data)
-    return response.data.token;
+    return response.data;
   }
 
   /////
@@ -508,7 +505,7 @@
         emptyBoxes.removeChild(child);
       }
     });
-    console.log('나빼고 참여자 수',subscribersComputed.value.length)
+    console.log('으아ㅏ아아ㅏㄱ',subscribersComputed.value.length)
     const boxNum = quota.value - subscribersComputed.value.length -1
     for (let index = 0; index < boxNum; index++) {
       const div = document.createElement('div')

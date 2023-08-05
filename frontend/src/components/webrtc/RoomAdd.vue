@@ -135,28 +135,28 @@
   }
 
   /////// 방 참가를 위한 함수
-  // function joinSession() {
-  //   if(!store.myUserName || !store.mySessionId){
-  //     alert("이름과 방제목을 작성해주세요.")
-  //     return
-  //   }
-  //   router.push({
-  //     name:'roomJoin',
-  //     params: { 
-  //       roomName: encodeURIComponent(mySessionId.value),  // 인코딩해서 보내줘야만 작동함
-  //     },
-  //   })
-  // }
   function joinSession() {
     if(!store.myUserName || !store.mySessionId){
       alert("이름과 방제목을 작성해주세요.")
       return
     }
-    store.joinSession(router)  // 이 코드 대신 아래 코드를 추가했음.
+    router.push({
+      name:'roomJoin',
+      params: { 
+        roomName: encodeURIComponent(mySessionId.value),  // 인코딩해서 보내줘야만 작동함
+      },
+    })
   }
-  function checkmyUserName(){
-    store.checkmyUserName()
-  }
+  // function joinSession() {
+  //   if(!store.myUserName || !store.mySessionId){
+  //     alert("이름과 방제목을 작성해주세요.")
+  //     return
+  //   }
+  //   store.joinSession(router)  // 이 코드 대신 아래 코드를 추가했음.
+  // }
+  // function checkmyUserName(){
+  //   store.checkmyUserName()
+  // }
 
 
   // 이미지 업로드 및 미리보기 함수

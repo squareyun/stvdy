@@ -58,7 +58,6 @@ public class RoomController {
             resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage());
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
-
         return new ResponseEntity<>(resultMap, status);
     }
 
@@ -141,7 +140,7 @@ public class RoomController {
             //OPENVIDU > session 접속을 위한 token 생성
             sessionId = roomService.getSessionIdByRoomNo(roomNo); //2번 단계
             token = roomService.joinSession(sessionId); //3번 단계
-
+            logger.debug("[join] 토큰처리 수행 완료");
             //DB처리
             roomService.addParticipant(roomNo,"참여자", userNo); //4번
             roomService.addRoomLog(roomNo,userNo); //5번
@@ -155,4 +154,9 @@ public class RoomController {
 //        Integer roomId = roomService.findRoomId(roomcode);
 //        return join(roomId);
 //    }
+
+    @PostMapping("exit")
+    public void exit(@RequestBody Map<String, Integer>map){
+        roomService.exit(map);
+    }
 }

@@ -14,17 +14,23 @@ const title = ref(null)
 onBeforeMount(() => {
   webRtcStore.getRtcRooms()
   roomList.value = webRtcStore.roomList
+  console.log(roomList.value)
 })
+
+
 
 function joinRoom(room) {
   // this.$router.push({ name: 'MovieDetailView', params: { id: moviecard.id }});  
-  router.push({
-    name:'roomJoin',
-    params: { 
-      // roomName: encodeURIComponent(mySessionId.value),  // 인코딩해서 보내줘야만 작동함
-      roomName: encodeURIComponent(room.roomTitle),  // 인코딩해서 보내줘야만 작동함
-    },
-  })
+  webRtcStore.joinRoom(room)
+  // const roomId = webRtcStore.roomId
+  // roomId = room.roomNo
+  // router.push({
+  //   name:'roomJoin',
+  //   params: { 
+  //     // roomName: encodeURIComponent(mySessionId.value),  // 인코딩해서 보내줘야만 작동함
+  //     roomName: (room.roomTitle),  // 인코딩해서 보내줘야만 작동함
+  //   },
+  // })
 }
 
 
@@ -62,6 +68,9 @@ function joinRoom(room) {
         <p>{{ room.quota }}</p>
         <div>
           <img @click="joinRoom(room)" :src="room.imgPreviewUrl" alt="imgPreview" style="max-width: 300px; max-height: 300px">
+        </div>
+        <div>
+          <p @click="joinRoom(room)">{{ room.roomTitle }}</p>
         </div>
       </div>
     </div>
