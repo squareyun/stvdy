@@ -91,7 +91,7 @@ public class RoomController {
         System.out.println(kickInfo.toString());
     }
 
-    @GetMapping("/code/{roomno}")
+    @GetMapping("/code/{roomNo}")
     public ResponseEntity<?> getCodeAndLink(@PathVariable Long roomNo){
         /*
           roomno 기반으로 code와 link 리턴.
@@ -113,7 +113,7 @@ public class RoomController {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    @GetMapping("/detail/{roomno}")
+    @GetMapping("/detail/{roomNo}")
     public ResponseEntity<?> detail(@PathVariable Integer roomNo){
         /*
           roomNo에 해당하는 room에 대한 정보(roomDto) return
@@ -135,17 +135,15 @@ public class RoomController {
         String token=null;
         String sessionId;
         String password = map.get("password");
-        Integer userId = Integer.parseInt(map.get("userId"));
-        logger.debug("[join] 호출");
+        Integer userNo = Integer.parseInt(map.get("userNo"));
         if( roomService.checkValid(roomNo, password)){ //1번 단계
             //OPENVIDU > session 접속을 위한 token 생성
             sessionId = roomService.getSessionIdByRoomNo(roomNo); //2번 단계
             token = roomService.joinSession(sessionId); //3번 단계
             logger.debug("[join] 토큰처리 수행 완료");
             //DB처리
-            roomService.addParticipant(roomNo,"참여자", userId); //4번
-            roomService.addRoomLog(roomNo,userId); //5번
-            logger.debug("[join] DB처리 완료");
+            roomService.addParticipant(roomNo,"참여자", userNo); //4번
+            roomService.addRoomLog(roomNo,userNo); //5번
         }
 
         return token;

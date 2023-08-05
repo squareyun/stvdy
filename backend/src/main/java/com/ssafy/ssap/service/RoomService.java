@@ -93,10 +93,10 @@ public class RoomService {
     }
 
     @SuppressWarnings("DataFlowIssue")
-    public void addRoomLog(Integer roomNo, Integer userId) {
+    public void addRoomLog(Integer roomNo, Integer userNO) {
         try{
             Room room = roomRepository.findById(roomNo).orElse(null);
-            addRoomLog(room, userId);
+            addRoomLog(room, userNO);
         } catch(NullPointerException e){
             logger.error("roomNo와 Room객체 매칭 실패");
             throw e;
@@ -172,6 +172,7 @@ public class RoomService {
         try {
             ConnectionProperties connectionProperties = new ConnectionProperties.Builder().type(ConnectionType.WEBRTC).build();
             token = session.createConnection(connectionProperties).getToken();
+            logger.debug("joinRoom token 생성 완료"+token);
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
             logger.error("can't build connection properties or get token from it");
         }
@@ -185,31 +186,31 @@ public class RoomService {
 
     public boolean checkValid(Integer roomNo, String password) throws RuntimeException {
         //방 입장이 가능한지 확인하는 메소드
-
+        logger.debug("[join] checkValid메소드 호출. roomNo:"+roomNo+" password:"+password);
         Room room = roomRepository.findById(roomNo).orElse(null);
 
         try {
             //noinspection DataFlowIssue
             if (participantsRepository.countByRoomIdAndIsOut(roomNo, false) >= room.getQuota()) {
                 //check quota
-                logger.trace(roomNo + " room is full");
+                logger.debug(roomNo + " room is full");
                 return false;
             } else {
-                logger.trace(roomNo + " room is not full");
+                logger.debug(roomNo + " room is not full");
             }
-            if (!room.getPassword().isBlank() && !password.isBlank()) {
-                logger.trace("roomPassword, 입력password 둘 다 존재");
+            if ((room.getPassword()!=null && password != null) && !room.getPassword().isBlank() && !password.isBlank()) {
+                logger.debug("roomPassword, 입력password 둘 다 존재");
                 //check password
                 if (!room.getPassword().equals(password)) {
-                    logger.trace("password 불일치" + room.getPassword() + " / " + password);
+                    logger.debug("password 불일치" + room.getPassword() + " / " + password);
                     return false;
                 } else {
-                    logger.trace("password 일치");
+                    logger.debug("password 일치");
                 }
             }
             return true;
         } catch (NullPointerException e){
-            logger.error("roomNo와 room 객체 매칭 실패");
+            logger.error("roomNo와 room 객체 매칭 실패"+roomNo);
             throw e;
         }
     }
