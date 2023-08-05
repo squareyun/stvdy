@@ -7,12 +7,12 @@ export const usewebRtcStore = defineStore({
   id: 'webrtc',
   state: () => ({
     // userNo: null,
-    // userNo: useUsersStore().user.id,
-    userNo: Math.floor(Math.random() * (200 - 1 + 1)) + 1,
+    userNo: useUsersStore().user.id,
+    // userNo: Math.floor(Math.random() * (200 - 1 + 1)) + 1,
     mySessionId: '123',
     // myUserName : null,
-    // myUserName : useUsersStore().user.username,
-    myUserName : Math.floor(Math.random() * (200 - 1 + 1)) + 1+'제발되라',
+    myUserName : useUsersStore().user.username,
+    // myUserName : Math.floor(Math.random() * (200 - 1 + 1)) + 1+'제발되라',
     endHour: 0,
     endMinute: 0,
     quota: 16,
@@ -26,13 +26,14 @@ export const usewebRtcStore = defineStore({
     /// 참여시 사용할 것
     inputPassword: null,
 
-    // realname: useUsersStore().user.realname,
-    realname: '홍길동'+ Math.floor(Math.random() * (200 - 1 + 1)) + 1,
+    realname: useUsersStore().user.realname,
+    // realname: '홍길동'+ Math.floor(Math.random() * (200 - 1 + 1)) + 1,
 
 
     //////////////////////////
     // 메인페이지에서 사용되는 방 목록 관련
     roomList: null,
+    roomId : 1,
 
   }),
   actions: {
@@ -102,14 +103,14 @@ export const usewebRtcStore = defineStore({
     //     console.log(err)
     //   })
     // }
-    joinSession(router) {
-      router.push({
-        name: 'roomJoin',
-        params: {
-          roomName: encodeURIComponent(this.mySessionId), // 인코딩해서 보내줘야만 작동함
-        },
-      })
-    },
+    // joinSession(router) {
+    //   router.push({
+    //     name: 'roomJoin',
+    //     params: {
+    //       roomName: encodeURIComponent(this.mySessionId), // 인코딩해서 보내줘야만 작동함
+    //     },
+    //   })
+    // },
     // joinSession(){
     //   // 새로운 탭에서 경로를 엽니다.
     //   const newTabUrl = `/room/${this.mySessionId}`;
@@ -160,15 +161,28 @@ export const usewebRtcStore = defineStore({
     async getRtcRooms() {
       try{
         // const response = axios.get('http://54.180.9.43:8080/rooms/list/')
-        const response = axios.get('http://localhost:8080/rooms/list/')
-        roomList.value = await response.data
+        console.log('이건가1')
+        const response = axios.get('http://localhost:8080/rooms/list')
+        console.log('이건가2')
+        this.roomList = await response.data
+        console.log('이건가3')
       }
       catch(error){
+        console.log('이건가4')
         console.error('방 리스트 받아오는 오류 발생: ', error)
       }
+    },
+    joinRoom(room) {
+      // this.$router.push({ name: 'MovieDetailView', params: { id: moviecard.id }});  
+      this.roomId = room.roomId
+      router.push({
+        name:'roomJoin',
+        params: { 
+          // roomName: encodeURIComponent(mySessionId.value),  // 인코딩해서 보내줘야만 작동함
+          roomName: room.roomTitle,  // 인코딩해서 보내줘야만 작동함
+        },
+      })
     }
-
-
     
   },
   mutations: {

@@ -136,14 +136,16 @@ public class RoomController {
         String sessionId;
         String password = map.get("password");
         Integer userId = Integer.parseInt(map.get("userId"));
+        logger.debug("[join] 호출");
         if( roomService.checkValid(roomNo, password)){ //1번 단계
             //OPENVIDU > session 접속을 위한 token 생성
             sessionId = roomService.getSessionIdByRoomNo(roomNo); //2번 단계
             token = roomService.joinSession(sessionId); //3번 단계
-
+            logger.debug("[join] 토큰처리 수행 완료");
             //DB처리
             roomService.addParticipant(roomNo,"참여자", userId); //4번
             roomService.addRoomLog(roomNo,userId); //5번
+            logger.debug("[join] DB처리 완료");
         }
 
         return token;
