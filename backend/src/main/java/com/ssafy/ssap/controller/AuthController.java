@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -103,4 +104,26 @@ public class AuthController {
 
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);
 	}
+
+	/**
+	 * 임시 비밀번호 발급
+	 */
+	@PutMapping("/findpwd")
+	public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> map) {
+		Map<String, Object> resultMap = new HashMap<>();
+		HttpStatus status = null;
+
+		try {
+			emailService.resetPwdEmail(map.get("email"), map.get("name"));
+			resultMap.put("message", MessageFormat.SUCCESS);
+			status = HttpStatus.ACCEPTED;
+		} catch (Exception e) {
+			logger.error("임시 비밀번호 전송 실패: ", e);
+			resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage());
+			status = HttpStatus.INTERNAL_SERVER_ERROR;
+		}
+
+		return new ResponseEntity<Map<String, Object>>(resultMap, status);
+	}
+
 }
