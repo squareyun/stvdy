@@ -102,13 +102,18 @@ public class RoomController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<?> search(@RequestParam String keyword, @RequestParam Integer page){
+    public ResponseEntity<Map<String,Object>> search(){
         /*
           keyword로 where = keyword 검색 쿼리 날린 결과 돌려주기
           @return : roomNo(int) roomTitle(String) quota(int) participantsCnt(int) roomImagePath(String)
          * pageLimit(미정) 개수만큼 자르기
          */
-        return new ResponseEntity<>(roomService.getRoomList(keyword,page), HttpStatus.OK);
+        System.out.println("rooms/list 접근");
+        Map<String,Object> resultMap = new HashMap<>();
+        System.out.println("resultMap 생성");
+        resultMap.put("roomList",roomService.getRoomList());
+        System.out.println("put 완료");
+        return new ResponseEntity<>(resultMap, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{roomNo}")
