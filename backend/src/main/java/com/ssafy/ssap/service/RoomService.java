@@ -6,6 +6,7 @@ import com.ssafy.ssap.domain.studyroom.Room;
 import com.ssafy.ssap.domain.studyroom.RoomLog;
 import com.ssafy.ssap.domain.user.User;
 import com.ssafy.ssap.dto.RoomCreateDto;
+import com.ssafy.ssap.dto.RoomDto;
 import com.ssafy.ssap.repository.*;
 import io.openvidu.java.client.*;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -304,10 +303,19 @@ public class RoomService {
         logger.debug("room/exit 트랜잭션 정상 완료");
     }
 
-    public List<Room> getRoomList(String keyword, Integer page) {
-        if(keyword==null) System.out.println("keyword is null");
-        if(page==null) System.out.println("page is null");
-        return roomRepository.findAll(); //키워드와 페이지 검색 수정필요
+    public List<RoomDto> getRoomList() {
+//        if(keyword==null) System.out.println("keyword is null");
+//        if(page==null) System.out.println("page is null");
+        System.out.println("getRoomList 접근");
+        List<RoomDto> list = roomRepository.findAllRooms();
+//        ListIterator<Room> li = list.listIterator();
+//        System.out.println("LIST 목록!!!!!!!!!!!");
+//        while(li.hasNext()){
+//            System.out.println(li.next().toString());
+//        }
+        System.out.println(list.get(0).toString());
+//        System.out.println(room.toString());
+        return list; //키워드와 페이지 검색 수정필요
     }
 }
 
