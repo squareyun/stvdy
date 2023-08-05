@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -301,6 +302,12 @@ public class RoomService {
             throw e;
         }
         logger.debug("room/exit 트랜잭션 정상 완료");
+    }
+
+    public List<Room> getRoomList(String keyword, Integer page) {
+        if(keyword==null) System.out.println("keyword is null");
+        if(page==null) System.out.println("page is null");
+        return roomRepository.findAll(); //키워드와 페이지 검색 수정필요
     }
 }
 

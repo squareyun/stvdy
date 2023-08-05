@@ -108,9 +108,7 @@ public class RoomController {
           @return : roomNo(int) roomTitle(String) quota(int) participantsCnt(int) roomImagePath(String)
          * pageLimit(미정) 개수만큼 자르기
          */
-//        List<RoomDto> roomList = new ArrayList<RoomDto>();
-        System.out.println(keyword+" / "+page);
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+        return new ResponseEntity<>(roomService.getRoomList(keyword,page), HttpStatus.OK);
     }
 
     @GetMapping("/detail/{roomNo}")
