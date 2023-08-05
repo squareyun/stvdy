@@ -138,15 +138,14 @@
     // 방 참가할때 사용하는 코드임
     console.log('joinRoom들어가기전')
     joinRoom(roomId.value).then((token) => {
-      console.log('joinRoom들어옴')
       console.log(token)
       console.log(myUserName.value)
-      console.log('참가중1')
+      console.log('방참여 가능!')
       session.value.connect(token, {clientData: myUserName.value})
       .then(() => {
         console.log()
         isJoin.value = true
-        console.log('참가중2')
+        console.log('방참여가 완료된거나 다름업슴!')
           let publisherTmp = OV.value.initPublisher(undefined, {
             audioSource: undefined, // The source of audio. If undefined default microphone
             videoSource: undefined, // The source of video. If undefined default webcam
@@ -170,47 +169,52 @@
         })
     })
     .catch((error)=>{
+
+      // joinRoom 실패시에만 creatRoom 이루어짐
+
       console.log('만들어진 방이없어.', error)
+      /// 방 생성할 때 만드는 코드임
+      // getToken(mySessionId.value).then((token) => {
+      console.log('isJoin걸리기전')
+      if(isJoin.value) return
+      console.log('createToken들어오기전')
+      createToken(mySessionId.value).then((token) => {
+        console.log('createToken들어옴')
+        console.log('토큰임',token)
+        console.log(myUserName.value)
+        
+        console.log('여긴가1')
+        session.value.connect(token, {clientData: myUserName.value})
+        .then(() => {
+          console.log('방생성 완료된거나 다름업슴!')
+            let publisherTmp = OV.value.initPublisher(undefined, {
+              audioSource: undefined, // The source of audio. If undefined default microphone
+              videoSource: undefined, // The source of video. If undefined default webcam
+              publishAudio: !muted.value, // Whether you want to start publishing with your audio unmuted or not
+              publishVideo: !camerOff.value, // Whether you want to start publishing with your video enabled or not
+              // resolution: "640x480", // The resolution of your video
+              resolution: "160x120", // The resolution of your video
+              frameRate: 30, // The frame rate of your video
+              insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
+              mirror: false, // Whether to mirror your local video or not
+            });
+            mainStreamManager.value = publisherTmp
+            publisher.value = publisherTmp
+
+            session.value.publish(publisher.value)
+            getMedia()  // 세션이 만들어졌을때 미디어 불러옴
+            addEmptyBox() // 빈 자리 메꾸기
+            console.log('방생성 완료!!!')
+          })
+          .catch((error) => {
+            console.log("session 커넥팅에 문제생김(createToken):", error.code, error.message);
+          })
+      })
+      // 여기에 추가할거야!!!!!!
     })
 
 
-    /// 방 생성할 때 만드는 코드임
-    // getToken(mySessionId.value).then((token) => {
-    console.log('isJoin걸리기전')
-    if(isJoin.value) return
-    console.log('createToken들어오기전')
-    createToken(mySessionId.value).then((token) => {
-      console.log('createToken들어옴')
-      console.log(token)
-      console.log(myUserName.value)
-      
-      console.log('여긴가1')
-      session.value.connect(token, {clientData: myUserName.value})
-      .then(() => {
-        console.log('여긴가3')
-          let publisherTmp = OV.value.initPublisher(undefined, {
-            audioSource: undefined, // The source of audio. If undefined default microphone
-            videoSource: undefined, // The source of video. If undefined default webcam
-            publishAudio: !muted.value, // Whether you want to start publishing with your audio unmuted or not
-            publishVideo: !camerOff.value, // Whether you want to start publishing with your video enabled or not
-            // resolution: "640x480", // The resolution of your video
-            resolution: "160x120", // The resolution of your video
-            frameRate: 30, // The frame rate of your video
-            insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
-            mirror: false, // Whether to mirror your local video or not
-          });
-          mainStreamManager.value = publisherTmp
-          publisher.value = publisherTmp
-
-          session.value.publish(publisher.value)
-          getMedia()  // 세션이 만들어졌을때 미디어 불러옴
-          addEmptyBox() // 빈 자리 메꾸기
-        })
-        .catch((error) => {
-          console.log("session 커넥팅에 문제생김(createToken):", error.code, error.message);
-        })
-    })
-    // 여기에 추가할거야!!!!!!
+    
 
     // window.addEventListener("beforeunload",leaveSession);
   }
@@ -264,12 +268,14 @@
     const password = store.password
     const backImgFile = store.backImgFile
     const rule = store.rule
-    
+    console.log('크리에이트 토큰 내부1')
     const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/add', 
       {userNo: userNo, title: mySessionId, endHour: endHour, endMinute: endMinute, quota: quota, 
         isPrivacy: isPrivacy, password: password, iamgePath: backImgFile, rule: rule}, 
       {headers: { 'Content-Type': 'application/json', },
     });
+    console.log('크리에이트 토큰 내부2')
+    console.log('create할때',userNo, mySessionId, endHour, endMinute, quota, isPrivacy, password, backImgFile, rule)
     console.log('이것이 만든 방의 리스폰스데이터 \n', response.data)
     return response.data;
   }
@@ -282,15 +288,17 @@
     const roomNo = roomId  // roomName -> 방 id 를 의미
     const userNo = store.userNo // 임시로 랜덤 값으로 보내는 중
     const inputPassword = store.inputPassword
-    console.log('조인룸 안됨1???????')
+    console.log('조인룸 내부1')
     
+    console.log(roomNo, userNo, inputPassword)
     // const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/' + roomNo, {userNo: userNo, password: inputPassword}, {
-    const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/' + roomNo, {userId: userNo, password: inputPassword}, {
+    const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/' + roomNo, {userNo: userNo, password: inputPassword}, {
     headers: { 'Content-Type': 'application/json', },
     });
-    console.log('조인룸 안됨2???????')
+    console.log('조인룸 내부2 해치웠나?1')
     console.log('joinRoom 리스폰스데이터 잘 받음',response.data)
-    return response.data;
+    return response.data
+    // return response.data.token
   }
 
   /////
@@ -505,7 +513,7 @@
         emptyBoxes.removeChild(child);
       }
     });
-    console.log('으아ㅏ아아ㅏㄱ',subscribersComputed.value.length)
+    console.log('나빼고 참여자 수',subscribersComputed.value.length)
     const boxNum = quota.value - subscribersComputed.value.length -1
     for (let index = 0; index < boxNum; index++) {
       const div = document.createElement('div')

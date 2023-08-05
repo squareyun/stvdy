@@ -14,7 +14,7 @@ const title = ref(null)
 onBeforeMount(() => {
   webRtcStore.getRtcRooms()
   roomList.value = webRtcStore.roomList
-  console.log(roomList.value)
+  console.log('받아온 roomList',roomList.value)
 })
 
 
@@ -67,7 +67,8 @@ function joinRoom(room) {
       <div v-for="room in roomList" :key="room.id" class="card">
         <p>{{ room.quota }}</p>
         <div>
-          <img @click="joinRoom(room)" :src="room.imgPreviewUrl" alt="imgPreview" style="max-width: 300px; max-height: 300px">
+          <img @click="joinRoom(room)" v-if="room.imgPreviewUrl" :src="room.imgPreviewUrl" alt="imgPreview" style="max-width: 300px; max-height: 300px">
+          <div @click="joinRoom(room)" v-if="!room.imgPreviewUrl" style="width: 300px; height: 300px; background-color : crimson;">메롱</div>
         </div>
         <div>
           <p @click="joinRoom(room)">{{ room.roomTitle }}</p>

@@ -33,7 +33,7 @@ export const usewebRtcStore = defineStore({
     //////////////////////////
     // 메인페이지에서 사용되는 방 목록 관련
     roomList: null,
-    roomId : 1,
+    roomId : 1000,
 
   }),
   actions: {
@@ -161,14 +161,14 @@ export const usewebRtcStore = defineStore({
     async getRtcRooms() {
       try{
         // const response = axios.get('http://54.180.9.43:8080/rooms/list/')
-        console.log('이건가1')
+        console.log('getRtcRooms내부1')
         const response = axios.get('http://localhost:8080/rooms/list')
-        console.log('이건가2')
+        console.log('getRtcRooms내부2')
         this.roomList = await response.data
-        console.log('이건가3')
+        console.log('getRtcRooms내부3')
       }
       catch(error){
-        console.log('이건가4')
+        console.log('getRtcRooms내부 오류')
         console.error('방 리스트 받아오는 오류 발생: ', error)
       }
     },
