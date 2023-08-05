@@ -53,7 +53,7 @@ public class Room {
     private String rule;
 
     @Builder.Default
-    @OneToMany(mappedBy = "room", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "room")
     private List<Participants> participantsList = new ArrayList<>();
 
 }
