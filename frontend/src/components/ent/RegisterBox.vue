@@ -38,7 +38,7 @@ const varificationEmail = async (value) => {
 }
 
 async function onSubmit(values) {
-  const user = {
+  const data = {
     email: values.email,
     password: values.password,
     name: values.realname,
@@ -46,9 +46,9 @@ async function onSubmit(values) {
   }
 
   joinUser(
-    user,
-    (data) => {
-      console.log(data)
+    data,
+    (res) => {
+      console.log(res)
       router.push('/about')
     },
     (error) => {
@@ -142,7 +142,7 @@ async function onSubmit(values) {
 </template>
 
 <style>
-ents > Form > .div-line {
+.ents > form > .div-line {
   width: 400px;
   height: 1px;
   margin-top: 25px;

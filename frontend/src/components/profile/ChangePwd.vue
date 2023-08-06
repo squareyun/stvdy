@@ -78,7 +78,7 @@ async function onSubmit(values) {
   border: none;
   background-color: transparent;
 
-  font-family: 'ASDGothic';
+  font-family: 'ASDGothicM';
   font-size: 1rem;
   color: var(--hl-purple);
   transition: color 0.4s;

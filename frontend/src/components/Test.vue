@@ -24,8 +24,8 @@ const changeUserName = (name) => {
   }
   listQuestion(
     query,
-    (mes) => {
-      console.log(mes)
+    (res) => {
+      console.log(res)
     },
     (fail) => {
       console.log(fail)

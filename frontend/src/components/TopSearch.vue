@@ -73,7 +73,7 @@ const openAlarms = () => {
 
   color: var(--font100);
 
-  font-family: 'ASDGothic';
+  font-family: 'ASDGothicM';
   font-size: 1rem;
 
   width: 330px;

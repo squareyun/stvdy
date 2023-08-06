@@ -50,7 +50,7 @@ onMounted(() => {
 }
 
 #time {
-  font-family: consolas, 'ASDGothic';
+  font-family: consolas, 'ASDGothicM';
   color: var(--topbar-time);
   font-size: 0.9rem;
 

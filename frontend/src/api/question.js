@@ -1,12 +1,16 @@
 import axios from 'axios'
 
-const listQuestion = async (query, success, fail) => {
+const listQuestion = async (values, success, fail) => {
   await axios
     .get(
-      `questions/list?keyword=${query.keyword}&nickname=${query.nickname}&page=${query.page}`,
+      `/api/questions/list?keyword=${values.keyword}&nickname=${values.nickname}&page=${values.page}`,
     )
     .then(success)
     .catch(fail)
 }
 
-export { listQuestion }
+const writeQuestion = async (values, success, fail) => {
+  await axios.post(`/api/questions/add`, values).then(success).catch(fail)
+}
+
+export { listQuestion, writeQuestion }
