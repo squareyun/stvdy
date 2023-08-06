@@ -140,9 +140,9 @@ public class RoomService {
         try {
             openVidu = new OpenVidu(OPENVIDU_URL,SECRET);
             session = this.openVidu.createSession(); //오픈비두 서버에 세션 생성
-            logger.info("session created, "+session+" / "+session.getSessionId());
+            logger.debug("session created, "+session+" / "+session.getSessionId());
             token = joinSession(session.getSessionId()); //joinSession에서 connection 생성
-            logger.info("connection created, "+token);
+            logger.debug("connection created, "+token);
             resultMap.put("session",session);
             resultMap.put("token",token);
             return resultMap;
@@ -217,16 +217,14 @@ public class RoomService {
     }
 
     @Transactional
-    public void changeHost(Map<String, Integer> changeInfo) {
+    public void changeHost(Integer currentUserNo, Integer nextUserNo) {
         /*
           changeInfo.get("roomNo"), changeInfo.get("currentUserNo"), changeInfo.get("nextUserNo")
           participants테이블의 room_id = roomNo and user_id = nextUserNo 조건에 해당하는 유저의 role을 `방장`으로 바꾼다.
           + 권한부여
           room_id = roomNo and user_id = currentUserNo에 해당하는 유저의 role을 일반으로 바꾼다.
          */
-        Integer currentUserNo = changeInfo.get("currentUserNo");
-        Integer nextUserNo = changeInfo.get("nextUserNo");
-        logger.info("userNo"+currentUserNo+"/participantsNo:"+nextUserNo);
+        logger.trace("userNo"+currentUserNo+"/participantsNo:"+nextUserNo);
 
         Participants currentHost = participantsRepository.findById(currentUserNo).orElse(null);
         Participants nextHost = participantsRepository.findById(nextUserNo).orElse(null);
@@ -239,7 +237,7 @@ public class RoomService {
 //                participantsRepository.save(currentHost);
                 nextHost.setRole(ROLE_HOST);
 //                participantsRepository.save(nextHost);
-                logger.info("호스트 role 변경 완료. partiNo "+currentUserNo+" to "+currentHost.getRole().toString()+", partiNo "+nextUserNo+" to "+nextHost.getRole().toString());
+                logger.debug("호스트 role 변경 완료. partiNo "+currentUserNo+" to "+currentHost.getRole().toString()+", partiNo "+nextUserNo+" to "+nextHost.getRole().toString());
             }
         } catch (NullPointerException e) {
             logger.error("user_id와 참여자/호스트 매칭 실패");
@@ -342,6 +340,24 @@ public class RoomService {
         //alarmService.createAlarm(room.getTitle()+"방에서 내보내졌습니다.", reason, participant.getUserId());
 
 
+    }
+
+    public String joinRoom(Integer roomNo, String password, Integer userNo) {
+        String sessionId;
+        String token;
+        if( checkValid(roomNo, password)){ //1번 단계
+            //OPENVIDU > session 접속을 위한 token 생성
+            sessionId = getSessionIdByRoomNo(roomNo); //2번 단계
+            token = joinSession(sessionId); //3번 단계
+            logger.debug(" 토큰처리 수행 완료");
+            //DB처리
+            addParticipant(roomNo,"참여자", userNo); //4번
+            addRoomLog(roomNo,userNo); //5번
+        } else{
+            logger.debug("방 접근이 유효하지 않음.");
+            token = null;
+        }
+        return token;
     }
 }
 
