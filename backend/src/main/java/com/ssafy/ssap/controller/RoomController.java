@@ -62,35 +62,56 @@ public class RoomController {
     }
 
     @PutMapping("/host")
-    public void changeHost(@RequestBody Map<String, Integer> changeInfo){
+    public ResponseEntity<?> changeHost(@RequestBody Map<String, Integer> changeInfo){
         /* currentUserNo, nextUserNo */
+        HttpStatus status;
         logger.debug("host 변경 controller 호출");
-        roomService.changeHost(changeInfo);
+        try{
+            roomService.changeHost(changeInfo.get("currentUserNo"),changeInfo.get("nextUserNo"));
+            status = HttpStatus.OK;
+        } catch(Exception e){
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+        return new ResponseEntity<>(status);
     }
 
     @PutMapping("/role")
-    public void assignStaff(@RequestBody Integer participantNo){
+    public ResponseEntity<?> assignStaff(@RequestBody Integer participantNo){
         /*
           assignInfo.get("roomNo"), assignInfo.get("participantsNo")
           participants테이블의 room_id = roomNo and user_id = participantsNo 조건에 해당하는 유저의 role을 `스태프`으로 바꾼다.
           + 권한부여
          */
-        logger.debug("staff 임명 controller 호출 with "+participantNo);
-        roomService.assignStaff(participantNo);
+        HttpStatus status;
+        logger.trace("staff 임명 controller 호출 with "+participantNo);
+        try{
+            roomService.assignStaff(participantNo);
+            status = HttpStatus.OK;
+        } catch (Exception e){
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+        return new ResponseEntity<>(status);
     }
 
     @Transactional
     @PostMapping("/kick")
-    public void kick(@RequestBody Map<String, Object> kickInfo){
+    public ResponseEntity<?> kick(@RequestBody Map<String, Object> kickInfo){
         /*
           kickInfo.get("roomNo"), kickInfo.get("participantsNo"), kickInfo.get("reason")
          */
         logger.debug("rooms/kick controller 호출 with : "+kickInfo.toString());
-        roomService.kickAndAlarm(
-                (Integer) kickInfo.get("roomNo"),
-                (Integer) kickInfo.get("participantsNo"),
-                (String) kickInfo.get("reason")
-        );
+        HttpStatus status;
+        try{
+            roomService.kickAndAlarm(
+                    (Integer) kickInfo.get("roomNo"),
+                    (Integer) kickInfo.get("participantsNo"),
+                    (String) kickInfo.get("reason")
+            );
+            status = HttpStatus.OK;
+        } catch(Exception e){
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+        return new ResponseEntity<>(status);
     }
 
     @GetMapping("/code/{roomNo}")
@@ -99,7 +120,7 @@ public class RoomController {
           roomno 기반으로 code와 link 리턴.
           roomno 기반으로 code와 link에 대한 정의 필요
          */
-        System.out.println(roomNo);
+        logger.trace(roomNo+"방의 코드 생성 요청");
         return new ResponseEntity<>("code",HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -110,26 +131,31 @@ public class RoomController {
           @return : roomNo(int) roomTitle(String) quota(int) participantsCnt(int) roomImagePath(String)
          * pageLimit(미정) 개수만큼 자르기
          */
-        System.out.println("rooms/list 접근");
+        HttpStatus status;
         Map<String,Object> resultMap = new HashMap<>();
-        System.out.println("resultMap 생성");
-        resultMap.put("roomList",roomService.getRoomList());
-        System.out.println("put 완료");
-        return new ResponseEntity<>(resultMap, HttpStatus.OK);
+        try {
+            resultMap.put("roomList",roomService.getRoomList());
+            status = HttpStatus.OK;
+        } catch(Exception e){
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+        return new ResponseEntity<>(resultMap, status);
     }
 
+    @Deprecated
     @GetMapping("/detail/{roomNo}")
     public ResponseEntity<?> detail(@PathVariable Integer roomNo){
         /*
           roomNo에 해당하는 room에 대한 정보(roomDto) return
+          participant 정보가 필요하여 넘겨주는 것이 아니면 구현X
          */
-        System.out.println(roomNo);
+        logger.trace(roomNo+"방의 정보 요청");
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     @Transactional
     @PostMapping("/{roomNo}")
-    public String join(@PathVariable Integer roomNo, @RequestBody Map<String,String> map) {
+    public ResponseEntity<?> join(@PathVariable Integer roomNo, @RequestBody Map<String,Object> map) {
         /*
           1. 해당하는 룸넘버가 입장가능한지 조회 (비밀번호, 정원(+강퇴당했었는지?))
           2. 룸넘버로 세션아이디 쿼리조회
@@ -137,20 +163,22 @@ public class RoomController {
           4. participants 테이블 insert
           5. room_log 테이블 insert
          */
-        String token=null;
-        String sessionId;
-        String password = map.get("password");
-        Integer userNo = Integer.parseInt(map.get("userNo"));
-        if( roomService.checkValid(roomNo, password)){ //1번 단계
-            //OPENVIDU > session 접속을 위한 token 생성
-            sessionId = roomService.getSessionIdByRoomNo(roomNo); //2번 단계
-            token = roomService.joinSession(sessionId); //3번 단계
-            logger.debug("[join] 토큰처리 수행 완료");
-            //DB처리
-            roomService.addParticipant(roomNo,"참여자", userNo); //4번
-            roomService.addRoomLog(roomNo,userNo); //5번
+        HttpStatus status;
+        String token;
+
+        try{
+            token = roomService.joinRoom(
+                    roomNo,
+                    (String) map.get("password"),
+                    (Integer) map.get("userNo")
+            );
+            status = HttpStatus.OK;
+        } catch(Exception e){
+            token = null;
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
-        return token;
+
+        return new ResponseEntity<>(token, status);
     }
 
 //    @GetMapping("/code/{roomcode}")
