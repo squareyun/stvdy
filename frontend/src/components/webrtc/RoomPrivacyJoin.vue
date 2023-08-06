@@ -137,6 +137,8 @@
 
     // 방 참가할때 사용하는 코드임
     console.log('joinRoom들어가기전')
+    console.log(roomId.value)
+
     joinRoom(roomId.value).then((token) => {
       console.log(token)
       console.log(myUserName.value)
@@ -240,7 +242,8 @@
     
     // 메인페이지로 넘어감
     router.push({
-      name:'roomAdd',// 임시로 roomAdd로 보냄.
+      // name:'roomAdd',// 임시로 roomAdd로 보냄.
+      name:'main',// 임시 이름 main으로 넘겨줌.
       // params: { 
       //   roomName: mySessionId.value,
       // },
@@ -525,6 +528,16 @@
       emptyBoxes.appendChild(div);
     }
   }
+
+  function shutDownRoom() {
+    const isShut = confirm("방 폐쇄 버튼을 눌렀습니다. 진심입니까? 휴먼??")
+    if(isShut){
+      alert('진심이군요 휴먼, 알겠습니다. 방을 폐쇄하도록하죠.')
+    }
+    else{
+      alert('거짓말을 하다니 그런짓은 하지마십시오. 휴먼.')
+    }
+  }
   // onMounted(() => {
   //   addEmptyBox()
   // }),
@@ -577,6 +590,10 @@
             <option disabled>사용할 마이크를 선택하세요</option>
           </select>
         </div>
+      </div>
+      <!-- 방 종료 버튼 -->
+      <div id=''>
+        <button @click="shutDownRoom">방 폐쇄하기</button>
       </div>
     </div>
   </div>

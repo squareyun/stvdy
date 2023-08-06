@@ -35,6 +35,8 @@ export const usewebRtcStore = defineStore({
     roomList: null,
     roomId : 1000,
 
+    router : useRouter()
+
   }),
   actions: {
     checkmyUserName(){
@@ -75,6 +77,12 @@ export const usewebRtcStore = defineStore({
     },
     updateRule(newRule){
       this.rule = newRule
+    },
+
+    // main 화면에서 방 입장 비밀번호 입력시
+    updatePwInput(newPwInput) {
+      this.password = newPwInput
+      console.log(this.password)
     },
     // joinSession(router){
     //   axios({
@@ -158,13 +166,15 @@ export const usewebRtcStore = defineStore({
     /////////////////////////////////////////////////
     // 메인 페이지에서 사용되는 방 리스트 목록
     // 방들 찾아옴.
+    // async getRtcRooms() {
     async getRtcRooms() {
       try{
         // const response = axios.get('http://54.180.9.43:8080/rooms/list/')
         console.log('getRtcRooms내부1')
-        const response = axios.get('http://localhost:8080/rooms/list')
+        const response = await axios.get('http://localhost:8080/rooms/list')
         console.log('getRtcRooms내부2')
-        this.roomList = await response.data
+        this.roomList = response.data.roomList
+        console.log(this.roomList)
         console.log('getRtcRooms내부3')
       }
       catch(error){
@@ -172,16 +182,20 @@ export const usewebRtcStore = defineStore({
         console.error('방 리스트 받아오는 오류 발생: ', error)
       }
     },
-    joinRoom(room) {
+    joinTheRoom(room) {
       // this.$router.push({ name: 'MovieDetailView', params: { id: moviecard.id }});  
-      this.roomId = room.roomId
-      router.push({
+      this.quota = room.quota
+      this.roomId = room.id
+      console.log('조인더룸내부1', this.roomId)
+      this.router.push({
         name:'roomJoin',
         params: { 
           // roomName: encodeURIComponent(mySessionId.value),  // 인코딩해서 보내줘야만 작동함
-          roomName: room.roomTitle,  // 인코딩해서 보내줘야만 작동함
+          // roomName: room.roomTitle,  // 인코딩해서 보내줘야만 작동함
+          roomName: encodeURIComponent(room.title),
         },
       })
+      console.log('조인더룸내부2')
     }
     
   },

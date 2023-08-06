@@ -137,13 +137,14 @@
 
     // 방 참가할때 사용하는 코드임
     console.log('joinRoom들어가기전')
+    console.log(roomId.value)
+
     joinRoom(roomId.value).then((token) => {
       console.log(token)
       console.log(myUserName.value)
       console.log('방참여 가능!')
       session.value.connect(token, {clientData: myUserName.value})
       .then(() => {
-        console.log()
         isJoin.value = true
         console.log('방참여가 완료된거나 다름업슴!')
           let publisherTmp = OV.value.initPublisher(undefined, {
@@ -240,7 +241,8 @@
     
     // 메인페이지로 넘어감
     router.push({
-      name:'roomAdd',// 임시로 roomAdd로 보냄.
+      // name:'roomAdd',// 임시로 roomAdd로 보냄.
+      name:'main',// 임시 이름 main으로 넘겨줌.
       // params: { 
       //   roomName: mySessionId.value,
       // },
@@ -535,9 +537,6 @@
       alert('거짓말을 하다니 그런짓은 하지마십시오. 휴먼.')
     }
   }
-  // onMounted(() => {
-  //   addEmptyBox()
-  // }),
 
 </script>
 
@@ -564,9 +563,6 @@
           <UserVideo :stream-manager="publisherComputed" @click.native="updateMainVideoStreamManager(publisher)" />
           <UserVideo v-for="sub in subscribersComputed" :key="sub.stream.connection.connectionId" :stream-manager="sub"
             @click.native="updateMainVideoStreamManager(sub)" />
-          <!-- 이거는 빈 자리 검정박스 --><!--  --><!--  -->
-          <!-- <div v-for="(number, i) in ( quota  - subscribersComputed.length -1)" :key="i" class="blackbox"></div> -->
-          <!-- <div id="emptyBox"></div> -->
         </div>
         <!-- 선택 캠 -->
         <div id="mainVideo">
