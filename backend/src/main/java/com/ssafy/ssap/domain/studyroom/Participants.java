@@ -25,6 +25,9 @@ public class Participants {
     @ColumnDefault("0")
     private Boolean isOut;
 
+    @Column(name = "connection_id", length = 100)
+    private String connectionId;
+
     @Setter
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "role")
