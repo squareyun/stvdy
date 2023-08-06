@@ -84,11 +84,13 @@ public class RoomController {
     public void kick(@RequestBody Map<String, Object> kickInfo){
         /*
           kickInfo.get("roomNo"), kickInfo.get("participantsNo"), kickInfo.get("reason")
-          participants테이블의 room_id = roomNo and user_id = participantsNo 조건에 해당하는 유저의 is_out을 0으로 바꾼다.
-          alarm 테이블에 insert (insert into alarm(title, detail, link, user_id) values("강제퇴장 처리", kickinfo.reason, ?, kickInfo.partiNo))
-          room_log 테이블에 update (update room_log set exit_time=now() where user_id= ~ and room_id = ~)
          */
-        System.out.println(kickInfo.toString());
+        logger.debug("rooms/kick controller 호출 with : "+kickInfo.toString());
+        roomService.kickAndAlarm(
+                (Integer) kickInfo.get("roomNo"),
+                (Integer) kickInfo.get("participantsNo"),
+                (String) kickInfo.get("reason")
+        );
     }
 
     @GetMapping("/code/{roomNo}")
@@ -148,7 +150,6 @@ public class RoomController {
             roomService.addParticipant(roomNo,"참여자", userNo); //4번
             roomService.addRoomLog(roomNo,userNo); //5번
         }
-
         return token;
     }
 
@@ -159,7 +160,8 @@ public class RoomController {
 //    }
 
     @PostMapping("exit")
-    public void exit(@RequestBody Map<String, Integer>map){
-        roomService.exit(map);
+    public ResponseEntity<?> exit(@RequestBody Map<String, Integer>map){
+        HttpStatus status = roomService.exit(map.get("roomNo"), map.get("participantNo"));
+        return new ResponseEntity<>(status);
     }
 }

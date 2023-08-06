@@ -12,6 +12,7 @@ import io.openvidu.java.client.*;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -266,56 +267,81 @@ public class RoomService {
 
     @SuppressWarnings("DataFlowIssue")
     @Transactional
-    public void exit(Map<String, Integer> map) {
+    public HttpStatus exit(Integer roomNo, Integer participantNo) {
         /*
-        1. room_log 수정
-        2. participant 테이블 수정
-        3. openvidu connection close
+        1. openvidu connection close
+        2. room_log 수정
+        3. participant 테이블 수정
          */
-        Integer roomNo = map.get("roomNo");
-        Integer participantNo = map.get("participantNo");
+        String connectionId;
+        Session session;
+        HttpStatus status;
 
         RoomLog roomLog = roomLogRepository.findByRoomIdAndUserId(roomNo, participantNo).orElse(null);
-        Participants participants = participantsRepository.findById(participantNo).orElse(null);
+        Participants participant = participantsRepository.findById(participantNo).orElse(null);
+
 
         try{
-            //participant 테이블 수정 (is_Out 수정)
-            participants.setIsOut(true);
-            logger.debug("is_out 수정 완료");
+            //대상자 connection 강제 disconnect
+            connectionId = participant.getConnectionId();
+            session = openVidu.getActiveSession(roomLog.getRoom().getSessionId());
+            session.forceDisconnect(connectionId);
 
-            //room_log 수정 (spend hour 갱신)
-            LocalDateTime time_start, time_end;
-            time_start = roomLog.getEnterTime();
-            time_end = LocalDateTime.now();
-            int spend_min = Math.toIntExact(ChronoUnit.MINUTES.between(time_start, time_end));
-            LocalTime spend_time = LocalTime.of(spend_min/60,spend_min%60);
-            roomLog.setSpendHour(spend_time);
-            logger.debug("room_log 갱신 완료");
+            if(session.getConnection(connectionId) == null) {
+                //강제 disconnect 성공 시 db처리
 
-            //openvidu connection close -> 취소
-            //오래된 connection은 오픈비두에서 자체적으로 관리함.
-            //명시적으로 닫아주려면 Connection이나 ConnectionId를 DB등에 저장 및 관리하여야하여 오히려 보안성 저하하고 DB수정 필요
+                //participant 테이블 수정 (is_Out 수정)
+                participant.setIsOut(true);
+                logger.trace("is_out 수정 완료");
 
+                //room_log 수정 (spend hour 갱신)
+                LocalDateTime time_start, time_end;
+                time_start = roomLog.getEnterTime();
+                time_end = LocalDateTime.now();
+                int spend_min = Math.toIntExact(ChronoUnit.MINUTES.between(time_start, time_end));
+                LocalTime spend_time = LocalTime.of(spend_min / 60, spend_min % 60);
+                roomLog.setSpendHour(spend_time);
+                logger.trace("spend hour 갱신 완료");
+                status = HttpStatus.OK;
+            } else{
+                logger.error("openvidu connection이 남아있음");
+                status = HttpStatus.CONFLICT;
+            }
         } catch(NullPointerException e){
             logger.error("매칭되는 객체 없음");
-            throw e;
+            status = HttpStatus.CONFLICT;
+        } catch(OpenViduJavaClientException | OpenViduHttpException e){
+            logger.error("Openvidu connection 처리 실패");
+            status = HttpStatus.CONFLICT;
         }
         logger.debug("room/exit 트랜잭션 정상 완료");
+        return status;
     }
+
 
     public List<RoomDto> getRoomList() {
 //        if(keyword==null) System.out.println("keyword is null");
 //        if(page==null) System.out.println("page is null");
-        System.out.println("getRoomList 접근");
+        logger.trace("getRoomList 접근");
         List<RoomDto> list = roomRepository.findAllRooms();
 //        ListIterator<Room> li = list.listIterator();
-//        System.out.println("LIST 목록!!!!!!!!!!!");
-//        while(li.hasNext()){
-//            System.out.println(li.next().toString());
-//        }
-        System.out.println(list.get(0).toString());
-//        System.out.println(room.toString());
+
+        logger.debug(list.get(0).toString());
         return list; //키워드와 페이지 검색 수정필요
+    }
+
+    @Transactional
+    public void kickAndAlarm(Integer roomNo, Integer participantNo, String reason) {
+        /*
+        participants테이블의 participantsNo가 일치하는 유저의 is_out을 0으로 바꾼다.
+        alarm 테이블에 insert (insert into alarm(title, detail, link, user_id) values("강제퇴장 처리", kickinfo.reason, ?, kickInfo.partiNo))
+        room_log 테이블에 update (update room_log set exit_time=now() where user_id= ~ and room_id = ~)
+        */
+
+        if(exit(roomNo,participantNo) == HttpStatus.OK);
+        //alarmService.createAlarm(room.getTitle()+"방에서 내보내졌습니다.", reason, participant.getUserId());
+
+
     }
 }
 
