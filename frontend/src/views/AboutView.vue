@@ -43,9 +43,8 @@ div {
   margin-bottom: 4px;
   padding-left: 18px;
 
-  color: var(--font100);
-
   font-size: 1rem;
+  color: var(--font100);
 
   width: 360px;
   height: 46px;
@@ -64,6 +63,7 @@ div {
   margin-left: 31px;
 
   /* font-size: 14px; */
+  color: var(--font80);
   font-size: 0.9rem;
 
   text-align: center;

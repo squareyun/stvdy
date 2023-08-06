@@ -1,11 +1,12 @@
 <script setup>
 import * as Yup from 'yup'
 import { Form, Field } from 'vee-validate'
-import { useUsersStore, useAlertStore } from '@/stores'
-import router from '@/router'
+import { useUserStore, useAlertStore } from '@/stores'
 
 const schema = Yup.object().shape({
-  password: Yup.string(),
+  password: Yup.string()
+    .required('비밀번호를 넣어주세요')
+    .min(6, '더 긴 비밀번호를 사용해야합니다.'),
   passwordConfirm: Yup.string().oneOf(
     [Yup.ref('password'), null],
     '비밀번호가 일치하지않습니다.',
@@ -14,20 +15,11 @@ const schema = Yup.object().shape({
 
 async function onSubmit(values) {
   // test console print below
-  const usersStore = useUsersStore()
+  const userStore = useUserStore()
   const alertStore = useAlertStore()
   const editData = values
   delete editData.passwordConfirm
-  console.log(alertStore)
-  // 아래 코드는 백엔드 연결시 삭제
-  delete editData.prvpassword
-  try {
-    await usersStore.update(2, values)
-    await router.push('/mypage')
-    alertStore.success('비밀번호가 변경되었습니다.')
-  } catch (error) {
-    alertStore.error(error)
-  }
+  console.log(editData)
 }
 </script>
 
@@ -39,11 +31,7 @@ async function onSubmit(values) {
         @submit="onSubmit"
         :validation-schema="schema"
         v-slot="{ errors, isSubmitting }">
-        <p class="field-name">
-          &nbsp;&nbsp;기존 비밀번호
-          <span class="error-yup">{{ errors.password }}</span>
-          &nbsp;
-        </p>
+        <p class="field-name">&nbsp;&nbsp;기존 비밀번호 &nbsp;</p>
         <Field
           name="prvpassword"
           type="password"
@@ -98,7 +86,7 @@ async function onSubmit(values) {
   cursor: pointer;
 }
 
-.div-line {
+.others > form > .div-line {
   width: 400px;
   height: 1px;
   margin-top: 25px;

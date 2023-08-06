@@ -1,0 +1,1 @@
+import{_ as a,T as o}from"./TopSearch-c45de08a.js";import{r as n,o as r,c as s,a as e,b as _,F as c}from"./index-ec503cca.js";const d={__name:"MyPageView",setup(i){return(m,p)=>{const t=n("router-view");return r(),s(c,null,[e(a),e(o,{id:"top-items"}),_("main",null,[e(t,{id:"contents"})])],64)}}};export{d as default};

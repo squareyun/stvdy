@@ -14,7 +14,7 @@ export default defineConfig({
   build: {
     outDir: '../backend/src/main/resources/static',
   },
-  server: {
+  devServer: {
     proxy: {
       '/api': 'http://54.180.9.43:8080',
     },

@@ -15,7 +15,9 @@ const schema = Yup.object().shape({
     .max(45, '길이를 줄여주세요.')
     .min(2, '더 긴 이름을 사용해야합니다.'),
   email: Yup.string().email('이메일을 넣어주세요'),
-  password: Yup.string().required('비밀번호를 넣어주세요'),
+  password: Yup.string()
+    .required('비밀번호를 넣어주세요')
+    .min(4, '더 긴 비밀번호를 사용해야합니다.'),
   passwordConfirm: Yup.string().oneOf(
     [Yup.ref('password'), null],
     '비밀번호가 일치하지 않습니다',
@@ -25,10 +27,10 @@ const schema = Yup.object().shape({
 const emailValue = ''
 const varificationEmail = async (value) => {
   console.log(value)
-  // const usersStore = useUsersStore()
+  // const userStore = useUserStore()
   // const alertStore = useAlertStore()
   // try {
-  //   await usersStore.varifyEmail(value)
+  //   await userStore.varifyEmail(value)
   //   alertStore.success('인증메일이 전송되었습니다.')
   // } catch (error) {
   //   alertStore.error(error)
@@ -140,7 +142,7 @@ async function onSubmit(values) {
 </template>
 
 <style>
-.div-line {
+ents > Form > .div-line {
   width: 400px;
   height: 1px;
   margin-top: 25px;

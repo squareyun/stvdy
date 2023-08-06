@@ -3,21 +3,18 @@ import { RouterLink } from 'vue-router'
 import { useQuestionsStore, useAuthStore } from '@/stores'
 import router from '@/router'
 
-async function myQuestion() {
-  const questionStore = useQuestionsStore()
-  await questionStore.getMyQtn()
-  router.push({ name: 'question' })
-}
-
 const logout = async () => {
   const authStore = useAuthStore()
   await authStore.logout()
+  router.push({ name: 'login' })
 }
 </script>
 
 <template>
   <div id="side-panel">
-    <router-link to="home">
+    <router-link
+      to="home"
+      id="side-home">
       <div class="selected"></div>
       <svg
         width="1.2rem"
@@ -32,7 +29,9 @@ const logout = async () => {
 
       홈
     </router-link>
-    <router-link to="question">
+    <router-link
+      to="lecture"
+      id="side-lecture">
       <div class="selected"></div>
       <svg
         width="1.2rem"
@@ -55,7 +54,9 @@ const logout = async () => {
       </svg>
       강의 정보 공유
     </router-link>
-    <router-link to="question">
+    <router-link
+      to="question"
+      id="side-question">
       <div class="selected"></div>
       <svg
         width="1.2rem"
@@ -70,7 +71,9 @@ const logout = async () => {
       질문 게시판
     </router-link>
     <div class="div-line"></div>
-    <router-link to="mypage">
+    <router-link
+      to="mypage"
+      id="side-lecture">
       <div class="selected"></div>
       <svg
         width="1.2rem"
@@ -84,9 +87,9 @@ const logout = async () => {
       </svg>
       프로필
     </router-link>
-    <a
-      href="#"
-      @click="myQuestion()">
+    <router-link
+      to="myquestion"
+      id="side-myquestion">
       <div class="selected"></div>
       <svg
         width="1.2rem"
@@ -99,8 +102,10 @@ const logout = async () => {
           fill="white" />
       </svg>
       내 질문
-    </a>
-    <router-link to="mypage">
+    </router-link>
+    <router-link
+      to="alarms"
+      id="side-alarms">
       <div class="selected"></div>
       <svg
         width="1.2rem"
@@ -177,7 +182,20 @@ const logout = async () => {
   transition: opacity 0.4s;
 }
 
-#side-panel a.router-link-exact-active {
+#side-home.router-link-exact-active {
+  opacity: 1;
+  transition: opacity 0.4s;
+  .selected {
+    opacity: 1;
+    transition: opacity 0.4s;
+  }
+}
+
+#side-lecture.router-link-active,
+#side-question.router-link-active,
+#side-mypage.router-link-active,
+#side-myquestion.router-link-active,
+#side-alarms.router-link-active {
   opacity: 1;
   transition: opacity 0.4s;
   .selected {

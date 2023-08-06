@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { fetchWrapper } from '@/helpers'
-import { useAlertStore, useUsersStore } from '@/stores'
+import { useAlertStore, useUserStore } from '@/stores'
 import { loginAuth } from '@/api/auth'
 import router from '@/router'
 
@@ -31,9 +31,9 @@ export const useAuthStore = defineStore({
           if (values.keeplog) localStorage.setItem('access-token', token)
           else sessionStorage.setItem('access-token', token)
 
-          const usersStore = useUsersStore()
-          await usersStore.getInfo(token)
-          await usersStore.setInfo(data.data.user)
+          const userStore = useUserStore()
+          await userStore.setInfo(data.data.user)
+          await userStore.getInfo(token)
 
           // sessionStorage.setItem('refresh-token', refreshToken)
         },
@@ -68,8 +68,8 @@ export const useAuthStore = defineStore({
       }
     },
     logout() {
-      const usersStore = useUsersStore()
-      usersStore.user = null
+      const userStore = useUserStore()
+      userStore.user = null
 
       this.setValid(false)
 
