@@ -1,4 +1,5 @@
 <script setup>
+import { onMounted, computed } from 'vue'
 import { useUserStore } from '@/stores'
 import { nameUser } from '@/api/user'
 import Deactivate from '@/components/profile/Deactivate.vue'
@@ -6,6 +7,7 @@ import { RouterLink, RouterView } from 'vue-router'
 import { Form, Field } from 'vee-validate'
 import * as Yup from 'yup'
 import router from '@/router'
+import { listQuestion } from '@/api/question'
 
 const userStore = useUserStore()
 const user = userStore.user
@@ -13,21 +15,22 @@ const user = userStore.user
 let nameWant = ''
 nameWant = user.username
 
-const changeUserName = async (name) => {
-  const data = {
-    nickname: name,
+const changeUserName = (name) => {
+  console.log('test')
+  const query = {
+    keyword: '3',
+    nickname: '3',
+    page: 0,
   }
-
-  await nameUser(
-    data,
-    (res) => {
-      console.log(res)
+  listQuestion(
+    query,
+    (mes) => {
+      console.log(mes)
     },
     (fail) => {
       console.log(fail)
     },
   )
-  router.go('mypage')
 }
 
 const schema = Yup.object().shape({

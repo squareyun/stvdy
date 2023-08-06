@@ -16,4 +16,13 @@ const getUser = async (token, success, fail) => {
   axios.defaults.headers['Authorization'] = 'Bearer ' + token
   await axios.get(`/mypage/`).then(success).catch(fail)
 }
-export { hello, getUser, joinUser }
+
+const nameUser = async (name, success, fail) => {
+  await axios.put('/mypage/nickname', name).then(success).catch(fail)
+}
+
+const deleteUser = async (userId, success, fail) => {
+  await axios.delete(`/users/${userId}`).then(success).catch(fail)
+}
+
+export { hello, getUser, joinUser, nameUser, deleteUser }

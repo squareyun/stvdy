@@ -5,7 +5,7 @@ import { getUser } from '@/api/user'
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/users`
 
-export const useUsersStore = defineStore({
+export const useUserStore = defineStore({
   id: 'users',
   state: () => ({
     users: {},
@@ -19,6 +19,7 @@ export const useUsersStore = defineStore({
         token,
         async (data) => {
           await AuthStore.setValid(true)
+          this.user.username = data.data.user.nickname
         },
         async (error) => {
           console.log(error)
@@ -27,7 +28,6 @@ export const useUsersStore = defineStore({
         },
       )
     },
-
     async setInfo(user) {
       this.user = {
         id: user.id,
