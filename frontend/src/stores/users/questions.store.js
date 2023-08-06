@@ -61,6 +61,7 @@ export const useQuestionsStore = defineStore({
       { id: 7, user_id: 2, question_id: 2, detail: 'Sample Answer7' },
       { id: 8, user_id: 2, question_id: 2, detail: 'Sample Answer8' },
     ],
+    category: 'sort-new',
   }),
   actions: {
     async create(question) {
@@ -82,14 +83,14 @@ export const useQuestionsStore = defineStore({
       }
       console.log('baseUrl/question/{id}')
     },
-    async sortMostRecent() {
-      console.log('baseUrl/question/sortMostRecent')
+    sortNew() {
+      this.category = 'sort-new'
     },
-    async sortNoAnswer() {
-      console.log('baseUrl/question/sortNoAnswer')
+    sortActive() {
+      this.category = 'sort-active'
     },
-    async sortActivated() {
-      console.log('baseUrl/question/sortActivated')
+    sortNone() {
+      this.category = 'sort-none'
     },
     async getMyQtn() {
       console.log('baseUrl/question/getMyQtn')

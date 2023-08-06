@@ -37,7 +37,7 @@ async function postAnswer(value) {
   console.log(value)
   try {
     await questionsStore.createAnswer(value)
-    await router.push('qtndetail')
+    await router.push('questiondetail')
     alertStore.success('답변이 등록되었습니다.')
     document.getElementById('answer-field').value = '??????'
   } catch (error) {

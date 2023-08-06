@@ -24,7 +24,7 @@ const onSubmit = async (values) => {
 <template>
   <div>
     <h2 class="ents-title">비밀번호 초기화</h2>
-    <div>
+    <div class="ents">
       <div id="slogan">" 괜찮아요. 저희가 찾아드릴게요..! "</div>
       <Form
         autocomplete="off"

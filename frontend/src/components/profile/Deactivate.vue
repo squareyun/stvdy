@@ -7,13 +7,16 @@ const userStore = useUserStore()
 const user = userStore.user
 
 async function deactivate() {
+  const data = user.id
   deleteUser(
-    user.id,
-    (message) => {
-      console.log(message)
+    data,
+    (res) => {
+      console.log(res)
     },
     (fail) => {
+      console.log('여기')
       console.log(fail)
+      console.log('에러')
     },
   )
 }

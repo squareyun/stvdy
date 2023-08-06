@@ -1,13 +1,19 @@
 @import '@/assets/darkPalette.css';
 
 @font-face {
-  font-family: 'ASDGothic';
+  font-family: 'ASDGothicM';
   src: url('@/assets/fonts/AppleSDGothicNeoM.ttf') format('truetype');
   font-weight: normal;
 }
 
+@font-face {
+  font-family: 'ASDGothicT';
+  src: url('@/assets/fonts/AppleSDGothicNeoT.ttf') format('truetype');
+  font-weight: normal;
+}
+
 #app {
-  font-family: 'ASDGothic', 'Noto Sans KR', sans-serif;
+  font-family: 'ASDGothicM', 'Noto Sans KR', sans-serif;
   display: flex;
   place-items: center;
 

@@ -17,9 +17,9 @@ export const useUserStore = defineStore({
 
       await getUser(
         token,
-        async (data) => {
+        async (res) => {
           await AuthStore.setValid(true)
-          this.user.username = data.data.user.nickname
+          this.user.username = res.data.user.nickname
         },
         async (error) => {
           console.log(error)
