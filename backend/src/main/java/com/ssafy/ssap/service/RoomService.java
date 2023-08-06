@@ -40,45 +40,94 @@ public class RoomService {
     @SuppressWarnings("FieldCanBeLocal")
     private final String SECRET = "MY_SECRET";
 
-    /**
-     * 스터디룸 생성
-     */
-    @Transactional
-    public Integer create(RoomCreateDto roomCreateDto, Session session) {
-        // 방 추가
-        Room room = Room.builder()
-                .title(roomCreateDto.getTitle())
-                .quota(roomCreateDto.getQuota())
-                .isPrivacy(roomCreateDto.getIsPrivacy())
-                .isValid(true)
-                .sessionId(session.getSessionId())
-                .password(roomCreateDto.getPassword())
-                .endTime(LocalDateTime.now().plusHours(roomCreateDto.getEndHour()).plusMinutes(roomCreateDto.getEndMinute()))
-                .imagePath(roomCreateDto.getImagePath())
-                .rule(roomCreateDto.getRule())
-                .build();
-        roomRepository.save(room);
+    public String makeSession(RoomCreateDto roomCreateDto) {
+        //session 생성, connection 생성, 토큰 생성
+        Session session;
+        Connection connection;
+        String token;
+        try {
+            openVidu = new OpenVidu(OPENVIDU_URL,SECRET);
+            //세션 생성
+            session = openVidu.createSession();
+            logger.debug("세션 생성 성공");
+            //connection 생성
+            connection = createConnection(session.getSessionId());
+            logger.debug("커넥션 생성 성공");
 
-        addParticipant(room, "호스트", roomCreateDto.getUserNo());
-        addRoomLog(room,roomCreateDto.getUserNo());
+            //세션 생성 성공 시 db에 입력
+            Room room = Room.builder()
+                    .title(roomCreateDto.getTitle())
+                    .quota(roomCreateDto.getQuota())
+                    .isPrivacy(roomCreateDto.getIsPrivacy())
+                    .isValid(true)
+                    .sessionId(session.getSessionId())
+                    .password(roomCreateDto.getPassword())
+                    .endTime(LocalDateTime.now().plusHours(roomCreateDto.getEndHour()).plusMinutes(roomCreateDto.getEndMinute()))
+                    .imagePath(roomCreateDto.getImagePath())
+                    .rule(roomCreateDto.getRule())
+                    .build();
+            roomRepository.save(room);
+            logger.debug("룸 정보 DB 입력");
 
-        return room.getId();
+            addParticipant(room, "호스트", roomCreateDto.getUserNo(), connection.getConnectionId());
+            logger.debug("participant 테이블에 레코드 입력");
+            addRoomLog(room,roomCreateDto.getUserNo());
+            logger.debug("room_log 테이블에 레코드 입력");
+
+            return connection.getToken();
+        } catch (OpenViduJavaClientException | OpenViduHttpException e) {
+            token = null;
+            logger.error("makeSession 실패");
+        }
+        return token;
     }
 
-    public void addParticipant(Room room, String role, Integer userNo){
+    public Connection createConnection(String sessionId) {
+        //열려있는 세션에 참가하고 커넥션(과 커넥션 안의 토큰) 반환
+
+        //입장 요청한 session 객체 획득
+        Session session = openVidu.getActiveSession(sessionId);
+        if (session == null) {
+            logger.error("session Id not matching");
+            return null;
+        }
+        return createConnection(session);
+    }
+
+    public Connection createConnection(Session session){
+        //커넥션 생성 및 반환
+        try {
+            ConnectionProperties connectionProperties = new ConnectionProperties.Builder().type(ConnectionType.WEBRTC).build();
+            logger.debug("joinRoom token 생성 완료");
+            return session.createConnection(connectionProperties);
+        } catch (OpenViduJavaClientException | OpenViduHttpException e) {
+            logger.error("can't build connection properties or get token from it");
+            return null;
+        }
+    }
+
+    @SuppressWarnings("DataFlowIssue")
+    public String getSessionIdByRoomNo(Integer roomNo) {
+        Room room = roomRepository.findById(roomNo).orElse(null);
+        if(room==null) logger.error(roomNo+"에 해당하는 방이 DB에 존재하지 않음");
+        return room.getSessionId();
+    }
+
+    public void addParticipant(Room room, String role, Integer userNo, String connectionId){
         // 참여자 추가 (방장)
         Participants participants = Participants.builder()
                 .isOut(false)
                 .role(participantsRoleNsRepository.findByName(role))
                 .room(room)
                 .user(userRepository.findById((long)userNo).orElse(null))
+                .connectionId(connectionId)
                 .build();
         participantsRepository.save(participants);
     }
 
-    public void addParticipant(Integer roomNo, String role, Integer userNo) {
+    public void addParticipant(Integer roomNo, String role, Integer userNo, String connectionId) {
         Room room = roomRepository.findById(roomNo).orElse(null);
-        addParticipant(room, role, userNo);
+        addParticipant(room, role, userNo, connectionId);
     }
 
     public void addRoomLog(Room room, Integer userId){
@@ -130,55 +179,6 @@ public class RoomService {
             logger.error("Openvidu session을 닫는 중 에러 발생");
             throw e2;
         }
-    }
-
-    public Map<String,Object> makeSession() {
-        //session 생성, connection 생성, 토큰 생성
-        Map<String, Object> resultMap = new HashMap<>();
-        Session session;
-        String token;
-        try {
-            openVidu = new OpenVidu(OPENVIDU_URL,SECRET);
-            session = this.openVidu.createSession(); //오픈비두 서버에 세션 생성
-            logger.debug("session created, "+session+" / "+session.getSessionId());
-            token = joinSession(session.getSessionId()); //joinSession에서 connection 생성
-            logger.debug("connection created, "+token);
-            resultMap.put("session",session);
-            resultMap.put("token",token);
-            return resultMap;
-        } catch (OpenViduJavaClientException | OpenViduHttpException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @SuppressWarnings("DataFlowIssue")
-    public String getSessionIdByRoomNo(Integer roomNo) {
-        Room room = roomRepository.findById(roomNo).orElse(null);
-        if(room==null) logger.error(roomNo+"에 해당하는 방이 DB에 존재하지 않음");
-        return room.getSessionId();
-    }
-
-    public String joinSession(String sessionId) {
-        //이미 열려있는 세션에 참가하고 토큰 반환
-        String token=null;
-
-        //입장 요청한 session이 존재하는지 확인 (무조건 존재해야함!)
-        Session session = openVidu.getActiveSession(sessionId);
-        if (session == null) {
-            logger.error("session Id not matching");
-            return null;
-        }
-
-        //커넥션 생성 및 토큰 반환
-        try {
-            ConnectionProperties connectionProperties = new ConnectionProperties.Builder().type(ConnectionType.WEBRTC).build();
-            token = session.createConnection(connectionProperties).getToken();
-            logger.debug("joinRoom token 생성 완료"+token);
-        } catch (OpenViduJavaClientException | OpenViduHttpException e) {
-            logger.error("can't build connection properties or get token from it");
-        }
-
-        return token;
     }
 
     public Integer findRoomId(Integer roomcode) {
@@ -297,12 +297,13 @@ public class RoomService {
                 time_start = roomLog.getEnterTime();
                 time_end = LocalDateTime.now();
                 int spend_min = Math.toIntExact(ChronoUnit.MINUTES.between(time_start, time_end));
-                LocalTime spend_time = LocalTime.of(spend_min / 60, spend_min % 60);
-                roomLog.setSpendHour(spend_time);
+                LocalTime spendTime = LocalTime.of(spend_min / 60, spend_min % 60);
+
+                roomLog.setSpendHour(spendTime);
                 logger.trace("spend hour 갱신 완료");
                 status = HttpStatus.OK;
             } else{
-                logger.error("openvidu connection이 남아있음");
+                logger.error("openvidu connection이 삭제되지 않음");
                 status = HttpStatus.CONFLICT;
             }
         } catch(NullPointerException e){
@@ -316,16 +317,8 @@ public class RoomService {
         return status;
     }
 
-
     public List<RoomDto> getRoomList() {
-//        if(keyword==null) System.out.println("keyword is null");
-//        if(page==null) System.out.println("page is null");
-        logger.trace("getRoomList 접근");
-        List<RoomDto> list = roomRepository.findAllRooms();
-//        ListIterator<Room> li = list.listIterator();
-
-        logger.debug(list.get(0).toString());
-        return list; //키워드와 페이지 검색 수정필요
+        return roomRepository.findAllRooms(); //키워드와 페이지 검색 수정필요
     }
 
     @Transactional
@@ -344,20 +337,20 @@ public class RoomService {
 
     public String joinRoom(Integer roomNo, String password, Integer userNo) {
         String sessionId;
-        String token;
-        if( checkValid(roomNo, password)){ //1번 단계
+        Connection connection;
+        if(checkValid(roomNo, password)){ //1번 단계
             //OPENVIDU > session 접속을 위한 token 생성
             sessionId = getSessionIdByRoomNo(roomNo); //2번 단계
-            token = joinSession(sessionId); //3번 단계
-            logger.debug(" 토큰처리 수행 완료");
+            connection = createConnection(sessionId); //3번 단계
+            logger.debug("토큰처리 수행 완료");
             //DB처리
-            addParticipant(roomNo,"참여자", userNo); //4번
+            addParticipant(roomNo,"참여자", userNo, connection.getConnectionId()); //4번
             addRoomLog(roomNo,userNo); //5번
         } else{
             logger.debug("방 접근이 유효하지 않음.");
-            token = null;
+            return null;
         }
-        return token;
+        return connection.getToken();
     }
 }
 
