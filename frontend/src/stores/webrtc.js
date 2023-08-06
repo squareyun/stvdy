@@ -9,7 +9,7 @@ export const usewebRtcStore = defineStore({
     // userNo: null,
     userNo: useUsersStore().user.id,
     // userNo: Math.floor(Math.random() * (200 - 1 + 1)) + 1,
-    mySessionId: '제발되라 좀',
+    mySessionId: '이젠 될때가 되지 않았나???',
     // myUserName : null,
     myUserName : useUsersStore().user.username,
     // myUserName : Math.floor(Math.random() * (200 - 1 + 1)) + 1+'제발되라',
@@ -33,7 +33,7 @@ export const usewebRtcStore = defineStore({
     //////////////////////////
     // 메인페이지에서 사용되는 방 목록 관련
     roomList: null,
-    roomId : 1000,
+    roomId : null,
 
     router : useRouter()
 
@@ -184,6 +184,7 @@ export const usewebRtcStore = defineStore({
     },
     joinTheRoom(room) {
       // this.$router.push({ name: 'MovieDetailView', params: { id: moviecard.id }});  
+      this.mySessionId = room.title
       this.quota = room.quota
       this.roomId = room.id
       console.log('조인더룸내부1', this.roomId)
