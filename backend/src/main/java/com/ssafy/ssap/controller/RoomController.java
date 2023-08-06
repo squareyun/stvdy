@@ -3,7 +3,6 @@ package com.ssafy.ssap.controller;
 import com.ssafy.ssap.common.MessageFormat;
 import com.ssafy.ssap.dto.RoomCreateDto;
 import com.ssafy.ssap.service.RoomService;
-import io.openvidu.java.client.Session;
 import lombok.RequiredArgsConstructor;
 import jakarta.transaction.Transactional;
 
@@ -30,18 +29,18 @@ public class RoomController {
 
     @PostMapping("/add")
     public ResponseEntity<String> add(@RequestBody RoomCreateDto roomCreateDto) {
+        String token;
+        HttpStatus status;
         try {
-            //session, connection 생성
-            Map<String, Object> resultMap = roomService.makeSession();
-
-            //세션 생성 성공 시 db에 입력
-            Integer roomId = roomService.create(roomCreateDto, (Session) resultMap.get("session"));
-            logger.info("{} 스터디룸 생성 성공", roomId);
-            return new ResponseEntity<>((String) resultMap.get("token"), HttpStatus.ACCEPTED); //testedit
+            //openvidu session, connection 생성
+            token = roomService.makeSession(roomCreateDto); //openviduDto에 session, connection, token 담음
+            status = HttpStatus.OK;
         } catch (Exception e) {
             logger.error("스터디룸 생성 실패: ", e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            token = null;
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
+        return new ResponseEntity<>(token, status);
     }
 
     @DeleteMapping("/{roomno}")
