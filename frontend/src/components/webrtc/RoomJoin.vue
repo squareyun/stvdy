@@ -1,5 +1,5 @@
 <script setup>
-  import { ref, computed, onBeforeMount, watch, onMounted, onBeforeUnmount, } from 'vue'
+  import { ref, computed, onBeforeMount, watch, onMounted, onBeforeUnmount, onUpdated, onBeforeUpdate, } from 'vue'
   import axios from 'axios'
   import { OpenVidu } from "openvidu-browser";
   import UserVideo from "@/components/webrtc/UserVideo.vue";
@@ -67,7 +67,6 @@
   ////다시그려내기 위해 computed 작성
   const mainStreamManagerComputed = computed(() => mainStreamManager.value);
   const publisherComputed = computed(() => publisher.value);
-  // const subscribersComputed = computed(() => subscribers);
   const subscribersComputed = computed(() => subscribers.value);
   ////
   ///////////////////
@@ -105,12 +104,28 @@
     console.log('이게뭐람',session.value)
 
     // --- 3) 세션에서 이벤트가 발생할때 수행할 작업 지정
-    // new Stream 을 수신할 때마다 수행...
-    session.value.on("streamCreated", ( {stream} )=> {
-      // const subscriber = session.subscribe(stream)
-      const subscriber = session.value.subscribe(stream)
-      subscribers.value.push(subscriber)
-    })
+    // // new Stream 을 수신할 때마다 수행...
+    // console.log('되는거야?')
+    // session.value.on("streamCreated", ( {stream} )=> {
+    //   console.log("새로운 참가자 스트림 생성됨:", stream); // 참가자가 만들어질 때마다 스트림이 로그에 찍히는지 확인
+    //   const subscriber = session.value.subscribe(stream)
+    //   subscribers.value.push(subscriber)
+    //   console.log("현재 참가자 리스트:", subscribers.value); // 참가자가 추가될 때마다 참가자 리스트를 출력
+    // })
+    ///////////////////////////////////
+    session.value.on("streamCreated", ({ stream }) => {
+      console.log("새로운 참가자 스트림 생성됨:", stream);
+      const subscriber = session.value.subscribe(stream);
+      subscribers.value.push(subscriber);
+      console.log("현재 참가자 리스트:", subscribers.value);
+      console.log('현재 참가자리스트2', subscribersComputed.value)
+      console.log('현재 remoteConnections:', session.value.remoteConnections); // 이 부분 추가
+      console.log('현재:', session.value.remoteConnections.get(0)); // 이 부분 추가
+      // console.log('현재value:', session.value.remoteConnections[0].value); // 이 부분 추가
+
+    });
+    /////////////////////////////
+    
 
     // 모든 스트림 파괴...
     session.value.on("streamDestroyed", ( {stream} ) => {
@@ -146,6 +161,39 @@
       session.value.connect(token, {clientData: myUserName.value})
       .then(() => {
         isJoin.value = true
+        /////////////////////////////
+        console.log('이건 작동하나?')
+        console.log("remoteConnections 상태:", session.value.remoteConnections)
+        session.value.remoteConnections.forEach((connection, key) => {
+          console.log('작동은 하는건가?');
+          console.log('작동은 하는건가?', connection.stream)
+          console.log('작동은 하는건가?', connection.stream.streamManager)
+          // const subscriber = session.value.subscribe(connection.streams[0]);
+          const subscriber = connection.stream.streamManager;
+          // console.log('참여자', subscriber);
+          subscribers.value.push(subscriber);
+        });
+        console.log("리모트까지 넣은",subscribers.value)
+        /////////////////////////////
+        //////////////////////////////////
+        console.log('!!!! joinRoom에서의 remoteConnections:', session.value.remoteConnections); // 이 부분 추가
+        console.log('이건 joinRoom에서의 session.value:', session.value); // 이 부분 추가
+        console.log('이건 joinRoom에서의 내 커넥션Id:', session.value.connection.connectionId); // 이 부분 추가
+        // 기존 참가자들의 스트림을 가져와 subscribers에 추가하기
+        // session.value.remoteConnections.forEach((_, connectionId) => {
+        //   const remoteConnection = session.value.remoteConnections.get(connectionId);
+        //   if (remoteConnection.streams && remoteConnection.streams.length > 0) {
+        //     const subscriber = session.value.subscribe(remoteConnection.streams[0]);
+        //     subscribers.value.push(subscriber);
+        //   }
+        // });
+        // session.value.remoteConnections.forEach((connection) => {
+        //   if (connection.streams && connection.streams.length > 0) {
+        //     const subscriber = session.value.subscribe(connection.streams[0]);
+        //     subscribers.value.push(subscriber);
+        //   }
+        // });
+        /////////////////////////////////////
         console.log('방참여가 완료된거나 다름업슴!')
           let publisherTmp = OV.value.initPublisher(undefined, {
             audioSource: undefined, // The source of audio. If undefined default microphone
@@ -166,7 +214,7 @@
           addEmptyBox() // 빈 자리 메꾸기
         })
         .catch((error) => {
-          console.log("session 커넥팅에 문제생김(joinRoom):", error.code, error.message);
+          console.error("session 커넥팅에 문제생김(joinRoom):", error.code, error.message);
         })
     })
     .catch((error)=>{
@@ -187,6 +235,9 @@
         console.log('여긴가1')
         session.value.connect(token, {clientData: myUserName.value})
         .then(() => {
+          console.log('remoteConnections:', session.value.remoteConnections); // 이 부분 추가
+          console.log('이건 createToken에서의 session.value:', session.value); // 이 부분 추가
+          console.log('이건 createToken에서의 내 커넥션Id:', session.value.connection.connectionId); // 이 부분 추가
           console.log('방생성 완료된거나 다름업슴!')
             let publisherTmp = OV.value.initPublisher(undefined, {
               audioSource: undefined, // The source of audio. If undefined default microphone
@@ -208,15 +259,11 @@
             console.log('방생성 완료!!!')
           })
           .catch((error) => {
-            console.log("session 커넥팅에 문제생김(createToken):", error.code, error.message);
+            console.error("session 커넥팅에 문제생김(createToken):", error.code, error.message);
           })
       })
       // 여기에 추가할거야!!!!!!
     })
-
-
-    
-
     // window.addEventListener("beforeunload",leaveSession);
   }
 
@@ -497,7 +544,7 @@
   /////////////////////////
   // 탭 메뉴 관련
   const funcTabs = ref(['참여멤버', '메시지', '그라운드 룰', '공유'])
-  const activeFuncTab = ref(0)
+  const activeFuncTab = ref(1)
   const roomRule = ref(store.rule)
 
   function changeTab(index) {
@@ -560,8 +607,13 @@
         <!-- 모든 캠 -->
         <div id="videoContainer">
           <!-- <UserVideo :stream-manager="publisherComputed" @click.native="updateMainVideoStreamManager(publisher)" :style="{width: '10%', height: '5%'}"/> -->
+          <!-- 내 캠 -->
           <UserVideo :stream-manager="publisherComputed" @click.native="updateMainVideoStreamManager(publisher)" />
-          <UserVideo v-for="sub in subscribersComputed" :key="sub.stream.connection.connectionId" :stream-manager="sub"
+          <!-- 타인 캠 -->
+          <!-- <UserVideo v-for="sub in subscribersComputed" :key="sub.stream.connection.connectionId" :stream-manager="sub"
+            @click.native="updateMainVideoStreamManager(sub)" /> -->
+          <!-- <div v-if="subscribersComputed.length">있긴한거지?</div> -->
+          <UserVideo v-for="(sub,i) in subscribersComputed" :key="i" :stream-manager="sub"
             @click.native="updateMainVideoStreamManager(sub)" />
         </div>
         <!-- 선택 캠 -->
@@ -604,7 +656,7 @@
       <div v-if="activeFuncTab === 2">그라운드 룰</div>
       <div v-if="activeFuncTab === 3">공유</div>
     </div>
-    <!-- 참여 멤버 -->
+    <!-- 참여멤버 -->
     <div v-if="activeFuncTab === 0">
       <ul>
         <li>{{ myUserName }}</li>

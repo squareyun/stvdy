@@ -116,22 +116,9 @@ function updateIsSeeInputPw(event) {
           <div>상단 왼쪽 = 인기 키워드</div>
           <div>상단 오른쪽 = (배너)들어갈 자리 </div>
       </div>
-      <!-- <p>중단= 공개 스터디 룸</p>
-      <div style="display:flex">
-        <div v-for="room in roomList" :key="room.id" class="card" >
-          <div>
-            <img @click="showRoomInfo(room)" v-if="room.imgPreviewUrl" :src="room.imgPreviewUrl" alt="imgPreview" style="max-width: 300px; max-height: 300px">
-            <div @click="showRoomInfo(room)" v-if="!room.imgPreviewUrl" style="width: 300px; height: 300px; background-color : crimson;">{{ room.title }}</div>
-            <div>
-              <p @click="showRoomInfo(room)">방 이름: {{ room.title }}</p>
-              <p>정원: {{ room.quota }}</p>
-            </div>
-          </div>
-        </div>
-      </div> -->
       <p>중단= 공개 스터디 룸</p>
       <div style="display:flex">
-        <div v-for="room in roomList" :key="room.id" class="card">
+        <div v-for="room in roomList" :key="room.id" class="card" style="margin: 10px;">
           <div style="position: relative; display: inline-block; width: 300px; height: 300px;" @click="showRoomInfo(room)">
             <img v-if="room.imgPreviewUrl" :src="room.imgPreviewUrl" alt="imgPreview" style="max-width: 100%; max-height: 100%;">
             <div v-else style="width: 100%; height: 100%; background-color: crimson;"></div>

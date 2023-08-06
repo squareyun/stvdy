@@ -1,22 +1,28 @@
 <template>
   <div v-if="streamManager">
-    <OvVideo :stream-manager="streamManager" />
-    <!-- {{ clientData }} is the current name -->
-    <div>
-      <p>{{ clientData }}</p>
-    </div>
+    <OvVideo :stream-manager="streamManager"/>
+    <!-- {{ clientData }}이게 내 현재 이름임 -->
+    <div><p>{{ clientData }}</p></div>
   </div>
 </template>
 
+<script>
+  export default {
+    name: 'UserVideo',
+  }
+</script>
+
 <script setup>
-  import { defineProps, computed, defineExpose } from 'vue';
+  // import { ref, onMounted, computed } from 'vue';
+  import { computed } from 'vue';
   import OvVideo from '@/components/webrtc/OvVideo.vue';
+
 
   const props = defineProps({
     streamManager: Object,
-  });
+  })
 
-  // clientData is computed
+  // clientData는 computed로 진행됨
   const clientData = computed(() => {
     const { clientData } = getConnectionData();
     return clientData;
@@ -26,9 +32,4 @@
     const { connection } = props.streamManager.stream;
     return JSON.parse(connection.data);
   }
-
-  // Expose component's name
-  defineExpose({
-    name: 'UserVideo',
-  });
 </script>
