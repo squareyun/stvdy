@@ -197,6 +197,16 @@ export const usewebRtcStore = defineStore({
         },
       })
       console.log('조인더룸내부2')
+    },
+    async shutDownRoom(roomId){
+      try{
+        const response = await axios.delete(`http://localhost:8080/rooms/${roomId}`)
+        console.log(response.data)
+        console.log('방이 성공적으로 제거되었습니다.')
+      }
+      catch(error){
+        console.error('방을 제거하지 못했습니다.',error.code, error.message)
+      }
     }
     
   },

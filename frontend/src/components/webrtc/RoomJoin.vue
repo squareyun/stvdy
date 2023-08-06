@@ -24,8 +24,6 @@
   }
   ///////////////////////////////////////////
 
-
-
   axios.defaults.headers.post["Content-Type"] = "application/json;charset=utf-8";
   // 추후 배포와 관련해서 이부분에 대해서 설정을 할 필요가 있게 될것.
   // const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000/';
@@ -38,7 +36,8 @@
   // const mainStreamManager = ref(undefined)
   let mainStreamManager = ref(undefined)
   const publisher = ref(undefined)
-  const subscribers = ref([]) //
+  const subscribers = ref([]) // 추가되는 참여자
+  const preSubscribers = ref([])    // 먼저 참여했던 사람들
 
   // Join form
   const mySessionId = ref(decodeURIComponent(store.mySessionId))  // 인코딩값을 디코딩한 해줘서 받아야만 작동가능함
@@ -48,7 +47,6 @@
     mySessionId.value = store.mySessionId
   }
   const myUserName = ref(store.myUserName)
-
   const roomId = ref(store.roomId)
   
   // 방에서 최대 인원수
@@ -68,9 +66,9 @@
   const mainStreamManagerComputed = computed(() => mainStreamManager.value);
   const publisherComputed = computed(() => publisher.value);
   const subscribersComputed = computed(() => subscribers.value);
+  const preSubscribersComputed = computed(() => preSubscribers.value)
   ////
   ///////////////////
-
 
   onBeforeMount(() => {
     window.addEventListener("beforeunload",leaveSession)
@@ -88,10 +86,6 @@
   onBeforeUnmount(()=>{
     leaveSession()
   })
-  
-  // onMounted(() => {
-  //   addEmptyBox()
-  // }),
 
   const isJoin = ref(false)
   // vue2에서의 methods 부분을 vue3화 handleUnload
@@ -126,12 +120,16 @@
     });
     /////////////////////////////
     
-
     // 모든 스트림 파괴...
     session.value.on("streamDestroyed", ( {stream} ) => {
       const index = subscribers.value.indexOf(stream.streamManager, 0)
       if(index >= 0){
         subscribers.value.splice(index, 1)
+      }
+      ////////////////////////////////// preSubscribers를 만듬에 따라 추가함.
+      const preIndex = preSubscribers.value.indexOf(stream.streamManager, 0)
+      if(preIndex >= 0){
+        preSubscribers.value.splice(preIndex, 1)
       }
     })
 
@@ -148,7 +146,6 @@
       }
       messages.value.push(messageData);
     });
-
 
     // 방 참가할때 사용하는 코드임
     console.log('joinRoom들어가기전')
@@ -171,7 +168,8 @@
           // const subscriber = session.value.subscribe(connection.streams[0]);
           const subscriber = connection.stream.streamManager;
           // console.log('참여자', subscriber);
-          subscribers.value.push(subscriber);
+          preSubscribers.value.push(subscriber);  // 기존 참가자들만 모아두기
+          // subscribers.value.push(subscriber);     // 기존 참가자들이고 뭐고 subscribers에 다 넣어둠
         });
         console.log("리모트까지 넣은",subscribers.value)
         /////////////////////////////
@@ -267,32 +265,32 @@
     // window.addEventListener("beforeunload",leaveSession);
   }
 
-
   function leaveSession(){
 
     // const confirmLeave = confirm("이 페이지를 떠나시겠습니까? 회의가 종료됩니다.")
     // console.log('나갈거야!!!!!',confirmLeave)
     // if(session.value && confirmLeave) session.value.disconnect()
     if(session.value) session.value.disconnect()
-    
+
     // Empty all properties...
     session.value = undefined;
     mainStreamManager.value = undefined;
     publisher.value = undefined;
     subscribers.value = [];
+    preSubscribers.value = [];    // 이전 참가자들도 비워줌.
     OV.value = undefined;
 
     // Remove beforeunload listener
     window.removeEventListener("beforeunload", leaveSession)
     document.removeEventListener('keydown', preventRefresh)
     
+    // 내가 마지막 나가는 사람이면 방 폐쇄.
+    if(!subscribers.value && !preSubscribers.value){
+      shutDownRoom(roomId.value)
+    }
     // 메인페이지로 넘어감
     router.push({
-      // name:'roomAdd',// 임시로 roomAdd로 보냄.
       name:'main',// 임시 이름 main으로 넘겨줌.
-      // params: { 
-      //   roomName: mySessionId.value,
-      // },
     })
   }
 
@@ -350,45 +348,6 @@
     // return response.data.token
   }
 
-  /////
-  // // 기존 방이 있는지 확인하고 토큰 받아서 joinSession 하기
-  // async function joinExistingSession(room) {
-  //   // const token = await joinRoom(mySessionId.value)
-  //   // joinSession(token, room);
-  //   try{
-  //     const token = await joinRoom(mySessionId.value)
-  //     joinSession(token, room);
-  //   }
-  //   catch(error){
-  //     console.error('방이 없는지 토큰 가져오는데 문제가 생겼는뎁쇼?', error);
-  //   }
-  // }
-
-
-
-  // async function getToken(mySessionId) {
-  //   const sessionId = await createSession(mySessionId);
-  //   console.log(mySessionId+'와 '+sessionId)
-  //   return await createToken(sessionId);
-  // }
-  
-  // async function createSession(sessionId) {
-  //   const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions', { customSessionId: sessionId}, {
-  //     headers: { 'Content-Type': 'application/json', },
-  //   });
-  //   console.log('이건 createSession',response.data)
-  //   return response.data; // The sessionId
-  // }
-
-  // async function createToken(sessionId) {
-  //   const response = await axios.post(APPLICATION_SERVER_URL + 'api/sessions/' + sessionId + '/connections', {}, {
-  //     headers: { 'Content-Type': 'application/json', },
-  //   });
-  //   console.log('이건 createToken',response.data)
-  //   return response.data; // The token
-  // }
-  
-
   // 채팅창 구현을 위한 함수 제작
   ///////////////////////////
   function sendMessage(event) {
@@ -404,7 +363,6 @@
     }
   }
 
-  ///////////////////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////////////////
   ///////기타 기능
@@ -575,10 +533,11 @@
     }
   }
 
-  function shutDownRoom() {
-    const isShut = confirm("방 폐쇄 버튼을 눌렀습니다. 진심입니까? 휴먼??")
+  function shutDownRoom(roomId) {
+    const isShut = confirm("방을 폐쇄합니다. 진심입니까? 휴먼??")
     if(isShut){
       alert('진심이군요 휴먼, 알겠습니다. 방을 폐쇄하도록하죠.')
+      store.shutDownRoom(roomId)
     }
     else{
       alert('거짓말을 하다니 그런짓은 하지마십시오. 휴먼.')
@@ -610,9 +569,10 @@
           <!-- 내 캠 -->
           <UserVideo :stream-manager="publisherComputed" @click.native="updateMainVideoStreamManager(publisher)" />
           <!-- 타인 캠 -->
-          <!-- <UserVideo v-for="sub in subscribersComputed" :key="sub.stream.connection.connectionId" :stream-manager="sub"
-            @click.native="updateMainVideoStreamManager(sub)" /> -->
-          <!-- <div v-if="subscribersComputed.length">있긴한거지?</div> -->
+          <!-- <UserVideo="updateMainVideoStreamManager(sub)" /> -->
+          <!-- 기존 참여자와 이후 참여자 구분해서 사용시 사용해보기 -->
+          <UserVideo v-for="(sub,i) in preSubscribersComputed" :key="i" :stream-manager="sub"
+            @click.native="updateMainVideoStreamManager(sub)" />
           <UserVideo v-for="(sub,i) in subscribersComputed" :key="i" :stream-manager="sub"
             @click.native="updateMainVideoStreamManager(sub)" />
         </div>
