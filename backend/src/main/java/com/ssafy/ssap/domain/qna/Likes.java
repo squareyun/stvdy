@@ -45,4 +45,8 @@ public class Likes {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @Nullable
     private Answer answer;
+
+    public void updateIsGood(Boolean isGood) {
+        this.isGood = isGood;
+    }
 }
