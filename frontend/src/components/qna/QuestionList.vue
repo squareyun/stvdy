@@ -1,54 +1,60 @@
 <script setup>
-import { storeToRefs } from 'pinia'
-import { useQuestionsStore } from '@/stores'
+import { useQuestionStore } from '@/stores'
 import router from '@/router'
-import { watch } from 'vue'
+import { reactive, computed } from 'vue'
 
-const questionsStore = useQuestionsStore()
-const questions = questionsStore.questions
-const category = questionsStore.category
+const questionStore = useQuestionStore()
+const questions = computed(() => questionStore.questions)
 
-// watch(category, () => {
-//   console.log(category)
-//   document.getElementById('sort-new').style.fontWeight = 700
-//   document.getElementById('sort-active').style.fontWeight = 0
-//   document.getElementById('sort-none').style.fontWeight = 0
-// })
+const query = {
+  keyword: '',
+  nickname: '',
+  page: 0,
+}
+questionStore.getList(query)
 
 const sortNew = () => {
-  questionsStore.sortNew()
-
   document.getElementById('sort-new').style.fontWeight = 700
   document.getElementById('sort-active').style.fontWeight = 100
   document.getElementById('sort-none').style.fontWeight = 100
+
+  const query = {
+    keyword: '',
+    nickname: '',
+    page: 0,
+  }
+  questionStore.getList(query)
 }
 
 const sortActive = () => {
-  questionsStore.sortActive()
-
   document.getElementById('sort-new').style.fontWeight = 100
   document.getElementById('sort-active').style.fontWeight = 700
   document.getElementById('sort-none').style.fontWeight = 100
+
+  const query = {
+    keyword: '새로운',
+    nickname: '',
+    page: 0,
+  }
+  questionStore.getList(query)
 }
 
 const sortNone = () => {
-  questionsStore.sortNone()
-
   document.getElementById('sort-new').style.fontWeight = 100
   document.getElementById('sort-active').style.fontWeight = 100
   document.getElementById('sort-none').style.fontWeight = 700
 }
 
 async function showDetail(value) {
-  await questionsStore.getById(value)
-  questionsStore.pickedQtn = value
+  await questionStore.getById(value)
+  questionStore.pickedQtn = value
   router.push({ name: 'questiondetail' })
 }
 </script>
 
 <template>
   <div>
-    <span class="content-title">도와주세요!</span>
+    <span class="content-title">질문 게시판</span>
     <router-link
       id="add-question"
       to="/createquestion">
@@ -75,16 +81,28 @@ async function showDetail(value) {
         </ul>
       </div>
 
-      <div v-if="questions">
+      <div>
         <tr
           class="question-row"
           v-for="qtn in questions"
-          :key="qtn.id"
-          @click="showDetail(qtn.id)">
+          :key="qtn.id">
           <td class="question-done"><div>채택안됨</div></td>
-          <div class="question-title">{{ qtn.title }}</div>
-          <div class="question-detail">{{ qtn.detail }}</div>
-          <td>{{ qtn.regist_time }}</td>
+          <td class="question-main">
+            <div class="question-title">{{ qtn.title }}</div>
+            <div class="question-detail">{{ qtn.detail }}</div>
+          </td>
+          <td class="question-info">
+            <p class="info-etc">
+              <span class="author">{{ qtn.userNickname }}</span>
+              <span class="wrote-from">&nbsp; {{ qtn.regist_time }}</span>
+            </p>
+            <div class="info-status">
+              <p>{{ qtn.questionScore }} 질문점수</p>
+              <p>{{ qtn.cntAnswer }} 답변</p>
+              <p>{{ qtn.hit }} 조회</p>
+            </div>
+          </td>
+          <div></div>
 
           <div class="question-div-line"></div>
         </tr>
@@ -101,7 +119,6 @@ async function showDetail(value) {
   border-radius: 10px;
 
   margin-bottom: 20px;
-  padding-bottom: 30px;
 
   width: calc(960px - 7rem);
 }
@@ -118,6 +135,10 @@ async function showDetail(value) {
   cursor: pointer;
 }
 
+#sort-new {
+  font-weight: 700;
+}
+
 #add-question {
   float: right;
   margin-right: calc(7rem);
@@ -128,8 +149,7 @@ async function showDetail(value) {
 
 .question-row {
   position: relative;
-  width: 100%;
-  height: 100px;
+  height: 140px;
 
   color: var(--hl-light);
 }
@@ -165,12 +185,16 @@ async function showDetail(value) {
   border-radius: 20px;
 }
 
+.question-main {
+  position: relative;
+  width: 600px;
+}
 .question-title {
   position: absolute;
   top: 21px;
-  left: 100px;
+  left: 10px;
 
-  width: 700px;
+  color: var(--hl-light);
 
   font-size: 1.4rem;
 }
@@ -178,11 +202,53 @@ async function showDetail(value) {
 .question-detail {
   position: absolute;
   top: 60px;
-  left: 100px;
+  left: 10px;
 
-  width: 700px;
+  height: 60px;
+  overflow: hidden;
+
+  color: var(--hl-light);
 
   font-family: 'ASDGothicT';
   font-size: 0.9rem;
+}
+
+.question-info {
+  width: calc(270px - 7rem);
+}
+
+.info-etc {
+  position: absolute;
+  right: 20px;
+}
+
+.author {
+  font-size: 0.9rem;
+}
+
+.wrote-from {
+  font-size: 0.9rem;
+  font-family: 'ASDGothicT';
+}
+
+.info-status {
+  position: absolute;
+  top: 45px;
+  right: 20px;
+
+  color: var(--hl-light);
+
+  text-align: right;
+}
+
+.info-status > p {
+  margin: 0px;
+  font-family: 'ASDGothicT';
+  font-size: 0.9rem;
+}
+
+.info-status > p:first-child {
+  font-family: 'ASDGothicM';
+  color: var(--hl-purple);
 }
 </style>

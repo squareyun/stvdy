@@ -11,15 +11,14 @@ import { listQuestion } from '@/api/question'
 
 const userStore = useUserStore()
 const user = userStore.user
-
 let nameWant = ''
 nameWant = user.username
 
 const changeUserName = (name) => {
   console.log('test')
   const query = {
-    keyword: '3',
-    nickname: '3',
+    keyword: '',
+    nickname: '',
     page: 0,
   }
   listQuestion(

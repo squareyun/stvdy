@@ -1,6 +1,6 @@
 <script setup>
 import { RouterLink } from 'vue-router'
-import { useQuestionsStore, useAuthStore } from '@/stores'
+import { useQuestionStore, useAuthStore } from '@/stores'
 import router from '@/router'
 
 const logout = async () => {
