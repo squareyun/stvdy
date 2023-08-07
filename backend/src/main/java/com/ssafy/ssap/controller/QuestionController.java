@@ -25,7 +25,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class QuestionController {
 
-    private static final Logger logger = LoggerFactory.getLogger(RoomController.class);
+    private static final Logger logger = LoggerFactory.getLogger(QuestionController.class);
     private final QuestionService questionService;
 
     @PostMapping("/add")
@@ -145,17 +145,16 @@ public class QuestionController {
     }
 
     @PutMapping("/likes/{questionNo}")
-    public ResponseEntity<Map<String, Object>> addLikes(@PathVariable("questionNo") Integer questionNo, @RequestBody
-        LikesDto likesDto) {
+    public ResponseEntity<Map<String, Object>> addLikes(@PathVariable("questionNo") Integer questionNo, @RequestBody LikesDto likesDto) {
         try {
             questionService.updateLikes(questionNo, likesDto);
-            logger.debug("좋아요 생성 성공");
+            logger.debug("질문 좋아요 성공");
             return ResponseEntity.accepted()
-                .body(Collections.singletonMap("message", MessageFormat.SUCCESS));
+                    .body(Collections.singletonMap("message", MessageFormat.SUCCESS));
         } catch (Exception e) {
-            logger.error("좋아요 생성 실패", e);
+            logger.error("질문 좋아요 실패", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Collections.singletonMap("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage()));
+                    .body(Collections.singletonMap("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage()));
         }
     }
 }

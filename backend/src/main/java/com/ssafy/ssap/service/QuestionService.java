@@ -57,7 +57,7 @@ public class QuestionService {
     @Transactional
     public Integer update(Integer questionNo, QuestionCreateDto questionCreateDto) {
         Question question = questionRepository.findById(questionNo)
-            .orElseThrow(() -> new IllegalArgumentException(MessageFormat.NO_QUETION_ID));
+                .orElseThrow(() -> new IllegalArgumentException(MessageFormat.NO_QUETION_ID));
 
         return question.update(questionCreateDto.getTitle(), questionCreateDto.getContent(), new QuestionCategoryNs(questionCreateDto.getCategory()));
     }
@@ -90,15 +90,16 @@ public class QuestionService {
     @Transactional
     public void updateLikes(Integer questionNo, LikesDto likesDto) {
         Question question = questionRepository.findById(questionNo)
-            .orElseThrow(() -> new IllegalArgumentException(MessageFormat.NO_QUETION_ID));
+                .orElseThrow(() -> new IllegalArgumentException(MessageFormat.NO_QUETION_ID));
 
-        User user = userRepository.getReferenceById(likesDto.getUserNo());
+        User user = userRepository.findById(likesDto.getUserNo())
+                .orElseThrow(() -> new IllegalArgumentException(MessageFormat.NO_USER_ID));
 
         Likes likes = Likes.builder()
-            .question(question)
-            .isGood(likesDto.getIsLike())
-            .user(user)
-            .build();
+                .question(question)
+                .isGood(likesDto.getIsLike())
+                .user(user)
+                .build();
 
         likesRepository.save(likes);
     }
