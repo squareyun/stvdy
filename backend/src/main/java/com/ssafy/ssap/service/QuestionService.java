@@ -3,7 +3,6 @@ package com.ssafy.ssap.service;
 import com.ssafy.ssap.common.MessageFormat;
 import com.ssafy.ssap.domain.qna.Likes;
 import com.ssafy.ssap.domain.qna.Question;
-import com.ssafy.ssap.domain.qna.QuestionCategoryNs;
 import com.ssafy.ssap.domain.user.User;
 import com.ssafy.ssap.dto.LikesDto;
 import com.ssafy.ssap.dto.QuestionCreateDto;
@@ -41,7 +40,7 @@ public class QuestionService {
                 .title(questionCreateDto.getTitle())
                 .detail(questionCreateDto.getContent())
                 .registTime(LocalDateTime.now())
-                .category(new QuestionCategoryNs(questionCreateDto.getCategory()))
+                .category(questionCreateDto.getCategory())
                 .hit(0)
                 .user(user)
                 .build();
@@ -59,7 +58,7 @@ public class QuestionService {
         Question question = questionRepository.findById(questionNo)
                 .orElseThrow(() -> new IllegalArgumentException(MessageFormat.NO_QUETION_ID));
 
-        return question.update(questionCreateDto.getTitle(), questionCreateDto.getContent(), new QuestionCategoryNs(questionCreateDto.getCategory()));
+        return question.update(questionCreateDto.getTitle(), questionCreateDto.getContent(), questionCreateDto.getCategory());
     }
 
     /**
@@ -77,6 +76,7 @@ public class QuestionService {
      */
     public Page<QuestionListResponseDto> getList(String keyword, String nickname, Pageable pageable) {
         return queryRepository.findAllQuestionWithKeywordAndNickName(keyword, nickname, pageable);
+
     }
 
     public QuestionDetailResponseDto detail(Integer questionNo) {
