@@ -40,7 +40,7 @@ public class RoomService {
     @SuppressWarnings("FieldCanBeLocal")
     private final String SECRET = "MY_SECRET";
 
-    public String makeSession(RoomCreateDto roomCreateDto) throws OpenViduJavaClientException, OpenViduHttpException {
+    public void makeSession(RoomCreateDto roomCreateDto, Map<String, Object> resultMap) throws OpenViduJavaClientException, OpenViduHttpException {
         //session 생성, connection 생성, 토큰 생성
         Session session;
         Connection connection;
@@ -51,6 +51,7 @@ public class RoomService {
             logger.debug("세션 생성 성공");
             //connection 생성
             connection = createConnection(session.getSessionId());
+            resultMap.put("token", connection.getToken());
             logger.debug("커넥션 생성 성공");
 
             //세션 생성 성공 시 db에 입력
@@ -66,6 +67,7 @@ public class RoomService {
                     .rule(roomCreateDto.getRule())
                     .build();
             roomRepository.save(room);
+            resultMap.put("room", room);
             logger.debug("룸 정보 DB 입력");
 
             addParticipant(room, "호스트", roomCreateDto.getUserNo(), connection.getConnectionId());
@@ -73,7 +75,6 @@ public class RoomService {
             addRoomLog(room,roomCreateDto.getUserNo());
             logger.debug("room_log 테이블에 레코드 입력");
 
-            return connection.getToken();
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
             logger.error("makeSession 실패");
             throw e;

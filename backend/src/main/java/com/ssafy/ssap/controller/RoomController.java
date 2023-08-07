@@ -30,19 +30,18 @@ public class RoomController {
 
 
     @PostMapping("/add")
-    public ResponseEntity<String> add(@RequestBody RoomCreateDto roomCreateDto) {
-        String token;
+    public ResponseEntity<?> add(@RequestBody RoomCreateDto roomCreateDto) {
+        Map<String, Object> resultMap = new HashMap<>();
         HttpStatus status;
         try {
             //openvidu session, connection 생성
-            token = roomService.makeSession(roomCreateDto); //openviduDto에 session, connection, token 담음
+            roomService.makeSession(roomCreateDto, resultMap); //openviduDto에 session, connection, token 담음
             status = HttpStatus.OK;
         } catch (Exception e) {
             logger.error("스터디룸 생성 실패: ", e);
-            token = null;
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
-        return new ResponseEntity<>(token, status);
+        return new ResponseEntity<>(resultMap, status);
     }
 
     @DeleteMapping("/{roomno}")
