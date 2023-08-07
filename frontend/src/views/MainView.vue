@@ -49,7 +49,7 @@ function joinTheRoom(room) {
 
 /// 방 입장 전 방 정보 모달 창 켜기
 function showRoomInfo(room) {
-  console.log(room)
+  console.log('해당 방의 정보',room)
   isRoomInfo.value = true
   selectedRoom.value = room
   selectedRoomPw.value = room.password
@@ -101,6 +101,7 @@ function updateIsSeeInputPw(event) {
       <!-- <button @click="joinRoom(room)">방 입장</button> -->
       <h1>{{selectedRoom.title}}</h1>
       <h4>{{ selectedRoom.rule }}</h4>
+      <!-- 현재 명 수는 room 에서 받아와야함. -->
       <p> 명 / {{ selectedRoom.quota }}명</p>
       <input v-if="selectedRoomPw && !isSeeInputPw" type="password" @input="updatePwInput" :value="inputPw">
       <input v-if="selectedRoomPw && isSeeInputPw" type="text" @input="updatePwInput" :value="inputPw">
@@ -123,7 +124,10 @@ function updateIsSeeInputPw(event) {
             <img v-if="room.imgPreviewUrl" :src="room.imgPreviewUrl" alt="imgPreview" style="max-width: 100%; max-height: 100%;">
             <div v-else style="width: 100%; height: 100%; background-color: crimson;"></div>
             <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;">{{ room.title }}</div>
-            <p>정원: {{ room.quota }}</p>
+            <div>
+              <span>정원: {{ room.quota }}</span>
+              <span>방 id : {{ room.id  }}</span>
+            </div>
           </div>
           <div>
           </div>

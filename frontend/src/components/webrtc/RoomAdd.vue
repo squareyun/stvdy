@@ -175,7 +175,6 @@
 <template>
   <!-- <router-link :to="{name: 'ArticleDetailView',params: {id: article.id }}"></router-link> -->
   <div id="join" style="color: white;">
-    <button @click="checkmyUserName">유저정보 확인버튼</button>
     <div id="img-div">
     </div>
     <div id="join-dialog">
