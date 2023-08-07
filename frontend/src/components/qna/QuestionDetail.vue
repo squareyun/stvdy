@@ -1,19 +1,19 @@
 <script setup>
 import { storeToRefs } from 'pinia'
 import { Form, Field } from 'vee-validate'
-import { useQuestionsStore, useAlertStore, useUserStore } from '@/stores'
+import { useQuestionStore, useAlertStore, useUserStore } from '@/stores'
 import { ref } from 'vue'
 import router from '../../router'
 
-const questionsStore = useQuestionsStore()
+const questionStore = useQuestionStore()
 const alertStore = useAlertStore()
 const userStroe = userUserStore()
-const { question } = storeToRefs(questionsStore)
+const { question } = storeToRefs(questionStore)
 const localUser = ref(JSON.parse(localStorage.getItem('user')))
-const { answers } = storeToRefs(questionsStore)
+const { answers } = storeToRefs(questionStore)
 
 function QtnUpdate(value) {
-  questionsStore.pickedQtn = value
+  questionStore.pickedQtn = value
   router.push('CreateQtn')
 }
 
@@ -21,7 +21,7 @@ async function QtnDelete(value) {
   let isDelete = confirm('질문을 삭제할까요?')
   if (isDelete) {
     try {
-      await questionsStore.delete(value)
+      await questionStore.delete(value)
       await router.push('question')
       alertStore.success('질문이 삭제되었습니다.')
     } catch (error) {
@@ -32,11 +32,11 @@ async function QtnDelete(value) {
 
 async function postAnswer(value) {
   value.user_id = localUser._value.id
-  const qtnId = questionsStore.pickedQtn
+  const qtnId = questionStore.pickedQtn
   value.question_id = qtnId
   console.log(value)
   try {
-    await questionsStore.createAnswer(value)
+    await questionStore.createAnswer(value)
     await router.push('questiondetail')
     alertStore.success('답변이 등록되었습니다.')
     document.getElementById('answer-field').value = '??????'
@@ -65,7 +65,7 @@ async function deleteAnswer(id) {
   let isDelAsr = confirm('답변을 삭제할까요?')
   if (isDelAsr) {
     try {
-      await questionsStore.deleteAnswer(id)
+      await questionStore.deleteAnswer(id)
       alertStore.success('답변이 삭제되었습니다.')
     } catch (error) {
       alertStore.error(error)
@@ -75,7 +75,7 @@ async function deleteAnswer(id) {
 
 async function awardAnswer(id) {
   try {
-    questionsStore.awardAnswer(id)
+    questionStore.awardAnswer(id)
     alertStore.success('답변이 채택되었습니다.')
   } catch (error) {
     alertStore.error(error)
