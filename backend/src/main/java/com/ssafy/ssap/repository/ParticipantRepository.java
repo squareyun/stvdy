@@ -10,7 +10,7 @@ import java.util.List;
 public interface ParticipantRepository extends JpaRepository<Participant, Integer> {
     void deleteByRoomId(Integer roomId);
 
-    Long countByRoomIdAndIsOut(Integer roomId, boolean isOut);
+    Integer countByRoomIdAndIsOut(Integer roomId, boolean isOut);
 
-    List<Participants> findAllByRoom_id(Integer room_id);
+    List<Participant> findAllByRoomId(Integer roomId);
 }

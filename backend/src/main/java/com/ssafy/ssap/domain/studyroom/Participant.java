@@ -1,25 +1,14 @@
 package com.ssafy.ssap.domain.studyroom;
 
-import static jakarta.persistence.FetchType.*;
-
+import com.ssafy.ssap.domain.user.User;
+import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import static jakarta.persistence.FetchType.LAZY;
 
-@SuppressWarnings("checkstyle:RegexpSinglelineJava")
 @Entity
 @Getter
 @NoArgsConstructor
@@ -31,11 +20,15 @@ public class Participant {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
+	@Setter
 	@Column(name = "is_out", columnDefinition = "bit")
 	@ColumnDefault("0")
 	private Boolean isOut;
 
-	@NotNull
+	@Column(name = "connection_id", length = 100)
+	private String connectionId;
+
+	@Setter
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "role")
 	private ParticipantRoleNs role;
@@ -44,4 +37,9 @@ public class Participant {
 	@JoinColumn(name = "room_id")
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private Room room;
+
+	@ManyToOne(fetch = LAZY)
+	@JoinColumn(name = "user_id")
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	private User user;
 }
