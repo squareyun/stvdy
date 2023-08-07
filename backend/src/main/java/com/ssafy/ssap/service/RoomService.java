@@ -383,5 +383,15 @@ public class RoomService {
         }
         return resultMap;
     }
+
+    public Map<String, String> createCode(Long roomNo) {
+        Map<String, String> resultMap = new HashMap<>();
+        //1. code생성 2. 기존코드와 중복되는지 검사 3-1. 중복X -> 저장 후 리턴 3-2. 중복 O -> 1부터 반복
+        Random random = new Random();
+        String Code = String.valueOf(random.nextInt(Long.valueOf(System.currentTimeMillis()).intValue()));
+
+
+        return resultMap;
+    }
 }
 

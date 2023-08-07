@@ -116,13 +116,22 @@ public class RoomController {
     }
 
     @GetMapping("/code/{roomNo}")
-    public ResponseEntity<?> getCodeAndLink(@PathVariable Long roomNo){
+    public ResponseEntity<?> getEnterCode(@PathVariable Long roomNo){
         /*
-          roomno 기반으로 code와 link 리턴.
-          roomno 기반으로 code와 link에 대한 정의 필요
+          무작위 세자리 code리턴.
          */
         logger.trace(roomNo+"방의 코드 생성 요청");
-        return new ResponseEntity<>("code",HttpStatus.NOT_IMPLEMENTED);
+        Map<String, String> resultMap;
+        HttpStatus status;
+        try{
+            resultMap = roomService.createCode(roomNo);
+            status = HttpStatus.OK;
+        } catch(Exception e){
+            resultMap = new HashMap<>();
+            resultMap.put("message","Error while Creating Room Number");
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+        return new ResponseEntity<>(resultMap,status);
     }
 
     @GetMapping("/list")
