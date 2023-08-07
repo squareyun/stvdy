@@ -61,6 +61,7 @@ public class AnswerService {
         return answerRepository.findByQuestionId(questionNo);
 	}
 
+    @Transactional
     public void updateLikes(Integer answerNo, LikesDto likesDto) {
         Answer answer = answerRepository.findById(answerNo)
             .orElseThrow(() -> new IllegalArgumentException(MessageFormat.NO_ANSWER_ID));
@@ -75,5 +76,16 @@ public class AnswerService {
             .build();
 
         likesRepository.save(likes);
+    }
+
+    @Transactional
+    public void selectAnswer(Integer questionNo, Integer answerNo) {
+        Question question = questionRepository.findById(questionNo)
+            .orElseThrow(() -> new IllegalArgumentException(MessageFormat.NO_QUETION_ID));
+
+        Answer answer = answerRepository.findById(answerNo)
+            .orElseThrow(() -> new IllegalArgumentException(MessageFormat.NO_ANSWER_ID));
+
+        question.selectAnswer(answer);
     }
 }

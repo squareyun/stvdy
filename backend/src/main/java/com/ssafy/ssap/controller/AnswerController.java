@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -77,6 +78,20 @@ public class AnswerController {
                 .body(Collections.singletonMap("message", MessageFormat.SUCCESS));
         } catch (Exception e) {
             logger.error("답변 좋아요 실패", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Collections.singletonMap("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage()));
+        }
+    }
+
+    @PutMapping("/choose/{questionNo}/{answerNo}")
+    public ResponseEntity<Map<String, Object>> selectAnswer(@PathVariable("questionNo") Integer questionNo, @PathVariable("answerNo") Integer answerNo) {
+        try {
+            answerService.selectAnswer(questionNo, answerNo);
+            logger.debug("답변 채택 성공");
+            return ResponseEntity.accepted()
+                .body(Collections.singletonMap("message", MessageFormat.SUCCESS));
+        } catch (Exception e) {
+            logger.error("답변 채택 실패", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Collections.singletonMap("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage()));
         }

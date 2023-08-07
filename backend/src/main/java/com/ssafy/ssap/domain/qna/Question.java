@@ -73,4 +73,8 @@ public class Question {
         this.category = category;
         return id;
     }
+
+    public void selectAnswer(Answer answer) {
+        this.answer = answer;
+    }
 }
