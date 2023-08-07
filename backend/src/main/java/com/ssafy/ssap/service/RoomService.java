@@ -40,11 +40,10 @@ public class RoomService {
     @SuppressWarnings("FieldCanBeLocal")
     private final String SECRET = "MY_SECRET";
 
-    public String makeSession(RoomCreateDto roomCreateDto) {
+    public String makeSession(RoomCreateDto roomCreateDto) throws OpenViduJavaClientException, OpenViduHttpException {
         //session 생성, connection 생성, 토큰 생성
         Session session;
         Connection connection;
-        String token;
         try {
             openVidu = new OpenVidu(OPENVIDU_URL,SECRET);
             //세션 생성
@@ -76,13 +75,12 @@ public class RoomService {
 
             return connection.getToken();
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
-            token = null;
             logger.error("makeSession 실패");
+            throw e;
         }
-        return token;
     }
 
-    public Connection createConnection(String sessionId) {
+    public Connection createConnection(String sessionId) throws OpenViduJavaClientException, OpenViduHttpException {
         //열려있는 세션에 참가하고 커넥션(과 커넥션 안의 토큰) 반환
 
         //입장 요청한 session 객체 획득
@@ -94,7 +92,7 @@ public class RoomService {
         return createConnection(session);
     }
 
-    public Connection createConnection(Session session){
+    public Connection createConnection(Session session) throws OpenViduJavaClientException, OpenViduHttpException {
         //커넥션 생성 및 반환
         try {
             ConnectionProperties connectionProperties = new ConnectionProperties.Builder().type(ConnectionType.WEBRTC).build();
@@ -102,7 +100,7 @@ public class RoomService {
             return session.createConnection(connectionProperties);
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
             logger.error("can't build connection properties or get token from it");
-            return null;
+            throw e;
         }
     }
 
@@ -175,9 +173,9 @@ public class RoomService {
         } catch(NullPointerException e){
             logger.error("can't find room by roomNo");
             throw e;
-        } catch (OpenViduJavaClientException | OpenViduHttpException e2) {
+        } catch (OpenViduJavaClientException | OpenViduHttpException e) {
             logger.error("Openvidu session을 닫는 중 에러 발생");
-            throw e2;
+            throw e;
         }
     }
 
@@ -265,7 +263,7 @@ public class RoomService {
 
     @SuppressWarnings("DataFlowIssue")
     @Transactional
-    public HttpStatus exit(Integer roomNo, Integer participantNo) {
+    public HttpStatus exit(Integer roomNo, Integer participantNo) throws OpenViduJavaClientException, OpenViduHttpException {
         /*
         1. openvidu connection close
         2. room_log 수정
@@ -275,7 +273,7 @@ public class RoomService {
         Session session;
         HttpStatus status;
 
-        RoomLog roomLog = roomLogRepository.findByRoomIdAndUserId(roomNo, participantNo).orElse(null);
+        RoomLog roomLog = roomLogRepository.findByRoom_idAndUser_id(roomNo, participantNo).orElse(null);
         Participants participant = participantsRepository.findById(participantNo).orElse(null);
 
 
@@ -308,10 +306,10 @@ public class RoomService {
             }
         } catch(NullPointerException e){
             logger.error("매칭되는 객체 없음");
-            status = HttpStatus.CONFLICT;
+            throw e;
         } catch(OpenViduJavaClientException | OpenViduHttpException e){
             logger.error("Openvidu connection 처리 실패");
-            status = HttpStatus.CONFLICT;
+            throw e;
         }
         logger.debug("room/exit 트랜잭션 정상 완료");
         return status;
@@ -322,7 +320,7 @@ public class RoomService {
     }
 
     @Transactional
-    public void kickAndAlarm(Integer roomNo, Integer participantNo, String reason) {
+    public void kickAndAlarm(Integer roomNo, Integer participantNo, String reason) throws OpenViduJavaClientException, OpenViduHttpException {
         /*
         participants테이블의 participantsNo가 일치하는 유저의 is_out을 0으로 바꾼다.
         alarm 테이블에 insert (insert into alarm(title, detail, link, user_id) values("강제퇴장 처리", kickinfo.reason, ?, kickInfo.partiNo))
@@ -335,7 +333,7 @@ public class RoomService {
 
     }
 
-    public String joinRoom(Integer roomNo, String password, Integer userNo) {
+    public String joinRoom(Integer roomNo, String password, Integer userNo) throws OpenViduJavaClientException, OpenViduHttpException {
         String sessionId;
         Connection connection;
         if(checkValid(roomNo, password)){ //1번 단계
@@ -351,6 +349,31 @@ public class RoomService {
             return null;
         }
         return connection.getToken();
+    }
+
+    public Map<String, Object> checkConnection(Integer roomNo) {
+        Map<String, Object> resultMap = new HashMap<>();
+        String sessionId = getSessionIdByRoomNo(roomNo);
+        Session session = openVidu.getActiveSession(sessionId);
+
+        List<String> currentOpenvidu = new ArrayList<>();
+        for(Connection con : session.getActiveConnections()){
+            currentOpenvidu.add(con.getConnectionId());
+        }
+        resultMap.put("openviduConnections",currentOpenvidu);
+
+        try{
+            List<Participants> currentObjectsInDB= participantsRepository.findAllByRoom_id(roomNo);
+            List<String> currentDB = new ArrayList<>();
+            for(Participants p : currentObjectsInDB){
+                currentDB.add(p.getConnectionId());
+            }
+            resultMap.put("dbConnections",currentDB);
+        } catch(NullPointerException e){
+            logger.error("connection 체크 중 오류");
+            throw e;
+        }
+        return resultMap;
     }
 }
 

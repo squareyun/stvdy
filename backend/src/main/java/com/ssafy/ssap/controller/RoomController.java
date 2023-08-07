@@ -3,6 +3,8 @@ package com.ssafy.ssap.controller;
 import com.ssafy.ssap.common.MessageFormat;
 import com.ssafy.ssap.dto.RoomCreateDto;
 import com.ssafy.ssap.service.RoomService;
+import io.openvidu.java.client.OpenViduHttpException;
+import io.openvidu.java.client.OpenViduJavaClientException;
 import lombok.RequiredArgsConstructor;
 import jakarta.transaction.Transactional;
 
@@ -187,8 +189,23 @@ public class RoomController {
 //    }
 
     @PostMapping("exit")
-    public ResponseEntity<?> exit(@RequestBody Map<String, Integer>map){
+    public ResponseEntity<?> exit(@RequestBody Map<String, Integer>map) throws OpenViduJavaClientException, OpenViduHttpException {
         HttpStatus status = roomService.exit(map.get("roomNo"), map.get("participantNo"));
         return new ResponseEntity<>(status);
+    }
+
+    @GetMapping("/currentConnection/{roomno}")
+    public ResponseEntity<?> checkConnection(@PathVariable Integer roomNo){
+        HttpStatus status;
+        Map<String, Object> resultMap;
+        try{
+            resultMap = roomService.checkConnection(roomNo);
+            status = HttpStatus.OK;
+        } catch(Exception e){
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+            resultMap = new HashMap<>();
+            resultMap.put("meessage","connection 확인 중 실패");
+        }
+        return new ResponseEntity<>(resultMap, status);
     }
 }
