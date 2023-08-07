@@ -216,7 +216,7 @@ public class RoomService {
     }
 
     @Transactional
-    public void changeHost(Integer currentUserNo, Integer nextUserNo) {
+    public void changeHost(Integer roomNo, Integer currentUserNo, Integer nextUserNo) {
         /*
           changeInfo.get("roomNo"), changeInfo.get("currentUserNo"), changeInfo.get("nextUserNo")
           participants테이블의 room_id = roomNo and user_id = nextUserNo 조건에 해당하는 유저의 role을 `방장`으로 바꾼다.
@@ -225,8 +225,8 @@ public class RoomService {
          */
         logger.trace("userNo"+currentUserNo+"/participantsNo:"+nextUserNo);
 
-        Participant currentHost = participantRepository.findById(currentUserNo).orElse(null);
-        Participant nextHost = participantRepository.findById(nextUserNo).orElse(null);
+        Participant currentHost = participantRepository.findByRoomIdAndUserId(roomNo, currentUserNo).orElse(null);
+        Participant nextHost = participantRepository.findByRoomIdAndUserId(roomNo, nextUserNo).orElse(null);
         final ParticipantRoleNs ROLE_HOST = participantRoleNsRepository.findByName("호스트");
 
         try{
@@ -245,8 +245,8 @@ public class RoomService {
 
     }
 
-    public void assignStaff(Integer participantNo) {
-        Participant assignee = participantRepository.findById(participantNo).orElse(null);
+    public void assignStaff(Integer roomNo, Integer userNo) {
+        Participant assignee = participantRepository.findByRoomIdAndUserId(roomNo, userNo).orElse(null);
 
         try{
             //noinspection DataFlowIssue
@@ -264,7 +264,7 @@ public class RoomService {
 
     @SuppressWarnings("DataFlowIssue")
     @Transactional
-    public HttpStatus exit(Integer roomNo, Integer participantNo) throws OpenViduJavaClientException, OpenViduHttpException {
+    public HttpStatus exit(Integer roomNo, Integer userNo) throws OpenViduJavaClientException, OpenViduHttpException {
         /*
         1. openvidu connection close
         2. room_log 수정
@@ -274,8 +274,8 @@ public class RoomService {
         Session session;
         HttpStatus status;
 
-        RoomLog roomLog = roomLogRepository.findByRoomIdAndUserId(roomNo, participantNo).orElse(null);
-        Participant participant = participantRepository.findById(participantNo).orElse(null);
+        RoomLog roomLog = roomLogRepository.findByRoomIdAndUserId(roomNo, userNo).orElse(null);
+        Participant participant = participantRepository.findByRoomIdAndUserId(roomNo, userNo).orElse(null);
 
 
         try{
@@ -306,7 +306,7 @@ public class RoomService {
                 status = HttpStatus.CONFLICT;
             }
         } catch(NullPointerException e){
-            logger.error("매칭되는 객체 없음"+roomLog+"/"+participant);
+            logger.error("매칭되는 객체 없음"+roomNo+"/"+userNo);
             status = HttpStatus.CONFLICT;
         } catch(OpenViduJavaClientException | OpenViduHttpException e){
             logger.error("Openvidu connection 처리 실패");
