@@ -3,6 +3,7 @@ package com.ssafy.ssap.service;
 import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.ssap.domain.todo.Todo;
 import com.ssafy.ssap.domain.user.User;
@@ -22,6 +23,7 @@ public class TodoService {
 	/**
 	 * todo 생성
 	 */
+	@Transactional
 	public Integer create(String objective) throws Exception {
 		String userEmail = userService.getMyUserWithAuthorities().getEmail();
 		User user = userRepository.findOneWithAuthoritiesByEmail(userEmail)
@@ -39,6 +41,28 @@ public class TodoService {
 		return todo.getId();
 	}
 
+	/**
+	 * todo 삭제
+	 */
+	@Transactional
+	public void delete(Integer todoId) {
+		String userEmail = userService.getMyUserWithAuthorities().getEmail();
+		User user = userRepository.findOneWithAuthoritiesByEmail(userEmail)
+			.orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
+
+		Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new IllegalArgumentException("todo를 찾을 수 없습니다."));
+
+		if (todo.getUser().getId() != user.getId()) {
+			new IllegalArgumentException("사용자 정보가 일치하지 않습니다.");
+		}
+
+		todoRepository.deleteById(todoId);
+	}
+
+	/**
+	 * todo 완료 표시: done_flag toggle
+	 */
+	@Transactional
 	public void checkDoneFlag(Integer todoId) {
 		String userEmail = userService.getMyUserWithAuthorities().getEmail();
 		User user = userRepository.findOneWithAuthoritiesByEmail(userEmail)
