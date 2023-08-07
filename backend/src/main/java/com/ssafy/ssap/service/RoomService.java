@@ -8,6 +8,7 @@ import com.ssafy.ssap.domain.user.User;
 import com.ssafy.ssap.dto.RoomCreateDto;
 import com.ssafy.ssap.dto.RoomDto;
 import com.ssafy.ssap.repository.*;
+import com.ssafy.ssap.util.RoomUtil;
 import io.openvidu.java.client.*;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ public class RoomService {
     private final ParticipantRoleNsRepository participantRoleNsRepository;
     private final RoomLogRepository roomLogRepository;
     private final UserRepository userRepository;
+    private final RoomUtil roomutil;
 
     /**
      * OpenVidu variables
@@ -114,14 +116,14 @@ public class RoomService {
 
     public void addParticipant(Room room, String role, Integer userNo, String connectionId){
         // 참여자 추가 (방장)
-        Participant participants = Participant.builder()
+        Participant participant = Participant.builder()
                 .isOut(false)
                 .role(participantRoleNsRepository.findByName(role))
                 .room(room)
                 .user(userRepository.findById(userNo).orElse(null))
                 .connectionId(connectionId)
                 .build();
-        participantRepository.save(participants);
+        participantRepository.save(participant);
     }
 
     public void addParticipant(Integer roomNo, String role, Integer userNo, String connectionId) {
@@ -219,11 +221,11 @@ public class RoomService {
     public void changeHost(Integer roomNo, Integer currentUserNo, Integer nextUserNo) {
         /*
           changeInfo.get("roomNo"), changeInfo.get("currentUserNo"), changeInfo.get("nextUserNo")
-          participants테이블의 room_id = roomNo and user_id = nextUserNo 조건에 해당하는 유저의 role을 `방장`으로 바꾼다.
+          participant테이블의 room_id = roomNo and user_id = nextUserNo 조건에 해당하는 유저의 role을 `방장`으로 바꾼다.
           + 권한부여
           room_id = roomNo and user_id = currentUserNo에 해당하는 유저의 role을 일반으로 바꾼다.
          */
-        logger.trace("userNo"+currentUserNo+"/participantsNo:"+nextUserNo);
+        logger.trace("userNo"+currentUserNo+"/participantNo:"+nextUserNo);
 
         Participant currentHost = participantRepository.findByRoomIdAndUserId(roomNo, currentUserNo).orElse(null);
         Participant nextHost = participantRepository.findByRoomIdAndUserId(roomNo, nextUserNo).orElse(null);
@@ -233,9 +235,7 @@ public class RoomService {
             //noinspection DataFlowIssue
             if(currentHost.getRole()==ROLE_HOST && nextHost.getRole()!=ROLE_HOST){
                 currentHost.setRole(nextHost.getRole());
-//                participantsRepository.save(currentHost);
                 nextHost.setRole(ROLE_HOST);
-//                participantsRepository.save(nextHost);
                 logger.debug("호스트 role 변경 완료. partiNo "+currentUserNo+" to "+currentHost.getRole().toString()+", partiNo "+nextUserNo+" to "+nextHost.getRole().toString());
             }
         } catch (NullPointerException e) {
@@ -252,7 +252,6 @@ public class RoomService {
             //noinspection DataFlowIssue
             if(assignee.getRole() == participantRoleNsRepository.findByName("참여자")){
                 assignee.setRole(participantRoleNsRepository.findByName("스태프"));
-//                participantsRepository.save(assignee);
             } else{
                 logger.error("스태프로 임명 가능한 role이 아님");
             }
@@ -327,15 +326,17 @@ public class RoomService {
     }
 
     @Transactional
-    public void kickAndAlarm(Integer roomNo, Integer participantNo, String reason) throws OpenViduJavaClientException, OpenViduHttpException {
+    public void kickAndAlarm(Integer roomNo, Integer staffNo, Integer targetNo, String reason) throws OpenViduJavaClientException, OpenViduHttpException {
         /*
-        participant테이블의 participantsNo가 일치하는 유저의 is_out을 0으로 바꾼다.
+        participant테이블의 participantNo가 일치하는 유저의 is_out을 0으로 바꾼다.
         alarm 테이블에 insert (insert into alarm(title, detail, link, user_id) values("강제퇴장 처리", kickinfo.reason, ?, kickInfo.partiNo))
         room_log 테이블에 update (update room_log set exit_time=now() where user_id= ~ and room_id = ~)
         */
-
-        if(exit(roomNo,participantNo) == HttpStatus.OK);
-        //alarmService.createAlarm(room.getTitle()+"방에서 내보내졌습니다.", reason, participant.getUserId());
+        if(roomutil.isStaff(roomNo, staffNo)){
+            if(exit(roomNo, targetNo) == HttpStatus.OK){
+                //alarmService.createAlarm(room.getTitle()+"방에서 내보내졌습니다.", reason, participant.getUserId());
+            }
+        }
 
 
     }

@@ -104,7 +104,8 @@ public class RoomController {
         try{
             roomService.kickAndAlarm(
                     (Integer) kickInfo.get("roomNo"),
-                    (Integer) kickInfo.get("participantsNo"),
+                    (Integer) kickInfo.get("staffNo"),
+                    (Integer) kickInfo.get("targetNo"),
                     (String) kickInfo.get("reason")
             );
             status = HttpStatus.OK;
