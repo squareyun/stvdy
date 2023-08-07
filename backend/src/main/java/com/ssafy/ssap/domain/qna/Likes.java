@@ -1,5 +1,6 @@
 package com.ssafy.ssap.domain.qna;
 
+import com.ssafy.ssap.domain.user.User;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -26,6 +27,11 @@ public class Likes {
     @NotNull
     @Column(name = "is_good", columnDefinition = "bit(1)")
     private Boolean isGood;
+
+    @NotNull
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @OneToOne(fetch = LAZY)
     @JoinColumn(name = "question_id", unique = false)

@@ -1,5 +1,6 @@
 package com.ssafy.ssap.domain.studyroom;
 
+import com.ssafy.ssap.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,5 +36,9 @@ public class RoomLog {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "room_id")
     private Room room;
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }
