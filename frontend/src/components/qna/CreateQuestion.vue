@@ -127,7 +127,7 @@ async function onSubmit(values) {
 
   padding: 0px;
 
-  color: var(--hl-light);
+  color: var(--hl-light80);
   font-size: 1.4rem;
   font-family: 'ASDGothicM';
 
