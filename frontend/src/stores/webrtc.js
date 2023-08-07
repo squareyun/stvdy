@@ -20,8 +20,10 @@ export const usewebRtcStore = defineStore({
     isPrivacy: false, // 이건 방에 대한게 아닌 방장외 전부 캠 오프와 관련된 거임.
     password: null,
     imagePath: null,
+    isHost : false,
     rule: '모두 열공해서 합격합시다 Ψ(￣∀￣)Ψ',
     backImgFile: null,
+    roomKeywords : [],
 
     /// 참여시 사용할 것
     inputPassword: null,
@@ -34,13 +36,16 @@ export const usewebRtcStore = defineStore({
     roomList: null,
     roomId : null,
 
-    peopleNo : 0, // 우선 peopleNo은 0으로 고정 방 탈퇴 및 방 정보에 사용할 예정임
+    peopleNo : 0, // 우선 peopleNo은 0으로 둠. 방 탈퇴 및 방 정보에 사용할 예정임
 
 
     router : useRouter()
 
   }),
   actions: {
+    creatorIsHost(){
+      this.isHost = true
+    },
     checkmyUserName(){
       console.log(this.myUserName)
       console.log(this.userNo)
@@ -79,6 +84,15 @@ export const usewebRtcStore = defineStore({
     },
     updateRule(newRule){
       this.rule = newRule
+    },
+    updateRoomKeywords(newKeywords){
+      this.roomKeywords = newKeywords
+      console.log(this.roomKeywords)
+    },
+    
+    //  방 생성시에 roomId를 모르고 있으므로 그 값을 적용시킴
+    updateRoomId(newRoomId){
+      this.roomId = newRoomId
     },
 
     // main 화면에서 방 입장 비밀번호 입력시
@@ -121,11 +135,29 @@ export const usewebRtcStore = defineStore({
         console.error('방 리스트 받아오는 오류 발생: ', error)
       }
     },
+    
+    async getEveryRoomKeywords() {
+      try{
+        // const response = axios.get('http://54.180.9.43:8080/rooms/list/')
+        console.log('getEveryRoomKeywords 내부1')
+        // const response = await axios.get('http://localhost:8080/rooms/list')
+        console.log('getEveryRoomKeywords 내부2')
+        this.roomList = response.data.roomList
+        console.log(this.roomList)
+        console.log('getEveryRoomKeywords 내부2')
+      }
+      catch(error){
+        console.log('getRtcRooms내부 오류')
+        console.error('방 리스트 받아오는 오류 발생: ', error)
+      }
+    },
+
     joinTheRoom(room) {
       // this.$router.push({ name: 'MovieDetailView', params: { id: moviecard.id }});  
       this.mySessionId = room.title
       this.quota = room.quota
       this.roomId = room.id
+      this.peopleNo = room.currentNumber
       console.log('조인더룸내부1', this.roomId)
       this.router.push({
         name:'roomJoin',
@@ -137,29 +169,41 @@ export const usewebRtcStore = defineStore({
       })
       console.log('조인더룸내부2')
     },
-    async shutDownRoom(roomId){
-      try{
-        const response = await axios.delete(`http://localhost:8080/rooms/${roomId}`)
-        console.log(response.data)
-        console.log('방이 성공적으로 제거되었습니다.')
-      }
-      catch(error){
-        console.error('방을 제거하지 못했습니다.',error.code, error.message)
-      }
-    },
+    // async shutDownRoom(roomId){
+    //   try{
+    //     const response = await axios.delete(`http://localhost:8080/rooms/${roomId}`)
+    //     console.log(response.data)
+    //     console.log('방이 성공적으로 제거되었습니다.')
+    //   }
+    //   catch(error){
+    //     console.error('방을 제거하지 못했습니다.',error.code, error.message)
+    //   }
+    // },
 
     async roomExit(roomId){
       console.log('나갈방번호',roomId)
-      alert("방나갈거야!!!!!!!!!!!")
+      console.log("방나갈거야!!!!!!!!!!!")
       try{
         // participan~~ 는 방에 참여한 사람 번호,  userNo는 내 번호.
         // participantNo는 방에 독립적인 참여자 번호,
-        const response = await axios.post(`http://localhost:8080/rooms/exit`,{roomNo:roomId, userNo: this.userNo})
-        console.log(response.data)
-        alert("방나갔다!!!!!!!")
+        const response = await axios.post('http://localhost:8080/rooms/exit',{roomNo:roomId, userNo: this.userNo})
+        console.log('방나감의 리스폰스',response.data)
+        console.log("방나갔다!!!!!!!")
       }
       catch(error){
         console.error('RoomExit에 문제가 생겼습니다.', error.code, error.message);
+      }
+    },
+
+    async checkCurrentConnection(roomId){
+      console.log('현재 커넥션 확인할 방 번호',roomId)
+      try{
+        const response = await axios.get(`http://localhost:8080//rooms/currentConnection/${roomId}`)
+        console.log('확인함')
+        console.log('현재 커넥션',response.data)
+      }
+      catch(error){
+        console.error('checkCurrentConnection에 문제가 생겼습니다.', error.code, error.message);
       }
     },
     

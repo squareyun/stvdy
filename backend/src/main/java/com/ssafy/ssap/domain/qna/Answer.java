@@ -47,6 +47,7 @@ public class Answer {
 
     public void addQuestion(Question question) {
         this.question = question;
-        question.answerList.add(this);
+//        question.answerList.add(this);
+
     }
 }

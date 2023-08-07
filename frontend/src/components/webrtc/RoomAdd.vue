@@ -36,9 +36,15 @@
   const password = ref(store.password)
   // 방 인원설정 관련 내용
   const quota = ref(store.quota)
-  
+  // 방장의 방장여부 등록
+  const isHost = ref(store.isHost)
+
   // 방 참여자들의 캠 전체 비활성화 여부를 의미
   const isPrivacy = ref(store.isPrivacy)
+
+  onMounted(() => {
+    creatorIsHost()
+  }),
 
   //tiemSet이 flase면 종료시간 초기화.
   watch(timeSet, (newtimeSet) => {
@@ -133,7 +139,11 @@
     store.updateQuota(Number(event.target.value))
     quota.value = Number(event.target.value)
   }
-
+  
+  function creatorIsHost() {  // store의 isHost값을 true로 만들어줌
+    store.creatorIsHost()
+    isHost.value=true
+  }
 
   function joinSession() {
     if(!store.myUserName || !store.mySessionId){
@@ -146,6 +156,43 @@
         roomName: encodeURIComponent(mySessionId.value),  // 인코딩해서 보내줘야만 작동함
       },
     })
+  }
+
+  // 키워드 관련 함수
+  const roomKeywords = ref([])
+  const roomKeyword = ref(null)
+  // 키워드 추가하는 함수
+  function addKeyword(event) {
+    event.preventDefault();
+    console.log(roomKeyword.value)
+    if(roomKeyword.value in roomKeywords){
+      alert('이미 추가된 키워드입니다.')
+      roomKeyword.value = null  
+      return
+    }
+    // roomKeyword는 최대 3개만 사용할 수 있게하기 위해
+    else if(roomKeyword.value && roomKeywords.value.length < 3){
+      roomKeywords.value.push(roomKeyword.value)
+      store.updateRoomKeywords(roomKeyword.value)
+    }
+    else{
+      alert('키워드를 더 추가할 수 없습니다.')
+    }
+    console.log(roomKeywords.value)
+    roomKeyword.value = null
+  }
+  // 키워드 삭제하는 함수
+  function removeKeyword(index) {
+    roomKeywords.value.splice(index, 1)
+    store.updateRoomKeywords(roomKeyword.value)
+    console.log(roomKeywords.value)
+  }
+  // 키워드는 최대 15글자.
+  function limitInput() {
+   const maxLength = 15
+    if (roomKeyword && roomKeyword.value && roomKeyword.value.length > maxLength) {
+      roomKeyword.value = roomKeyword.value.slice(0, maxLength)
+    }
   }
 
 
@@ -202,6 +249,21 @@
           <input type="checkbox" :checked="isPassword" @change="updateIsPassword">
           <span id="isPasswordSpan">공개</span>
         </p> -->
+        <!-- 키워드 설정 -->
+        <p>
+          <form @submit="addKeyword"> <!-- 메서드 생성 -->
+            <div>
+              <label for="keyword">키워드</label>
+              <input id="keyword" type="text" v-model="roomKeyword" @input="limitInput">
+            </div>
+            <button type="submit">키워드 추가</button>
+          </form>
+          <span v-for="(keyword, i) in roomKeywords" :key="i">
+            {{ keyword }}
+            <!-- <button id="kwDelBtn{{i}}">X</button> -->
+            <button @click="removeKeyword(i)">X</button>
+          </span>
+        </p>
         <!-- 비밀번호 설정여부 -->
         <p>
           <label for="">비밀번호 여부</label>
@@ -215,6 +277,7 @@
           <input type="checkbox" :checked="isPrivacy" @change="updateIsPrivacy">
           <span id="isPrivacySpan">미설정</span>
         </p>
+        
         <!-- 방 종료 시간 작성 -->
         <p>
           <label>시간 설정</label>

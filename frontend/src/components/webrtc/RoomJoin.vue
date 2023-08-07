@@ -92,14 +92,18 @@
 
   //// 페이지 벗어나면 
   onBeforeUnmount(()=>{
-    leaveSession()
-    store.roomExit(roomId.value)  // 방나가면 방나갔음을 백엔드로 전송.
+    if(peopleNoComputed.value == 1){  // 사람 수가 1이면 결국 혼자인거니까.
+      // store.shutDownRoom(roomId.value)
+      shutDownRoom(roomId.value)
+    }
+    else{
+      leaveSession()
+      store.roomExit(roomId.value)  // 방나가면 방나갔음을 백엔드로 전송.
+      console.log('roomExit 되는건가')
+    }
     /////////////////////////////////////////////
     // 방을 나가는데 사람이 없으면 방을 폐쇄할 거임.
     // peopleNo.value 를 subscriber를 이용하게된다면 너무나 위험하군....
-    // if(peopleNoComputed.value == 1){  // 사람 수가 1이면 결국 혼자인거니까.
-    //   store.shutDownRoom(roomId.value)
-    // }
     /////////////////////////////////////////////
   })
 
@@ -236,6 +240,7 @@
     const password = store.password
     const backImgFile = store.backImgFile
     const rule = store.rule
+    const roomKeywords = store.roomKeywords
     ////////////////////////////////////////////////////
     try{
       console.log(roomNo, userNo, inputPassword)
@@ -253,18 +258,24 @@
     catch(error){
       console.error('만들어진 방이없어서 발생한 에러:', error);
       try{
-      const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/add', 
-      {userNo: userNo, title: mySessionId, endHour: endHour, endMinute: endMinute, quota: quota, 
-        isPrivacy: isPrivacy, password: password, iamgePath: backImgFile, rule: rule}, 
-        {headers: { 'Content-Type': 'application/json', },
-      });
-      console.log('create할때',userNo, mySessionId, endHour, endMinute, quota, isPrivacy, password, backImgFile, rule)
-      console.log('크리에이트룸 내부 해치웠나?1')
-      console.log('이것이 만든 방의 리스폰스데이터 \n', response.data)
-      /////////////////////////////////////////////////
-      // 방 ID 받아와야함. 그리고 그걸로 store및 여기 roomId.value에 저장할 것.ㄴ
-      /////////////////////////////////////////////////
-      return response.data;
+        console.log('방만들거임')
+        const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/add', 
+        {userNo: userNo, title: mySessionId, endHour: endHour, endMinute: endMinute, quota: quota, 
+          isPrivacy: isPrivacy, password: password, iamgePath: backImgFile, rule: rule, roomKeywords: roomKeywords}, 
+          {headers: { 'Content-Type': 'application/json', },
+        });
+        console.log('create할때',userNo, mySessionId, endHour, endMinute, quota, isPrivacy, password, backImgFile, rule)
+        console.log('크리에이트룸 내부 해치웠나?1')
+        console.log('이것이 만든 방의 리스폰스데이터 \n', response.data)
+        console.log('이것이 만든 방의 리스폰스데이터 \n', response.data.token)
+        /////////////////////////////////////////////////
+        // 방 ID 받아와야함. 그리고 그걸로 store및 여기 roomId.value에 저장할 것.
+        /////////////////////////////////////////////////
+        //response.data.room
+        console.log('방 번호 조정중1', response.data.room.id)
+        updateRoomId(response.data.room.id)
+        console.log('방 번호 조정중2')
+        return response.data.token;
       }
       catch(error){
         console.error("방생성에도 오류 났음.",error);
@@ -272,6 +283,11 @@
     }
   }
 
+
+  function updateRoomId(newroomId){
+    store.updateRoomId(newroomId)
+    roomId.value = store.roomId
+  }
   // 채팅창 구현을 위한 함수 제작
   ///////////////////////////
   function sendMessage(event) {
@@ -434,12 +450,47 @@
   }
 
   /////////////////////////
+  async function shutDownRoom(roomId) {
+    // store.shutDownRoom(roomId)
+    try{
+      // const confirmLeave = confirm("이 페이지를 떠나시겠습니까? 회의가 종료됩니다.")
+      // console.log('나갈거야!!!!!',confirmLeave)
+      // if(session.value && confirmLeave) session.value.disconnect()
+      if(session.value) session.value.disconnect()
+      
+      // Empty all properties...
+      session.value = undefined;
+      mainStreamManager.value = undefined;
+      publisher.value = undefined;
+      subscribers.value = [];
+      OV.value = undefined;
 
-  function shutDownRoom(roomId) {
+      // Remove beforeunload listener
+      window.removeEventListener("beforeunload", leaveSession)
+      document.removeEventListener('keydown', preventRefresh)
+      // 메인페이지로 넘어감
+      router.push({
+        // name:'roomAdd',// 임시로 roomAdd로 보냄.
+        name:'main',// 임시 이름 main으로 넘겨줌.
+        // params: { 
+        //   roomName: mySessionId.value,
+        // },
+      })
+      store.roomExit(roomId.value)  // 방나가면 방나갔음을 백엔드로 전송.
+      const response = await axios.delete(`http://localhost:8080/rooms/${roomId}`)
+      console.log(response.data)
+      console.log('방이 성공적으로 제거되었습니다.')
+    }
+    catch(error){
+      console.error('방을 제거하지 못했습니다.',error.code, error.message)
+    }
+  }
+  async function handleshutDownRoom(roomId) {
     const isShut = confirm("방 폐쇄 버튼을 눌렀습니다. 진심입니까? 휴먼??")
     if(isShut){
       alert('진심이군요 휴먼, 알겠습니다. 방을 폐쇄하도록하죠.')
-      store.shutDownRoom(roomId)
+      // store.shutDownRoom(roomId)
+      shutDownRoom(roomId)
     }
     else{
       alert('거짓말을 하다니 그런짓은 하지마십시오. 휴먼.')
@@ -448,8 +499,6 @@
 
 </script>
 
-<!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  -->
-<!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  -->
 <!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  -->
 <!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  -->
 
@@ -497,7 +546,7 @@
       </div>
       <!-- 방 종료 버튼 -->
       <div id=''>
-        <button @click="shutDownRoom(roomId)">방 폐쇄하기</button>
+        <button @click="handleshutDownRoom(roomId)">방 폐쇄하기</button>
       </div>
     </div>
   </div>
