@@ -16,5 +16,5 @@ public interface RoomLogRepository extends JpaRepository<RoomLog, Integer> {
     @Query(value = "UPDATE room_log SET spend_hour = TIME_FORMAT(SEC_TO_TIME(TIMESTAMPDIFF(SECOND, enter_time, CURRENT_TIMESTAMP)), '%H:%i:%s') WHERE room_id = :roomId", nativeQuery = true)
     void updateSpendHourByAllRoomId(@Param("roomId") Integer roomId);
 
-    Optional<RoomLog> findByRoom_idAndUser_id(Integer room_id, Integer user_id);
+    Optional<RoomLog> findByRoomIdAndUserId(Integer roomId, Integer userId);
 }

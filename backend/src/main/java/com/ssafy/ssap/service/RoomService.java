@@ -7,18 +7,8 @@ import com.ssafy.ssap.domain.studyroom.RoomLog;
 import com.ssafy.ssap.domain.user.User;
 import com.ssafy.ssap.dto.RoomCreateDto;
 import com.ssafy.ssap.dto.RoomDto;
-import com.ssafy.ssap.repository.ParticipantRepository;
-import com.ssafy.ssap.repository.ParticipantRoleNsRepository;
-import com.ssafy.ssap.repository.RoomLogRepository;
-import com.ssafy.ssap.repository.RoomRepository;
-import com.ssafy.ssap.repository.UserRepository;
-
-import io.openvidu.java.client.ConnectionProperties;
-import io.openvidu.java.client.ConnectionType;
-import io.openvidu.java.client.OpenVidu;
-import io.openvidu.java.client.OpenViduHttpException;
-import io.openvidu.java.client.OpenViduJavaClientException;
-import io.openvidu.java.client.Session;
+import com.ssafy.ssap.repository.*;
+import io.openvidu.java.client.*;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,12 +24,12 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class RoomService {
-	private final Logger logger = LoggerFactory.getLogger(RoomService.class);
-	private final RoomRepository roomRepository;
-	private final ParticipantRepository participantRepository;
-	private final ParticipantRoleNsRepository participantRoleNsRepository;
-	private final RoomLogRepository roomLogRepository;
-	private final UserRepository userRepository;
+    private final Logger logger = LoggerFactory.getLogger(RoomService.class);
+    private final RoomRepository roomRepository;
+    private final ParticipantRepository participantRepository;
+    private final ParticipantRoleNsRepository participantRoleNsRepository;
+    private final RoomLogRepository roomLogRepository;
+    private final UserRepository userRepository;
 
     /**
      * OpenVidu variables
@@ -78,8 +68,6 @@ public class RoomService {
             roomRepository.save(room);
             logger.debug("룸 정보 DB 입력");
 
-		addParticipant(room, "호스트");
-		addRoomLog(room, roomCreateDto.getUserNo());
             addParticipant(room, "호스트", roomCreateDto.getUserNo(), connection.getConnectionId());
             logger.debug("participant 테이블에 레코드 입력");
             addRoomLog(room,roomCreateDto.getUserNo());
@@ -104,8 +92,6 @@ public class RoomService {
         return createConnection(session);
     }
 
-		return room.getId();
-	}
     public Connection createConnection(Session session) throws OpenViduJavaClientException, OpenViduHttpException {
         //커넥션 생성 및 반환
         try {
@@ -127,14 +113,14 @@ public class RoomService {
 
     public void addParticipant(Room room, String role, Integer userNo, String connectionId){
         // 참여자 추가 (방장)
-        Participant participant = Participant.builder()
+        Participant participants = Participant.builder()
                 .isOut(false)
                 .role(participantRoleNsRepository.findByName(role))
                 .room(room)
-                .user(userRepository.findById((long)userNo).orElse(null))
+                .user(userRepository.findById(userNo).orElse(null))
                 .connectionId(connectionId)
                 .build();
-        participantRepository.save(participant);
+        participantRepository.save(participants);
     }
 
     public void addParticipant(Integer roomNo, String role, Integer userNo, String connectionId) {
@@ -143,7 +129,7 @@ public class RoomService {
     }
 
     public void addRoomLog(Room room, Integer userId){
-        User user = userRepository.findById((long)userId).orElse(null);
+        User user = userRepository.findById(userId).orElse(null);
         // 접속 기록 추가
         RoomLog roomLog = RoomLog.builder()
                 .roomTitle(room.getTitle())
@@ -232,11 +218,11 @@ public class RoomService {
     public void changeHost(Integer currentUserNo, Integer nextUserNo) {
         /*
           changeInfo.get("roomNo"), changeInfo.get("currentUserNo"), changeInfo.get("nextUserNo")
-          participant테이블의 room_id = roomNo and user_id = nextUserNo 조건에 해당하는 유저의 role을 `방장`으로 바꾼다.
+          participants테이블의 room_id = roomNo and user_id = nextUserNo 조건에 해당하는 유저의 role을 `방장`으로 바꾼다.
           + 권한부여
           room_id = roomNo and user_id = currentUserNo에 해당하는 유저의 role을 일반으로 바꾼다.
          */
-        logger.trace("userNo"+currentUserNo+"/participantNo:"+nextUserNo);
+        logger.trace("userNo"+currentUserNo+"/participantsNo:"+nextUserNo);
 
         Participant currentHost = participantRepository.findById(currentUserNo).orElse(null);
         Participant nextHost = participantRepository.findById(nextUserNo).orElse(null);
@@ -246,7 +232,9 @@ public class RoomService {
             //noinspection DataFlowIssue
             if(currentHost.getRole()==ROLE_HOST && nextHost.getRole()!=ROLE_HOST){
                 currentHost.setRole(nextHost.getRole());
+//                participantsRepository.save(currentHost);
                 nextHost.setRole(ROLE_HOST);
+//                participantsRepository.save(nextHost);
                 logger.debug("호스트 role 변경 완료. partiNo "+currentUserNo+" to "+currentHost.getRole().toString()+", partiNo "+nextUserNo+" to "+nextHost.getRole().toString());
             }
         } catch (NullPointerException e) {
@@ -263,7 +251,7 @@ public class RoomService {
             //noinspection DataFlowIssue
             if(assignee.getRole() == participantRoleNsRepository.findByName("참여자")){
                 assignee.setRole(participantRoleNsRepository.findByName("스태프"));
-//                participantRepository.save(assignee);
+//                participantsRepository.save(assignee);
             } else{
                 logger.error("스태프로 임명 가능한 role이 아님");
             }
@@ -285,7 +273,7 @@ public class RoomService {
         Session session;
         HttpStatus status;
 
-        RoomLog roomLog = roomLogRepository.findByRoom_idAndUser_id(roomNo, participantNo).orElse(null);
+        RoomLog roomLog = roomLogRepository.findByRoomIdAndUserId(roomNo, participantNo).orElse(null);
         Participant participant = participantRepository.findById(participantNo).orElse(null);
 
 
@@ -327,14 +315,20 @@ public class RoomService {
         return status;
     }
 
-    public List<RoomDto> getRoomList() {
-        return roomRepository.findAllRooms(); //키워드와 페이지 검색 수정필요
+    public void getRoomList(Map<String,Object> resultMap) {
+//        resultMap.put("roomList", roomRepository.findAllRooms()); //키워드와 페이지 검색 수정필요
+        List<RoomDto> roomList = roomRepository.findAllRooms();
+        for(RoomDto dto : roomList){
+            Integer num = participantRepository.countByRoomIdAndIsOut(dto.getId(),false);
+            dto.setCurrentNumber(num);
+        }
+        resultMap.put("roomList",roomList);
     }
 
     @Transactional
     public void kickAndAlarm(Integer roomNo, Integer participantNo, String reason) throws OpenViduJavaClientException, OpenViduHttpException {
         /*
-        participant테이블의 participantNo가 일치하는 유저의 is_out을 0으로 바꾼다.
+        participant테이블의 participantsNo가 일치하는 유저의 is_out을 0으로 바꾼다.
         alarm 테이블에 insert (insert into alarm(title, detail, link, user_id) values("강제퇴장 처리", kickinfo.reason, ?, kickInfo.partiNo))
         room_log 테이블에 update (update room_log set exit_time=now() where user_id= ~ and room_id = ~)
         */
@@ -375,7 +369,7 @@ public class RoomService {
         resultMap.put("openviduConnections",currentOpenvidu);
 
         try{
-            List<Participant> currentObjectsInDB= participantRepository.findAllByRoom_id(roomNo);
+            List<Participant> currentObjectsInDB= participantRepository.findAllByRoomId(roomNo);
             List<String> currentDB = new ArrayList<>();
             for(Participant p : currentObjectsInDB){
                 currentDB.add(p.getConnectionId());

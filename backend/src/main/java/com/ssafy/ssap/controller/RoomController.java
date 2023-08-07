@@ -135,7 +135,7 @@ public class RoomController {
         HttpStatus status;
         Map<String,Object> resultMap = new HashMap<>();
         try {
-            resultMap.put("roomList",roomService.getRoomList());
+            roomService.getRoomList(resultMap);
             status = HttpStatus.OK;
         } catch(Exception e){
             status = HttpStatus.INTERNAL_SERVER_ERROR;
