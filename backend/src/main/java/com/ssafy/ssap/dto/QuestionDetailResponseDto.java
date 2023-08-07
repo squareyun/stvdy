@@ -17,7 +17,10 @@ public class QuestionDetailResponseDto {
     private Boolean bestSelected;
     private String category;
     private String userNickname;
-    //    private Boolean isLike;
     private Integer questionScore;
+
+    public int getQuestionScore() {
+        return questionScore == null ? 0 : questionScore;
+    }
 
 }

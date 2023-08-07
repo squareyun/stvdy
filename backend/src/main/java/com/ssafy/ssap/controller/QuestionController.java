@@ -84,28 +84,26 @@ public class QuestionController {
 
     @GetMapping("/{questionNo}")
     public ResponseEntity<Map<String, Object>> detail(@PathVariable("questionNo") Integer questionNo) {
-        Map<String, Object> resultMap = new HashMap<>();
-        HttpStatus status = null;
         try {
             QuestionDetailResponseDto detail = questionService.detail(questionNo);
             if (detail != null) {
-                logger.debug("{}번 질문 조회 성공", questionNo);
+                logger.debug("{}번 질문 단건 조회 성공", questionNo);
+                Map<String, Object> resultMap = new HashMap<>();
                 resultMap.put("message", MessageFormat.SUCCESS);
                 resultMap.put("question", detail);
+                return ResponseEntity.ok(resultMap);
             } else {
-                logger.debug("{}번 질문 조회 실패 (존재하지 않음)", questionNo);
-                resultMap.put("message", MessageFormat.FAIL + ": " + MessageFormat.NO_QUETION_ID);
-                resultMap.put("question", detail);
+                logger.debug("{}번 질문 단건 조회 실패 (존재하지 않음)", questionNo);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Collections.singletonMap("message", MessageFormat.FAIL + ": " + MessageFormat.NO_QUETION_ID));
             }
-            status = HttpStatus.ACCEPTED;
         } catch (Exception e) {
             logger.error("질문 단건 조회 실패", e);
-            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getClass().getSimpleName());
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage()));
         }
-
-        return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }
+
 
     @GetMapping("/islike/{userNo}/{questionNo}")
     public ResponseEntity<Map<String, Object>> detailIsLike(@PathVariable("userNo") Integer userNo, @PathVariable("questionNo") Integer questionNo) {

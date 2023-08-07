@@ -1,6 +1,7 @@
 package com.ssafy.ssap.repository;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -92,12 +93,12 @@ public class QueryRepository {
                         question.answer.isNotNull(),
                         question.category,
                         question.user.nickname,
-                        JPAExpressions.select(likes.isGood.when(true).then(1).otherwise(0).sum().castToNum(Integer.class))
-                                .from(likes)
-                                .where(likes.question.id.eq(question.id))))
+                        ExpressionUtils.as(
+                                JPAExpressions.select(likes.isGood.when(true).then(1).otherwise(-1).sum().coalesce(0))
+                                        .from(likes)
+                                        .where(likes.question.id.eq(question.id)), "questionScore")))
                 .from(question)
                 .leftJoin(question.user, user)
-                .leftJoin(question.likes, likes)
                 .where(question.id.eq(questionNo))
                 .fetchOne();
     }
