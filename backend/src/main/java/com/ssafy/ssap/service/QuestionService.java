@@ -78,13 +78,6 @@ public class QuestionService {
         return questionQueryRepository.findAllQuestionWithKeywordAndNickName(keyword, nickname, noAnsFilter, noBestAnsFilter, pageable);
     }
 
-    /**
-     * 전체 목록 조회
-     * 답변이 달리지 않은 게시물 검색
-     */
-//    public Page<QuestionListResponseDto> getListWithNoAnswer(Pageable pageable) {
-//        return questionQueryRepository.findAllQuestionWithNoAnswer(pageable);
-//    }
     public QuestionDetailResponseDto detail(Integer questionNo) {
         return questionQueryRepository.findQuestionById(questionNo);
     }

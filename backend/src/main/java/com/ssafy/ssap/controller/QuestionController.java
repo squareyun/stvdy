@@ -145,24 +145,6 @@ public class QuestionController {
         }
     }
 
-//    @GetMapping("/list/noanswer")
-//    public ResponseEntity<Map<String, Object>> liseWithNoAnswer(Pageable pageable) {
-//        try {
-//            Page<QuestionListResponseDto> questionList = questionService.getListWithNoAnswer(pageable);
-//            logger.debug("{} 개의 질문 검색 성공", questionList.stream().count());
-//
-//            return ResponseEntity.accepted()
-//                    .body(Map.of("question", questionList, "message", MessageFormat.SUCCESS));
-//
-//        } catch (Exception e) {
-//            logger.error("질문 검색 실패", e);
-//
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body(Map.of("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage()));
-//        }
-//    }
-
-
     @PutMapping("/likes/{questionNo}")
     public ResponseEntity<Map<String, Object>> addLikes(@PathVariable("questionNo") Integer questionNo, @RequestBody LikesDto likesDto) {
         try {
