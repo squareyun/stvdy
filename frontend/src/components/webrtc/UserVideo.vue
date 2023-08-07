@@ -8,6 +8,11 @@
   </div>
 </template>
 
+<script>
+  export default {
+    name: 'OvVideo',
+  }
+</script>
 <script setup>
   import { defineProps, computed, defineExpose } from 'vue';
   import OvVideo from '@/components/webrtc/OvVideo.vue';
@@ -27,8 +32,8 @@
     return JSON.parse(connection.data);
   }
 
-  // Expose component's name
-  defineExpose({
-    name: 'UserVideo',
-  });
+  // // Expose component's name
+  // defineExpose({
+  //   name: 'UserVideo',
+  // });
 </script>

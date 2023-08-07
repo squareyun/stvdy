@@ -544,6 +544,12 @@
     }
   }
 
+  function tmpClick1() {
+    console.log('기존 참여자 div')
+  }
+  function tmpClick2() {
+    console.log('신규 참여자 div')
+  }
 </script>
 
 <!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  -->
@@ -571,10 +577,11 @@
           <!-- 타인 캠 -->
           <!-- <UserVideo="updateMainVideoStreamManager(sub)" /> -->
           <!-- 기존 참여자와 이후 참여자 구분해서 사용시 사용해보기 -->
+          
           <UserVideo v-for="(sub,i) in preSubscribersComputed" :key="i" :stream-manager="sub"
-            @click.native="updateMainVideoStreamManager(sub)" />
+            @click.native="updateMainVideoStreamManager(sub)" @click="tmpClick1"/>
           <UserVideo v-for="(sub,i) in subscribersComputed" :key="i" :stream-manager="sub"
-            @click.native="updateMainVideoStreamManager(sub)" />
+            @click.native="updateMainVideoStreamManager(sub)" @click="tmpClick2"/>
         </div>
         <!-- 선택 캠 -->
         <div id="mainVideo">
