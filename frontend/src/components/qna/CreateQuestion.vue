@@ -19,6 +19,8 @@ const user = userStore.user
 const openTextArea = (title) => {
   if (typeof title != 'undefined' && title.length > 0) {
     document.getElementById('question-form-main').style.opacity = 1
+    document.getElementById('question-form-main-text').style.pointerEvents =
+      'auto'
     document.getElementById('question-form-main-btn').style.opacity = 1
     document.getElementById('question-form-main-btn').style.cursor = 'pointer'
   }
@@ -169,6 +171,8 @@ async function onSubmit(values) {
   background-color: transparent;
   border: none;
   outline: none;
+
+  pointer-events: none;
 }
 
 #question-form-menu {
