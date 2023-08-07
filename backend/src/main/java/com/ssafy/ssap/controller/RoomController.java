@@ -194,7 +194,7 @@ public class RoomController {
         return new ResponseEntity<>(status);
     }
 
-    @GetMapping("/currentConnection/{roomNo}")
+    @GetMapping("/currentConnection/{roomno}")
     public ResponseEntity<?> checkConnection(@PathVariable Integer roomNo){
         HttpStatus status;
         Map<String, Object> resultMap;
