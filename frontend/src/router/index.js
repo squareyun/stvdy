@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 // import RoomView from '../views/RoomView.vue'
-import { useAuthStore, useAlertStore, useUsersStore } from '@/stores'
+import { useAuthStore, useAlertStore, useUserStore } from '@/stores'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,8 +12,20 @@ const router = createRouter({
       component: () => import('../views/HomeView.vue'),
       children: [
         {
-          path: '/mypage',
-          name: 'mypage',
+          path: '',
+          name: 'main',
+          component: () => import('../components/Test.vue'),
+        },
+      ],
+    },
+    {
+      path: '/mypage',
+      name: 'mypage',
+      component: () => import('../views/MyPageView.vue'),
+      children: [
+        {
+          path: '',
+          name: 'profile',
           component: () => import('../components/profile/MyPage.vue'),
           children: [
             {
@@ -26,31 +38,32 @@ const router = createRouter({
               name: 'changepwd',
               component: () => import('../components/profile/ChangePwd.vue'),
             },
-            {
-              path: '/changeusername',
-              name: 'changeusername',
-              component: () =>
-                import('../components/profile/ChangeUsername.vue'),
-            },
           ],
         },
+      ],
+    },
+    {
+      path: '/question',
+      name: 'question',
+      component: () => import('../views/QuestionView.vue'),
+      children: [
         {
-          path: '/question',
-          name: 'question',
+          path: '',
+          name: 'listquestions',
           component: () => import('../components/qna/QuestionList.vue'),
           children: [],
         },
         {
-          path: '/createqtn',
-          name: 'createqtn',
-          component: () => import('../components/qna/CreateQtn.vue'),
+          path: '/createquestion',
+          name: 'createquestion',
+          component: () => import('../components/qna/CreateQuestion.vue'),
           children: [],
         },
         {
-          path: '/qtndetail',
-          name: 'qtndetail',
+          path: '/questiondetail',
+          name: 'questiondetail',
           params: {},
-          component: () => import('../components/qna/QtnDetail.vue'),
+          component: () => import('../components/qna/QuestionDetail.vue'),
           children: [],
         },
       ],
@@ -152,35 +165,33 @@ router.beforeEach(async (to) => {
 
   // 로컬 스토리지의 유저 로그인 정보가 있는지 받아오는 스토어
   const authStore = useAuthStore()
-  const usersStore = useUsersStore()
+  const userStore = useUserStore()
 
   let token = localStorage.getItem('access-token')
-  console.log(1, token)
   if (typeof token == 'undefined' || token == null || token == '')
     token = sessionStorage.getItem('access-token')
 
-  console.log(2, token)
   if (!(typeof token == 'undefined' || token == null || token == ''))
-    await usersStore.getInfo(token)
+    await userStore.getInfo(token)
 
   // public 라우터이면 유저 정보를 확인하지 않아 무한 반복 방지
   // 없으면 끝도 없이 유저 정보 검사후 이동을 반복
-  // if (authStore.isLogin) {
-  //   if (loginLogics.includes(to.path)) {
-  //     console.log(to.path)
-  //     authStore.returnUrl = to.fullPath
+  if (authStore.isLogin) {
+    if (loginLogics.includes(to.path)) {
+      console.log(to.path)
+      authStore.returnUrl = to.fullPath
 
-  //     return '/'
-  //   }
-  // } else {
-  //   if (authRequired) {
-  //     console.log(authRequired)
-  //     console.log(to.path)
-  //     authStore.returnUrl = to.fullPath
+      return '/'
+    }
+  } else {
+    if (authRequired) {
+      console.log(authRequired)
+      console.log(to.path)
+      authStore.returnUrl = to.fullPath
 
-  //     return '/about'
-  //   }
-  // }
+      return '/about'
+    }
+  }
 })
 
 export default router

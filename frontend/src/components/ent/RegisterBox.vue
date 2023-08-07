@@ -15,7 +15,9 @@ const schema = Yup.object().shape({
     .max(45, '길이를 줄여주세요.')
     .min(2, '더 긴 이름을 사용해야합니다.'),
   email: Yup.string().email('이메일을 넣어주세요'),
-  password: Yup.string().required('비밀번호를 넣어주세요'),
+  password: Yup.string()
+    .required('비밀번호를 넣어주세요')
+    .min(4, '더 긴 비밀번호를 사용해야합니다.'),
   passwordConfirm: Yup.string().oneOf(
     [Yup.ref('password'), null],
     '비밀번호가 일치하지 않습니다',
@@ -25,10 +27,10 @@ const schema = Yup.object().shape({
 const emailValue = ''
 const varificationEmail = async (value) => {
   console.log(value)
-  // const usersStore = useUsersStore()
+  // const userStore = useUserStore()
   // const alertStore = useAlertStore()
   // try {
-  //   await usersStore.varifyEmail(value)
+  //   await userStore.varifyEmail(value)
   //   alertStore.success('인증메일이 전송되었습니다.')
   // } catch (error) {
   //   alertStore.error(error)
@@ -36,7 +38,7 @@ const varificationEmail = async (value) => {
 }
 
 async function onSubmit(values) {
-  const user = {
+  const data = {
     email: values.email,
     password: values.password,
     name: values.realname,
@@ -44,9 +46,9 @@ async function onSubmit(values) {
   }
 
   joinUser(
-    user,
-    (data) => {
-      console.log(data)
+    data,
+    (res) => {
+      console.log(res)
       router.push('/about')
     },
     (error) => {
@@ -59,7 +61,7 @@ async function onSubmit(values) {
 <template>
   <div>
     <h2 class="ents-title">회원가입</h2>
-    <div>
+    <div class="ents">
       <Form
         autocomplete="off"
         @submit="onSubmit"
@@ -140,7 +142,7 @@ async function onSubmit(values) {
 </template>
 
 <style>
-.div-line {
+.ents > form > .div-line {
   width: 400px;
   height: 1px;
   margin-top: 25px;
@@ -158,7 +160,7 @@ async function onSubmit(values) {
   border: 0;
   background-color: transparent;
 
-  color: var(--hl-green);
+  color: var(--hl-purple);
   transition: color 0.4s;
   font-size: 1rem;
 

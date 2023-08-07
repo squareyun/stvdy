@@ -34,7 +34,7 @@ div {
   color: var(--font100);
 }
 
-.field {
+.ents > form > .field {
   /* position: relative;
   top: 50px; */
   background-color: var(--hl-light);
@@ -43,9 +43,8 @@ div {
   margin-bottom: 4px;
   padding-left: 18px;
 
-  color: var(--font100);
-
   font-size: 1rem;
+  color: var(--font100);
 
   width: 360px;
   height: 46px;
@@ -53,17 +52,18 @@ div {
   border: 1px solid var(--font30);
 }
 
-.field:focus {
+.ents > form > .field:focus {
   outline: none;
   box-shadow: 0 0 0 1px var(--font80) inset;
 }
 
-.field-name {
+.ents > form > .field-name {
   position: relative;
   display: inline;
   margin-left: 31px;
 
   /* font-size: 14px; */
+  color: var(--font80);
   font-size: 0.9rem;
 
   text-align: center;

@@ -1,7 +1,7 @@
 <script setup>
 import { Form, Field } from 'vee-validate'
 import { useAuthStore } from '@/stores'
-import { useUsersStore } from '@/stores'
+import { useUserStore } from '@/stores'
 import router from '@/router'
 import * as Yup from 'yup'
 
@@ -25,7 +25,7 @@ const onSubmit = async (values) => {
 <template>
   <div>
     <h2 class="ents-title">"만나게 되어 반가워요"</h2>
-    <div>
+    <div class="ents">
       <Form
         autocomplete="off"
         @submit="onSubmit"
@@ -125,13 +125,13 @@ input[type='checkbox'] {
   cursor: pointer;
 }
 
-#login-button:hover > svg > path {
-  fill: var(--hl-green);
+#login-button > svg > path {
+  fill: var(--font100);
   transition: fill 0.4s;
 }
 
-path {
-  fill: var(--font100);
+#login-button:hover > svg > path {
+  fill: var(--hl-green);
   transition: fill 0.4s;
 }
 
