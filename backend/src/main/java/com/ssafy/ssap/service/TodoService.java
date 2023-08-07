@@ -67,7 +67,7 @@ public class TodoService {
 	 * todo 완료 표시: done_flag toggle
 	 */
 	@Transactional
-	public void checkDoneFlag(Integer todoId) {
+	public void updateDoneFlag(Integer todoId) {
 		String userEmail = userService.getMyUserWithAuthorities().getEmail();
 		User user = userRepository.findOneWithAuthoritiesByEmail(userEmail)
 			.orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));

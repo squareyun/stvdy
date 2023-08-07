@@ -78,11 +78,11 @@ public class TodoController {
 	 * todo 완료 표시
 	 */
 	@PutMapping("/{todoId}")
-	public ResponseEntity<Map<String, Object>> add(@PathVariable Integer todoId) {
+	public ResponseEntity<Map<String, Object>> updateDoneFlag(@PathVariable Integer todoId) {
 		Map<String, Object> resultMap = new HashMap<>();
 		HttpStatus status = null;
 		try {
-			todoService.checkDoneFlag(todoId);
+			todoService.updateDoneFlag(todoId);
 			logger.info("{} todo toggle 표시 성공", todoId);
 			resultMap.put("message", MessageFormat.SUCCESS);
 			status = HttpStatus.ACCEPTED;
