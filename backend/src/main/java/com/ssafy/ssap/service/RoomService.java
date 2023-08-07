@@ -307,7 +307,7 @@ public class RoomService {
                 status = HttpStatus.CONFLICT;
             }
         } catch(NullPointerException e){
-            logger.error("매칭되는 객체 없음");
+            logger.error("매칭되는 객체 없음"+roomLog+"/"+participant);
             status = HttpStatus.CONFLICT;
         } catch(OpenViduJavaClientException | OpenViduHttpException e){
             logger.error("Openvidu connection 처리 실패");
