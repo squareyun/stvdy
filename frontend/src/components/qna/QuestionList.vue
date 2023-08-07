@@ -90,6 +90,7 @@ async function showDetail(id) {
             <div class="question-title">
               {{ qtn.title }}
             </div>
+            <div id="question-main-div-line"></div>
             <div class="question-detail">{{ qtn.detail }}</div>
           </td>
           <td class="question-info">
@@ -190,14 +191,27 @@ async function showDetail(id) {
   position: relative;
   width: 600px;
 }
+
+#question-main-div-line {
+  position: absolute;
+  top: 52px;
+  left: 10px;
+
+  width: 590px;
+  height: 1px;
+
+  background-color: var(--hl-light30);
+  opacity: 0.5;
+}
+
 .question-title {
   position: absolute;
-  top: 21px;
+  top: 22px;
   left: 10px;
 
   color: var(--hl-light);
 
-  font-size: 1.4rem;
+  font-size: 1.3rem;
 
   cursor: pointer;
 }

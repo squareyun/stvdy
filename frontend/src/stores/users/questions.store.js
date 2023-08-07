@@ -55,6 +55,8 @@ export const useQuestionStore = defineStore('questions', () => {
       id,
       (res) => {
         question.value = res.data.question
+        question.value.regist_time =
+          question.value.regist_time.replaceAll('T', ' ') + ' ·'
       },
       (fail) => {
         console.log(fail)

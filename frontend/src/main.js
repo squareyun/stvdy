@@ -12,16 +12,8 @@ import router from './router'
 
 const app = createApp(App)
 const pinia = createPinia()
-pinia.use(piniaPersist)
+// pinia.use(piniaPersist)
 
 app.use(router)
 app.use(pinia)
-// app.use((req, res, next) => {
-//   res.setHeader('Access-Control-Allow-Origin', '*')
-//   res.header('Access-Control-Allow-Methods', 'GET, OPTIONS, PUT, POST')
-//   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-//   res.header('Access-Control-Allow-Credentials', 'true')
-// })
-
-// app.globalProperties.$axios = axios
 app.mount('#app')

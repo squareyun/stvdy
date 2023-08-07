@@ -6,7 +6,7 @@ import router from '@/router'
 const logout = async () => {
   const authStore = useAuthStore()
   await authStore.logout()
-  router.push('/login')
+  router.push('/about')
 }
 </script>
 

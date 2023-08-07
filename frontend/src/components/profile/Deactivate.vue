@@ -1,10 +1,11 @@
 <script setup>
 import { useAuthStore, useAlertStore, useUserStore } from '@/stores'
 import { deleteUser } from '@/api/user'
+import { computed } from 'vue'
 import router from '@/router'
 
 const userStore = useUserStore()
-const user = userStore.user
+const user = computed(() => userStore.user)
 
 async function deactivate() {
   const data = user.id
