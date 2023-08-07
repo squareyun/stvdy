@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Integer> {
@@ -22,5 +23,6 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
     @Query("SELECT new com.ssafy.ssap.dto.RoomDto(r.id, r.title, r.quota, r.isPrivacy, r.isValid, r.sessionId, r.password, r.endTime, r.imagePath, r.rule) FROM Room r")
     List<RoomDto> findAllRooms();
 
+    Optional<Room> findByCode(String code);
 
 }

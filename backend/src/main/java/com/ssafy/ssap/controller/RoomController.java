@@ -31,13 +31,15 @@ public class RoomController {
 
     @PostMapping("/add")
     public ResponseEntity<?> add(@RequestBody RoomCreateDto roomCreateDto) {
-        Map<String, Object> resultMap = new HashMap<>();
+        Map<String, Object> resultMap;
         HttpStatus status;
         try {
             //openvidu session, connection 생성
-            roomService.makeSession(roomCreateDto, resultMap); //openviduDto에 session, connection, token 담음
+            resultMap = roomService.makeSession(roomCreateDto); //openviduDto에 session, connection, token 담음
             status = HttpStatus.OK;
         } catch (Exception e) {
+            resultMap = new HashMap<>();
+            resultMap.put("message","스터디룸 생성 중 에러 발생");
             logger.error("스터디룸 생성 실패: ", e);
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
@@ -116,13 +118,22 @@ public class RoomController {
     }
 
     @GetMapping("/code/{roomNo}")
-    public ResponseEntity<?> getCodeAndLink(@PathVariable Long roomNo){
+    public ResponseEntity<?> getEnterCode(@PathVariable Integer roomNo){
         /*
-          roomno 기반으로 code와 link 리턴.
-          roomno 기반으로 code와 link에 대한 정의 필요
+          무작위 세자리 code리턴.
          */
         logger.trace(roomNo+"방의 코드 생성 요청");
-        return new ResponseEntity<>("code",HttpStatus.NOT_IMPLEMENTED);
+        Map<String, String> resultMap;
+        HttpStatus status;
+        try{
+            resultMap = roomService.createCode(roomNo);
+            status = HttpStatus.OK;
+        } catch(Exception e){
+            resultMap = new HashMap<>();
+            resultMap.put("message","Error while Creating Room Number");
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+        return new ResponseEntity<>(resultMap,status);
     }
 
     @GetMapping("/list")
@@ -194,7 +205,7 @@ public class RoomController {
         return new ResponseEntity<>(status);
     }
 
-    @GetMapping("/currentConnection/{roomno}")
+    @GetMapping("/currentConnection/{roomNo}")
     public ResponseEntity<?> checkConnection(@PathVariable Integer roomNo){
         HttpStatus status;
         Map<String, Object> resultMap;

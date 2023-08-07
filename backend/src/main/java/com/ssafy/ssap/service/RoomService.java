@@ -42,8 +42,9 @@ public class RoomService {
     @SuppressWarnings("FieldCanBeLocal")
     private final String SECRET = "MY_SECRET";
 
-    public void makeSession(RoomCreateDto roomCreateDto, Map<String, Object> resultMap) throws OpenViduJavaClientException, OpenViduHttpException {
+    public Map<String, Object> makeSession(RoomCreateDto roomCreateDto) throws OpenViduJavaClientException, OpenViduHttpException {
         //session 생성, connection 생성, 토큰 생성
+        Map<String, Object> resultMap = new HashMap<>();
         Session session;
         Connection connection;
         try {
@@ -77,6 +78,7 @@ public class RoomService {
             addRoomLog(room,roomCreateDto.getUserNo());
             logger.debug("room_log 테이블에 레코드 입력");
 
+            return resultMap;
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
             logger.error("makeSession 실패");
             throw e;
@@ -381,6 +383,33 @@ public class RoomService {
             logger.error("connection 체크 중 오류");
             throw e;
         }
+        return resultMap;
+    }
+
+    public Map<String, String> createCode(Integer roomNo) {
+        Map<String, String> resultMap = new HashMap<>();
+
+        //1. code생성 2. 기존코드와 중복되는지 검사 3-1. 중복X -> 저장 후 리턴 3-2. 중복 O -> 1부터 반복
+        Random random = new Random();
+        String code;
+        Room room = roomRepository.findById(roomNo).orElse(null);
+
+        try {
+            for (int i = 0; i < 1000; i++) {
+                code = String.format("%03d", random.nextInt(999) + 1);
+                logger.trace("roomCode의 반복문 실행");
+                if (roomRepository.findByCode(code).orElse(null) == null) {
+                    //code에 해당하는 room이 없으면 해당 코드를 room에 set하고 return
+                    room.setCode(code); //저장용
+                    resultMap.put("code",code); //전달용
+                    return resultMap;
+                }
+            }
+        } catch(Exception e){
+            logger.error("code 생성 중 알 수 없는 에러 : " + e);
+        }
+
+        resultMap.put("stopMessage","roomCode생성 시도 1000회 반복으로 중단");
         return resultMap;
     }
 }
