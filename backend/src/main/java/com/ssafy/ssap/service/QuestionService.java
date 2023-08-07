@@ -83,7 +83,13 @@ public class QuestionService {
 			noBestAnsFilter, pageable);
 	}
 
+	@Transactional
 	public QuestionDetailResponseDto detail(Integer questionNo) {
+		Question question = questionRepository.findById(questionNo)
+			.orElseThrow(() -> new IllegalArgumentException(MessageFormat.NO_QUETION_ID));
+
+		questionRepository.updateHits(questionNo);
+
 		return questionQueryRepository.findQuestionById(questionNo);
 	}
 
