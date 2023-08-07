@@ -1,6 +1,7 @@
 package com.ssafy.ssap.controller;
 
 import com.ssafy.ssap.common.MessageFormat;
+import com.ssafy.ssap.dto.LikesDto;
 import com.ssafy.ssap.dto.QuestionCreateDto;
 import com.ssafy.ssap.dto.QuestionDetailResponseDto;
 import com.ssafy.ssap.dto.QuestionListResponseDto;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -140,5 +142,20 @@ public class QuestionController {
         }
 
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
+    }
+
+    @PutMapping("/likes/{questionNo}")
+    public ResponseEntity<Map<String, Object>> addLikes(@PathVariable("questionNo") Integer questionNo, @RequestBody
+        LikesDto likesDto) {
+        try {
+            questionService.updateLikes(questionNo, likesDto);
+            logger.debug("좋아요 생성 성공");
+            return ResponseEntity.accepted()
+                .body(Collections.singletonMap("message", MessageFormat.SUCCESS));
+        } catch (Exception e) {
+            logger.error("좋아요 생성 실패", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Collections.singletonMap("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage()));
+        }
     }
 }

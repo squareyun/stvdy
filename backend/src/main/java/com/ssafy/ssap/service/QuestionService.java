@@ -1,12 +1,15 @@
 package com.ssafy.ssap.service;
 
 import com.ssafy.ssap.common.MessageFormat;
+import com.ssafy.ssap.domain.qna.Likes;
 import com.ssafy.ssap.domain.qna.Question;
 import com.ssafy.ssap.domain.qna.QuestionCategoryNs;
 import com.ssafy.ssap.domain.user.User;
+import com.ssafy.ssap.dto.LikesDto;
 import com.ssafy.ssap.dto.QuestionCreateDto;
 import com.ssafy.ssap.dto.QuestionDetailResponseDto;
 import com.ssafy.ssap.dto.QuestionListResponseDto;
+import com.ssafy.ssap.repository.LikesRepository;
 import com.ssafy.ssap.repository.QueryRepository;
 import com.ssafy.ssap.repository.QuestionRepository;
 import com.ssafy.ssap.repository.UserRepository;
@@ -25,6 +28,7 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final QueryRepository queryRepository;
     private final UserRepository userRepository;
+    private final LikesRepository likesRepository;
 
     /**
      * 질문 생성
@@ -53,7 +57,7 @@ public class QuestionService {
     @Transactional
     public Integer update(Integer questionNo, QuestionCreateDto questionCreateDto) {
         Question question = questionRepository.findById(questionNo)
-                .orElseThrow(() -> new IllegalArgumentException(MessageFormat.NO_QUETION_ID));
+            .orElseThrow(() -> new IllegalArgumentException(MessageFormat.NO_QUETION_ID));
 
         return question.update(questionCreateDto.getTitle(), questionCreateDto.getContent(), new QuestionCategoryNs(questionCreateDto.getCategory()));
     }
@@ -81,5 +85,21 @@ public class QuestionService {
 
     public Boolean getIsLike(Integer userNo, Integer questionNo) {
         return queryRepository.findLikesIsLikedQuestion(userNo, questionNo);
+    }
+
+    @Transactional
+    public void updateLikes(Integer questionNo, LikesDto likesDto) {
+        Question question = questionRepository.findById(questionNo)
+            .orElseThrow(() -> new IllegalArgumentException(MessageFormat.NO_QUETION_ID));
+
+        User user = userRepository.getReferenceById(likesDto.getUserNo());
+
+        Likes likes = Likes.builder()
+            .question(question)
+            .isGood(likesDto.getIsLike())
+            .user(user)
+            .build();
+
+        likesRepository.save(likes);
     }
 }
