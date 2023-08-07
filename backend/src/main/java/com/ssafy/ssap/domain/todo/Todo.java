@@ -43,7 +43,7 @@ public class Todo {
 	private Boolean doneFlag;
 
 	@NotNull
-	@Column(name = "objective")
+	@Column(name = "objective", length = 20)
 	private String objective;
 
 	@NotNull
