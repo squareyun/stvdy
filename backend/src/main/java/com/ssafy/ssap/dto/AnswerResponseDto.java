@@ -13,5 +13,6 @@ public class AnswerResponseDto {
     private String detail;
     private LocalDateTime regist_time;
     private Integer answerScore;
+    private Boolean bestSelected;
 
 }
