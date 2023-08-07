@@ -1,17 +1,22 @@
 package com.ssafy.ssap.service;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.ssafy.ssap.domain.user.User;
+import com.ssafy.ssap.exception.NotFoundMemberException;
 import com.ssafy.ssap.repository.UserRepository;
 import com.ssafy.ssap.util.RedisUtil;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -21,13 +26,8 @@ public class EmailService {
 	@Autowired
 	private JavaMailSender javaMailSender;
 	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
 	private final RedisUtil redisUtil;
-
-	public int makeRandomNumber() {
-		Random random = new Random();
-		int checkNum = random.nextInt(888888) + 111111;
-		return checkNum;
-	}
 
 	public boolean sendEmail(String email) throws MessagingException {
 
@@ -62,4 +62,70 @@ public class EmailService {
 
 		return true;
 	}
+
+	/**
+	 * 임시 비밀번호 발급
+	 */
+	@Transactional
+	public boolean resetPwdEmail(String email, String name) throws MessagingException {
+
+		User user = userRepository.findByEmailAndName(email, name)
+			.orElseThrow(() -> new NotFoundMemberException("사용자 정보를 찾을 수 없습니다."));
+
+		// 회원탈퇴 계정 상태
+		if (!user.isActivated()) {
+			new NotFoundMemberException("사용자 정보를 찾을 수 없습니다.");
+		}
+
+		MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
+
+		// 임시 비밀번호 생성
+		String newPassword = makeRandomPassword();
+
+		String message = user.getName() + " 님의 임시 비밀번호입니다." +
+			"<br><br>" +
+			"임시 비밀번호: " + newPassword;
+
+		helper.setSubject("[SSAP] 임시 비밀번호 발급 메일입니다.");
+		helper.setTo(email);
+		// true 입력시 html 양식으로 전달됨. 안하면 일단 텍스트 형식임.
+		helper.setText(message, true);
+
+		user.setPassword(passwordEncoder.encode(newPassword));
+		userRepository.save(user);
+		javaMailSender.send(mimeMessage);
+
+		return true;
+	}
+
+	public int makeRandomNumber() {
+		Random random = new Random();
+		// 인증번호: 숫자 6자리
+		int checkNum = random.nextInt(888888) + 111111;
+		return checkNum;
+	}
+
+	public String makeRandomPassword() {
+		String lowerCase = "abcdefghijklmnopqrstuvwxyz";
+		String upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		String numbers = "0123456789";
+		String specialChars = "!#$%&*?";
+
+		String allChars = lowerCase + upperCase + numbers + specialChars;
+
+		SecureRandom random = new SecureRandom();
+		StringBuilder password = new StringBuilder();
+
+		// 임시 비밀번호: 숫자 + 영문대소문자 + 특수문자 조합 12자리
+		int length = 12;
+
+		for (int i = 0; i < length; i++) {
+			int randomIndex = random.nextInt(allChars.length());
+			password.append(allChars.charAt(randomIndex));
+		}
+
+		return password.toString();
+	}
+
 }
