@@ -63,11 +63,11 @@ public class RoomController {
 
     @PutMapping("/host")
     public ResponseEntity<?> changeHost(@RequestBody Map<String, Integer> changeInfo){
-        /* currentUserNo, nextUserNo */
+        /* roomNo, currentUserNo, nextUserNo */
         HttpStatus status;
         logger.debug("host 변경 controller 호출");
         try{
-            roomService.changeHost(changeInfo.get("currentUserNo"),changeInfo.get("nextUserNo"));
+            roomService.changeHost(changeInfo.get("roomNo"), changeInfo.get("currentUserNo"),changeInfo.get("nextUserNo"));
             status = HttpStatus.OK;
         } catch(Exception e){
             status = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -76,16 +76,16 @@ public class RoomController {
     }
 
     @PutMapping("/role")
-    public ResponseEntity<?> assignStaff(@RequestBody Integer participantNo){
+    public ResponseEntity<?> assignStaff(@RequestBody Integer roomNo, Integer userNo){
         /*
           assignInfo.get("roomNo"), assignInfo.get("participantsNo")
           participants테이블의 room_id = roomNo and user_id = participantsNo 조건에 해당하는 유저의 role을 `스태프`으로 바꾼다.
           + 권한부여
          */
         HttpStatus status;
-        logger.trace("staff 임명 controller 호출 with "+participantNo);
+        logger.trace("staff 임명 controller 호출 with "+userNo);
         try{
-            roomService.assignStaff(participantNo);
+            roomService.assignStaff(roomNo, userNo);
             status = HttpStatus.OK;
         } catch (Exception e){
             status = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -189,7 +189,7 @@ public class RoomController {
 
     @PostMapping("exit")
     public ResponseEntity<?> exit(@RequestBody Map<String, Integer>map) throws OpenViduJavaClientException, OpenViduHttpException {
-        HttpStatus status = roomService.exit(map.get("roomNo"), map.get("participantNo"));
+        HttpStatus status = roomService.exit(map.get("roomNo"), map.get("userNo"));
         return new ResponseEntity<>(status);
     }
 
