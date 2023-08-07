@@ -17,17 +17,7 @@ public class CorsConfig {
 		config.addAllowedHeader("*");
 		config.addAllowedMethod("*");
 
-		source.registerCorsConfiguration("/users/**", config);
-
-		// Create a new CORS configuration for "/mypage/**" pattern
-		CorsConfiguration myPageConfig = new CorsConfiguration();
-		myPageConfig.setAllowCredentials(true);
-		myPageConfig.addAllowedOriginPattern("*");
-		myPageConfig.addAllowedHeader("*");
-		myPageConfig.addAllowedMethod("*");
-
-		// Register CORS configuration for "/mypage/**" pattern
-		source.registerCorsConfiguration("/mypage/**", myPageConfig);
+		source.registerCorsConfiguration("/**", config);
 
 		//스터디룸 관련 CORS설정
 		CorsConfiguration roomsConfig = new CorsConfiguration();
