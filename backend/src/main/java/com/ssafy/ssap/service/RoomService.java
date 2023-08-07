@@ -184,8 +184,16 @@ public class RoomService {
         }
     }
 
-    public Integer findRoomId(Integer roomcode) {
-        return 0;
+    public Map<String, Object> getRoom(String roomCode) {
+        Map<String, Object> resultMap = new HashMap<>();
+        Room room = roomRepository.findByCode(roomCode).orElse(null);
+        try{
+            resultMap.put("room",room);
+            resultMap.put("matched",true);
+        }catch(NullPointerException e){
+            resultMap.put("matched",false);
+        }
+        return resultMap;
     }
 
     public boolean checkValid(Integer roomNo, String password) throws RuntimeException {

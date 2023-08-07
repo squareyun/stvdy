@@ -193,11 +193,20 @@ public class RoomController {
         return new ResponseEntity<>(token, status);
     }
 
-//    @GetMapping("/code/{roomcode}")
-//    public String joinByCode(@PathVariable Integer roomcode){
-//        Integer roomId = roomService.findRoomId(roomcode);
-//        return join(roomId);
-//    }
+    @GetMapping("/code/{roomCode}")
+    public ResponseEntity<?> getRoom(@PathVariable String roomCode){
+        Map<String, Object> resultMap;
+        HttpStatus status;
+        try{
+            resultMap = roomService.getRoom(roomCode);
+            status = HttpStatus.OK;
+        }catch(Exception e){
+            resultMap = new HashMap<>();
+            resultMap.put("message","roomCode로 방 번호 조회 실패");
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+        return new ResponseEntity<>(resultMap,status);
+    }
 
     @PostMapping("exit")
     public ResponseEntity<?> exit(@RequestBody Map<String, Integer>map) throws OpenViduJavaClientException, OpenViduHttpException {
