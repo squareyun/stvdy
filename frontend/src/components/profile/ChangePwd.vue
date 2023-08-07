@@ -25,7 +25,7 @@ async function onSubmit(values) {
 
 <template>
   <div>
-    <p class="content-title">비밀번호 변경</p>
+    <span class="content-title">비밀번호 변경</span>
     <div class="content others">
       <Form
         @submit="onSubmit"

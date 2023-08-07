@@ -7,8 +7,8 @@ import piniaPersist from 'pinia-plugin-persist'
 import App from './App.vue'
 import router from './router'
 
-import { fakeBackend } from './helpers'
-fakeBackend()
+// import { fakeBackend } from './helpers'
+// fakeBackend()
 
 const app = createApp(App)
 const pinia = createPinia()

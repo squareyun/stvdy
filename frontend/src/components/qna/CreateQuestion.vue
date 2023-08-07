@@ -40,6 +40,7 @@ async function onSubmit(values) {
     data,
     (res) => {
       console.log(res)
+      router.push('/question')
     },
     (fail) => {
       console.log(fail)
@@ -50,7 +51,7 @@ async function onSubmit(values) {
 
 <template>
   <div>
-    질문 작성
+    <span class="content-title">질문 작성</span>
     <div class="content">
       <Form
         id="question-form"

@@ -40,7 +40,7 @@ const schema = Yup.object().shape({
 
 <template>
   <div>
-    <p class="content-title">프로필</p>
+    <span class="content-title">프로필</span>
     <div class="content">
       <div id="user-background-img"></div>
       <div id="user-profile-img"></div>

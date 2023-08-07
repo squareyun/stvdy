@@ -1,7 +1,7 @@
 <script setup>
 import { useQuestionStore } from '@/stores'
 import router from '@/router'
-import { reactive, computed } from 'vue'
+import { computed } from 'vue'
 
 const questionStore = useQuestionStore()
 const questions = computed(() => questionStore.questions)
@@ -45,10 +45,8 @@ const sortNone = () => {
   document.getElementById('sort-none').style.fontWeight = 700
 }
 
-async function showDetail(value) {
-  await questionStore.getById(value)
-  questionStore.pickedQtn = value
-  router.push({ name: 'questiondetail' })
+async function showDetail(id) {
+  router.push(`/questiondetail/${id}`)
 }
 </script>
 
@@ -85,10 +83,13 @@ async function showDetail(value) {
         <tr
           class="question-row"
           v-for="qtn in questions"
-          :key="qtn.id">
+          :key="qtn.id"
+          @click="showDetail(qtn.id)">
           <td class="question-done"><div>채택안됨</div></td>
           <td class="question-main">
-            <div class="question-title">{{ qtn.title }}</div>
+            <div class="question-title">
+              {{ qtn.title }}
+            </div>
             <div class="question-detail">{{ qtn.detail }}</div>
           </td>
           <td class="question-info">
@@ -197,6 +198,8 @@ async function showDetail(value) {
   color: var(--hl-light);
 
   font-size: 1.4rem;
+
+  cursor: pointer;
 }
 
 .question-detail {

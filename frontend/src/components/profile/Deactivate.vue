@@ -24,7 +24,7 @@ async function deactivate() {
 
 <template>
   <div>
-    <p class="content-title">계정 삭제</p>
+    <span class="content-title">계정 삭제</span>
     <div class="content others">
       <p id="confirm-test">
         "본인은 {{ user.username }}#{{ user.id }} 계정을 삭제하겠습니다."
