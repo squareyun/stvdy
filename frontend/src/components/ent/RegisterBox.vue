@@ -24,19 +24,6 @@ const schema = Yup.object().shape({
   ),
 })
 
-const emailValue = ''
-const varificationEmail = async (value) => {
-  console.log(value)
-  // const userStore = useUserStore()
-  // const alertStore = useAlertStore()
-  // try {
-  //   await userStore.varifyEmail(value)
-  //   alertStore.success('인증메일이 전송되었습니다.')
-  // } catch (error) {
-  //   alertStore.error(error)
-  // }
-}
-
 async function onSubmit(values) {
   const data = {
     email: values.email,
