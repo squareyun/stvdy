@@ -3,15 +3,16 @@ import { useUserStore } from '@/stores'
 import { nameUser } from '@/api/user'
 import Deactivate from '@/components/profile/Deactivate.vue'
 import { RouterLink, RouterView } from 'vue-router'
+import { computed } from 'vue'
 import { Form, Field } from 'vee-validate'
 import * as Yup from 'yup'
 import router from '@/router'
 
 const userStore = useUserStore()
-const user = userStore.user
+const user = computed(() => userStore.user)
 
 let nameWant = ''
-nameWant = user.username
+nameWant = user.value.username
 
 const changeUserName = async (name) => {
   const data = {
@@ -22,6 +23,7 @@ const changeUserName = async (name) => {
     data,
     (res) => {
       console.log(res)
+      user.value.username = name
     },
     (fail) => {
       console.log(fail)
@@ -40,7 +42,7 @@ const schema = Yup.object().shape({
 
 <template>
   <div>
-    <p class="content-title">프로필</p>
+    <span class="content-title">프로필</span>
     <div class="content">
       <div id="user-background-img"></div>
       <div id="user-profile-img"></div>

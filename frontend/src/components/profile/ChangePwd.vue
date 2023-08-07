@@ -6,7 +6,7 @@ import { useUserStore, useAlertStore } from '@/stores'
 const schema = Yup.object().shape({
   password: Yup.string()
     .required('비밀번호를 넣어주세요')
-    .min(6, '더 긴 비밀번호를 사용해야합니다.'),
+    .min(4, '더 긴 비밀번호를 사용해야합니다.'),
   passwordConfirm: Yup.string().oneOf(
     [Yup.ref('password'), null],
     '비밀번호가 일치하지않습니다.',
@@ -14,9 +14,6 @@ const schema = Yup.object().shape({
 })
 
 async function onSubmit(values) {
-  // test console print below
-  const userStore = useUserStore()
-  const alertStore = useAlertStore()
   const editData = values
   delete editData.passwordConfirm
   console.log(editData)
@@ -25,7 +22,7 @@ async function onSubmit(values) {
 
 <template>
   <div>
-    <p class="content-title">비밀번호 변경</p>
+    <span class="content-title">비밀번호 변경</span>
     <div class="content others">
       <Form
         @submit="onSubmit"
@@ -94,6 +91,7 @@ async function onSubmit(values) {
   margin-left: -10px;
 
   background-color: var(--hl-light30);
+  opacity: 0.5;
 }
 
 #password-btn:hover {

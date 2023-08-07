@@ -1,7 +1,6 @@
 <script setup>
 import { Form, Field } from 'vee-validate'
 import { useAuthStore } from '@/stores'
-import { useUserStore } from '@/stores'
 import router from '@/router'
 import * as Yup from 'yup'
 

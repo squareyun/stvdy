@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia'
-import { listQuestion } from '@/api/question'
+import { listQuestion, getQuestion } from '@/api/question'
 import { ref } from 'vue'
 
 export const useQuestionStore = defineStore('questions', () => {
   const questions = ref([])
+  const question = ref([])
 
   const getList = async (cond) => {
     await listQuestion(
@@ -49,5 +50,19 @@ export const useQuestionStore = defineStore('questions', () => {
     )
   }
 
-  return { questions, getList }
+  const getQuestionById = async (id) => {
+    getQuestion(
+      id,
+      (res) => {
+        question.value = res.data.question
+        question.value.regist_time =
+          question.value.regist_time.replaceAll('T', ' ') + ' ·'
+      },
+      (fail) => {
+        console.log(fail)
+      },
+    )
+  }
+
+  return { questions, question, getList, getQuestionById }
 })

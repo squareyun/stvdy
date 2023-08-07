@@ -8,97 +8,10 @@ import { Form, Field } from 'vee-validate'
 import * as Yup from 'yup'
 import router from '@/router'
 import { listQuestion } from '@/api/question'
-
-const userStore = useUserStore()
-const user = userStore.user
-let nameWant = ''
-nameWant = user.username
-
-const changeUserName = (name) => {
-  console.log('test')
-  const query = {
-    keyword: '',
-    nickname: '',
-    page: 0,
-  }
-  listQuestion(
-    query,
-    (res) => {
-      console.log(res)
-    },
-    (fail) => {
-      console.log(fail)
-    },
-  )
-}
-
-const schema = Yup.object().shape({
-  username: Yup.string()
-    .required('닉네임을 작성해주세요.')
-    .max(45, '길이를 줄여주세요.')
-    .min(4, '더 긴 닉네임을 사용해야합니다.'),
-})
 </script>
 
 <template>
-  <div>
-    <p class="content-title">프로필</p>
-    <div class="content">
-      <div id="user-background-img"></div>
-      <div id="user-profile-img"></div>
-      <h1 id="user-name">{{ user.username }}#{{ user.id }}</h1>
-      <div id="user-edit">
-        <Form
-          autocomplete="off"
-          @submit="onSubmit"
-          :validation-schema="schema"
-          v-slot="{ errors, isSubmitting }">
-          <p class="field-name">
-            &nbsp;&nbsp;별명
-            <span class="error-yup">{{ errors.username }}</span>
-            &nbsp;
-          </p>
-          <Field
-            name="username"
-            type="text"
-            class="field"
-            :class="{ 'is-invalid': errors.username }"
-            v-model="nameWant" />
-          <button
-            id="transmit-button"
-            type="button"
-            :disabled="isSubmitting"
-            @click="changeUserName(nameWant)">
-            변경
-          </button>
-          <p class="field-name">&nbsp;&nbsp;본명 &nbsp;</p>
-          <Field
-            name="realname"
-            type="text"
-            class="field disabled"
-            :class="{ 'is-invalid': errors.realname }"
-            v-model="user.realname"
-            disabled />
-          <p class="field-name">&nbsp;&nbsp;이메일 &nbsp;</p>
-          <Field
-            name="email"
-            type="email"
-            class="field disabled"
-            :class="{ 'is-invalid': errors.email }"
-            v-model="user.email"
-            disabled />
-        </Form>
-      </div>
-
-      <div id="edit-menu">
-        <a href="">대표 이미지(스터디룸) 변경</a>
-        <a href="">프로필 이미지 변경</a>
-        <router-link to="/changepwd">비밀번호 변경</router-link>
-      </div>
-    </div>
-    <RouterView />
-    <Deactivate />
-  </div>
+  <div></div>
 </template>
 
 <style>

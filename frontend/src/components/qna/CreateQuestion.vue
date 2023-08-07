@@ -19,8 +19,10 @@ const user = userStore.user
 const openTextArea = (title) => {
   if (typeof title != 'undefined' && title.length > 0) {
     document.getElementById('question-form-main').style.opacity = 1
-    document.getElementById('question-form-main-btn').style.opacity = 1
-    document.getElementById('question-form-main-btn').style.cursor = 'pointer'
+    document.getElementById('question-form-main-text').style.pointerEvents =
+      'auto'
+    document.getElementById('question-form-menu-btn').style.opacity = 1
+    document.getElementById('question-form-menu-btn').style.cursor = 'pointer'
   }
 }
 
@@ -29,7 +31,7 @@ async function onSubmit(values) {
     userNo: user.id,
     title: values.title,
     content: values.content,
-    category: '알고리즘',
+    category: question.category,
   }
 
   console.log(data)
@@ -38,6 +40,7 @@ async function onSubmit(values) {
     data,
     (res) => {
       console.log(res)
+      router.push('/question')
     },
     (fail) => {
       console.log(fail)
@@ -48,7 +51,7 @@ async function onSubmit(values) {
 
 <template>
   <div>
-    질문 작성
+    <span class="content-title">질문 작성</span>
     <div class="content">
       <Form
         id="question-form"
@@ -67,6 +70,20 @@ async function onSubmit(values) {
           @click="openTextArea(question.title)">
           다음
         </button>
+        <div id="category-select">
+          <Form autocomplete="off">
+            <p class="field-name">
+              &nbsp;&nbsp;#카테고리 혹은 태그를 입력해주세요.
+              <span class="error-yup">{{ errors.username }}</span>
+              &nbsp;
+            </p>
+            <Field
+              name="category"
+              type="text"
+              class="field"
+              v-model="question.category" />
+          </Form>
+        </div>
         <div id="question-form-main">
           <Field
             v-slot="{ field }"
@@ -83,12 +100,12 @@ async function onSubmit(values) {
         </div>
         <div id="question-form-menu">
           <router-link
-            id="question-form-main-cancel"
+            id="question-form-menu-cancel"
             to="question">
             취소하기
           </router-link>
           <button
-            id="question-form-main-btn"
+            id="question-form-menu-btn"
             :disabled="isSubmitting">
             작성
           </button>
@@ -110,7 +127,7 @@ async function onSubmit(values) {
 
   padding: 0px;
 
-  color: var(--hl-light);
+  color: var(--hl-light80);
   font-size: 1.4rem;
   font-family: 'ASDGothicM';
 
@@ -123,11 +140,11 @@ async function onSubmit(values) {
 
 #question-form-title-btn {
   position: absolute;
-  top: 72px;
+  top: 35px;
   right: 30px;
 
   font-family: 'ASDGothicM';
-  font-size: 1.2rem;
+  font-size: 1rem;
 
   color: var(--hl-purple);
   transition: color 0.4s;
@@ -142,25 +159,71 @@ async function onSubmit(values) {
   color: var(--hl-light);
   transition: color 0.4s;
 }
+
+#category-select {
+  margin-top: 40px;
+
+  /* text-align: center; */
+  font-family: 'ASDGothicT';
+}
+
+.field {
+  display: block;
+  background-color: var(--hl-window);
+  margin-top: -12px;
+  margin-bottom: 4px;
+  padding-left: 18px;
+
+  color: var(--hl-light80);
+
+  font-size: 1rem;
+
+  width: 360px;
+  height: 46px;
+  border-radius: 10px;
+  border: 1px solid var(--hl-light30);
+}
+
+.field:focus {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--font80) inset;
+}
+
+.field-name {
+  position: relative;
+  display: inline;
+  margin-left: 11px;
+
+  /* font-size: 14px; */
+  font-size: 0.9rem;
+
+  text-align: center;
+  color: var(--hl-light);
+
+  background-color: var(--background-window);
+}
+
 #question-form-main {
-  margin-top: 50px;
+  margin-top: 10px;
 
   width: 900px;
 
   border-radius: 10px;
-  background-color: var(--background-up);
+  background-color: var(--background-down);
 
   opacity: 0.5;
 }
 
 #question-form-main-text {
-  width: 840px;
-  height: 600px;
+  width: 860px;
+  height: 400px;
 
   margin-top: 15px;
-  margin-left: 30px;
-  margin-bottom: 15px;
+  margin-left: 20px;
+  margin-bottom: 10px;
   padding: 0px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 
   color: var(--hl-light);
   font-family: 'ASDGothicM';
@@ -168,7 +231,11 @@ async function onSubmit(values) {
 
   background-color: transparent;
   border: none;
+  /* border-top: 1px solid var(--hl-light30); */
+  border-bottom: 1px solid var(--hl-light30);
   outline: none;
+
+  pointer-events: none;
 }
 
 #question-form-menu {
@@ -177,18 +244,18 @@ async function onSubmit(values) {
   margin-bottom: 20px;
 }
 
-#question-form-main-cancel {
+#question-form-menu-cancel {
   position: absolute;
   top: 3px;
   left: 5px;
 
   color: var(--hl-light80);
-  font-size: 1.2rem;
+  font-size: 1rem;
 }
 
-#question-form-main-btn {
-  height: 30px;
-  width: 60px;
+#question-form-menu-btn {
+  height: 28px;
+  width: 50px;
   background-color: var(--hl-purple);
 
   float: right;
@@ -197,7 +264,7 @@ async function onSubmit(values) {
   transition: color 0.4s;
 
   font-family: 'ASDGothicM';
-  font-size: 1.2rem;
+  font-size: 1rem;
 
   border: none;
   border-radius: 15px;

@@ -6,14 +6,14 @@ import router from '@/router'
 const logout = async () => {
   const authStore = useAuthStore()
   await authStore.logout()
-  router.push({ name: 'login' })
+  router.push('/about')
 }
 </script>
 
 <template>
   <div id="side-panel">
     <router-link
-      to="home"
+      to="/home"
       id="side-home">
       <div class="selected"></div>
       <svg
@@ -30,7 +30,7 @@ const logout = async () => {
       홈
     </router-link>
     <router-link
-      to="lecture"
+      to="/lecture"
       id="side-lecture">
       <div class="selected"></div>
       <svg
@@ -55,7 +55,7 @@ const logout = async () => {
       강의 정보 공유
     </router-link>
     <router-link
-      to="question"
+      to="/question"
       id="side-question">
       <div class="selected"></div>
       <svg
@@ -72,7 +72,7 @@ const logout = async () => {
     </router-link>
     <div class="div-line"></div>
     <router-link
-      to="mypage"
+      to="/mypage"
       id="side-lecture">
       <div class="selected"></div>
       <svg
@@ -88,7 +88,7 @@ const logout = async () => {
       프로필
     </router-link>
     <router-link
-      to="myquestion"
+      to="/myquestion"
       id="side-myquestion">
       <div class="selected"></div>
       <svg
@@ -104,7 +104,7 @@ const logout = async () => {
       내 질문
     </router-link>
     <router-link
-      to="alarms"
+      to="/alarms"
       id="side-alarms">
       <div class="selected"></div>
       <svg
@@ -136,7 +136,7 @@ const logout = async () => {
         </svg>
         로그아웃
       </a>
-      <router-link to="mypage">
+      <router-link to="/mypage">
         <svg
           width="1.2rem"
           height="1.2rem"
