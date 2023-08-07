@@ -125,23 +125,43 @@ public class QuestionController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<Map<String, Object>> add(@RequestParam(required = false) String keyword, @RequestParam(required = false) String nickname, Pageable pageable) {
-        Map<String, Object> resultMap = new HashMap<>();
-        HttpStatus status = null;
+    public ResponseEntity<Map<String, Object>> list(@RequestParam(required = false) String keyword,
+                                                    @RequestParam(required = false) String nickname,
+                                                    @RequestParam(required = false, defaultValue = "false") Boolean noAnsFilter,
+                                                    @RequestParam(required = false, defaultValue = "false") Boolean noBestAnsFilter,
+                                                    Pageable pageable) {
         try {
-            Page<QuestionListResponseDto> questionList = questionService.getList(keyword, nickname, pageable);
+            Page<QuestionListResponseDto> questionList = questionService.getList(keyword, nickname, noAnsFilter, noBestAnsFilter, pageable);
             logger.debug("{} 개의 질문 검색 성공", questionList.stream().count());
-            resultMap.put("question", questionList);
-            resultMap.put("message", MessageFormat.SUCCESS);
-            status = HttpStatus.ACCEPTED;
+
+            return ResponseEntity.accepted()
+                    .body(Map.of("question", questionList, "message", MessageFormat.SUCCESS));
+
         } catch (Exception e) {
             logger.error("질문 검색 실패", e);
-            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getClass().getSimpleName());
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
-        }
 
-        return new ResponseEntity<Map<String, Object>>(resultMap, status);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage()));
+        }
     }
+
+//    @GetMapping("/list/noanswer")
+//    public ResponseEntity<Map<String, Object>> liseWithNoAnswer(Pageable pageable) {
+//        try {
+//            Page<QuestionListResponseDto> questionList = questionService.getListWithNoAnswer(pageable);
+//            logger.debug("{} 개의 질문 검색 성공", questionList.stream().count());
+//
+//            return ResponseEntity.accepted()
+//                    .body(Map.of("question", questionList, "message", MessageFormat.SUCCESS));
+//
+//        } catch (Exception e) {
+//            logger.error("질문 검색 실패", e);
+//
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body(Map.of("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage()));
+//        }
+//    }
+
 
     @PutMapping("/likes/{questionNo}")
     public ResponseEntity<Map<String, Object>> addLikes(@PathVariable("questionNo") Integer questionNo, @RequestBody LikesDto likesDto) {

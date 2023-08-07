@@ -21,15 +21,15 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 
 @Repository
-public class QueryRepository {
+public class QuestionQueryRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
-    public QueryRepository(JPAQueryFactory jpaQueryFactory) {
+    public QuestionQueryRepository(JPAQueryFactory jpaQueryFactory) {
         this.jpaQueryFactory = jpaQueryFactory;
     }
 
-    public Page<QuestionListResponseDto> findAllQuestionWithKeywordAndNickName(String keyword, String nickname, Pageable pageable) {
+    public Page<QuestionListResponseDto> findAllQuestionWithKeywordAndNickName(String keyword, String nickname, Boolean noAnsFilter, Boolean noBestAnsFilter, Pageable pageable) {
         QQuestion question = QQuestion.question;
         QUser user = QUser.user;
         QAnswer answer = QAnswer.answer;
@@ -43,6 +43,14 @@ public class QueryRepository {
 
         if (StringUtils.hasText(nickname)) {
             builder.and(question.user.nickname.containsIgnoreCase(nickname));
+        }
+
+        if (Boolean.TRUE.equals(noAnsFilter)) {
+            builder.and(question.answerList.isEmpty());
+        }
+
+        if (Boolean.TRUE.equals(noBestAnsFilter)) {
+            builder.and(question.answer.isNull());
         }
 
         JPAQuery<QuestionListResponseDto> query = jpaQueryFactory
@@ -61,7 +69,7 @@ public class QueryRepository {
                                 .where(likes.question.id.eq(question.id))))
                 .from(question)
                 .leftJoin(question.likes, likes)
-                .leftJoin(question.answer, answer)
+                .leftJoin(question.answerList, answer)
                 .leftJoin(question.user, user)
                 .where(builder)
                 .offset(pageable.getOffset())

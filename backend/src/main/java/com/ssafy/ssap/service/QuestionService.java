@@ -9,7 +9,7 @@ import com.ssafy.ssap.dto.QuestionCreateDto;
 import com.ssafy.ssap.dto.QuestionDetailResponseDto;
 import com.ssafy.ssap.dto.QuestionListResponseDto;
 import com.ssafy.ssap.repository.LikesRepository;
-import com.ssafy.ssap.repository.QueryRepository;
+import com.ssafy.ssap.repository.QuestionQueryRepository;
 import com.ssafy.ssap.repository.QuestionRepository;
 import com.ssafy.ssap.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 public class QuestionService {
 
     private final QuestionRepository questionRepository;
-    private final QueryRepository queryRepository;
+    private final QuestionQueryRepository questionQueryRepository;
     private final UserRepository userRepository;
     private final LikesRepository likesRepository;
 
@@ -74,17 +74,23 @@ public class QuestionService {
      * 전체, 키워드 검색, 사용자 번호 검색을 지원
      * 페이징 지원
      */
-    public Page<QuestionListResponseDto> getList(String keyword, String nickname, Pageable pageable) {
-        return queryRepository.findAllQuestionWithKeywordAndNickName(keyword, nickname, pageable);
-
+    public Page<QuestionListResponseDto> getList(String keyword, String nickname, Boolean noAnsFilter, Boolean noBestAnsFilter, Pageable pageable) {
+        return questionQueryRepository.findAllQuestionWithKeywordAndNickName(keyword, nickname, noAnsFilter, noBestAnsFilter, pageable);
     }
 
+    /**
+     * 전체 목록 조회
+     * 답변이 달리지 않은 게시물 검색
+     */
+//    public Page<QuestionListResponseDto> getListWithNoAnswer(Pageable pageable) {
+//        return questionQueryRepository.findAllQuestionWithNoAnswer(pageable);
+//    }
     public QuestionDetailResponseDto detail(Integer questionNo) {
-        return queryRepository.findQuestionById(questionNo);
+        return questionQueryRepository.findQuestionById(questionNo);
     }
 
     public Boolean getIsLike(Integer userNo, Integer questionNo) {
-        return queryRepository.findLikesIsLikedQuestion(userNo, questionNo);
+        return questionQueryRepository.findLikesIsLikedQuestion(userNo, questionNo);
     }
 
     @Transactional
@@ -103,4 +109,5 @@ public class QuestionService {
 
         likesRepository.save(likes);
     }
+
 }
