@@ -113,6 +113,7 @@ public class QuestionController {
         HttpStatus status = null;
         try {
             Boolean isLike = questionService.getIsLike(userNo, questionNo);
+            logger.debug("질문 isLiked 조회 성공");
             resultMap.put("message", MessageFormat.SUCCESS);
             resultMap.put("isQuetionLiked", isLike);
             status = HttpStatus.ACCEPTED;

@@ -55,7 +55,7 @@ public class QueryRepository {
                         question.category,
                         question.user.nickname,
                         question.answerList.size().as("cntAnswer"),
-                        JPAExpressions.select(likes.isGood.when(true).then(1).otherwise(0).sum().castToNum(Integer.class))
+                        JPAExpressions.select(likes.isGood.when(true).then(1).when(false).then(-1).otherwise(0).sum())
                                 .from(likes)
                                 .where(likes.question.id.eq(question.id))))
                 .from(question)
