@@ -1,6 +1,7 @@
 <script setup>
 import SideBar from '@/components/SideBar.vue'
 import TopSearch from '@/components/TopSearch.vue'
+import AiAssist from '@/components/main/AiAssist.vue'
 </script>
 
 <template>
@@ -8,6 +9,10 @@ import TopSearch from '@/components/TopSearch.vue'
   <TopSearch id="top-items" />
   <main>
     <!-- <TheWelcome /> -->
+    <SideBar />
+    <div id="testDiv">
+      <AiAssist />
+    </div>
     <router-view id="contents" />
   </main>
 </template>
