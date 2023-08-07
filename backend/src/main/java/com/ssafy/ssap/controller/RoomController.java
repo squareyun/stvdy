@@ -31,13 +31,15 @@ public class RoomController {
 
     @PostMapping("/add")
     public ResponseEntity<?> add(@RequestBody RoomCreateDto roomCreateDto) {
-        Map<String, Object> resultMap = new HashMap<>();
+        Map<String, Object> resultMap;
         HttpStatus status;
         try {
             //openvidu session, connection 생성
-            roomService.makeSession(roomCreateDto, resultMap); //openviduDto에 session, connection, token 담음
+            resultMap = roomService.makeSession(roomCreateDto); //openviduDto에 session, connection, token 담음
             status = HttpStatus.OK;
         } catch (Exception e) {
+            resultMap = new HashMap<>();
+            resultMap.put("message","스터디룸 생성 중 에러 발생");
             logger.error("스터디룸 생성 실패: ", e);
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
@@ -116,7 +118,7 @@ public class RoomController {
     }
 
     @GetMapping("/code/{roomNo}")
-    public ResponseEntity<?> getEnterCode(@PathVariable Long roomNo){
+    public ResponseEntity<?> getEnterCode(@PathVariable Integer roomNo){
         /*
           무작위 세자리 code리턴.
          */
@@ -203,7 +205,7 @@ public class RoomController {
         return new ResponseEntity<>(status);
     }
 
-    @GetMapping("/currentConnection/{roomno}")
+    @GetMapping("/currentConnection/{roomNo}")
     public ResponseEntity<?> checkConnection(@PathVariable Integer roomNo){
         HttpStatus status;
         Map<String, Object> resultMap;

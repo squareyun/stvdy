@@ -50,7 +50,12 @@ public class Room {
     @Column(name = "image_path", length = 45)
     private String imagePath;
 
+    @Column
     private String rule;
+
+    @Setter
+    @Column(length = 3)
+    private String code;
 
     @Builder.Default
     @OneToMany(mappedBy = "room")
