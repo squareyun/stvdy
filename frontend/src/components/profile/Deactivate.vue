@@ -1,10 +1,11 @@
 <script setup>
 import { useAuthStore, useAlertStore, useUserStore } from '@/stores'
 import { deleteUser } from '@/api/user'
+import { computed } from 'vue'
 import router from '@/router'
 
 const userStore = useUserStore()
-const user = userStore.user
+const user = computed(() => userStore.user)
 
 async function deactivate() {
   const data = user.id
@@ -24,7 +25,7 @@ async function deactivate() {
 
 <template>
   <div>
-    <p class="content-title">계정 삭제</p>
+    <span class="content-title">계정 삭제</span>
     <div class="content others">
       <p id="confirm-test">
         "본인은 {{ user.username }}#{{ user.id }} 계정을 삭제하겠습니다."

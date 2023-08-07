@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.ssap.common.MessageFormat;
+import com.ssafy.ssap.domain.user.User;
 import com.ssafy.ssap.dto.user.UserDto;
 import com.ssafy.ssap.service.UserService;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -66,22 +67,19 @@ public class UserController {
 	}
 
 	/**
-	 * 회원(본인) 정보 조회
-	 * 접근: 로그인한 유저, 관리자
+	 * 회원탈퇴
 	 */
-	@GetMapping("/user")
-	@PreAuthorize("hasAnyRole('USER','ADMIN')")
-	public ResponseEntity<?> getMyUserInfo(HttpServletRequest request) {
+	@DeleteMapping("/{userId}")
+	public ResponseEntity<?> withdrawal(@PathVariable Integer userId) {
 		Map<String, Object> resultMap = new HashMap<>();
 		HttpStatus status = null;
 		try {
-			UserDto userDto = userService.getMyUserWithAuthorities();
-			logger.info("회원(본인) 정보 조회 성공: userEmail = {}", userDto.getEmail());
-			resultMap.put("user", userDto);
+			User user = userService.withdrawal(userId);
+			logger.info("회원탈퇴 성공: userEmail = {}", user.getEmail());
 			resultMap.put("message", MessageFormat.SUCCESS);
 			status = HttpStatus.ACCEPTED;
 		} catch (Exception e) {
-			logger.error("회원(본인) 정보 조회 실패: ", e);
+			logger.error("회원탈퇴 실패: ", e);
 			resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage());
 			status = HttpStatus.INTERNAL_SERVER_ERROR;
 		}

@@ -60,7 +60,7 @@ const router = createRouter({
           children: [],
         },
         {
-          path: '/questiondetail',
+          path: '/questiondetail/:id',
           name: 'questiondetail',
           params: {},
           component: () => import('../components/qna/QuestionDetail.vue'),
@@ -168,11 +168,9 @@ router.beforeEach(async (to) => {
   const userStore = useUserStore()
 
   let token = localStorage.getItem('access-token')
-  console.log(1, token)
   if (typeof token == 'undefined' || token == null || token == '')
     token = sessionStorage.getItem('access-token')
 
-  console.log(2, token)
   if (!(typeof token == 'undefined' || token == null || token == ''))
     await userStore.getInfo(token)
 

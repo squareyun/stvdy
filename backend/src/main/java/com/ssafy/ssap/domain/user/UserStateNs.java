@@ -5,20 +5,17 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
-@Table(name = "authority")
+@Table(name = "user_state_ns")
 @Getter
-@Setter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class Authority {
+@AllArgsConstructor
+public class UserStateNs {
+
 	@Id
-	@Column(name = "authority_name", length = 45)
-	private String authorityName;
+	@Column(length = 10)
+	private String name;
 }

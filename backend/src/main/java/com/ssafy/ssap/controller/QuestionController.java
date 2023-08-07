@@ -36,8 +36,8 @@ public class QuestionController {
             resultMap.put("message", MessageFormat.SUCCESS);
             status = HttpStatus.ACCEPTED;
         } catch (Exception e) {
-            logger.error("질문 생성 실패: ", e);
-            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage());
+            logger.error("질문 생성 실패: {}", e.getMessage());
+            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getClass().getSimpleName());
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
@@ -72,8 +72,8 @@ public class QuestionController {
             resultMap.put("message", MessageFormat.SUCCESS);
             status = HttpStatus.ACCEPTED;
         } catch (Exception e) {
-            logger.error("질문 삭제 실패: ", e);
-            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage());
+            logger.error("질문 삭제 실패: {}", e.getMessage());
+            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getClass().getSimpleName());
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
@@ -97,8 +97,26 @@ public class QuestionController {
             }
             status = HttpStatus.ACCEPTED;
         } catch (Exception e) {
-            logger.error("질문 조회 실패: ", e);
-            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage());
+            logger.error("질문 단건 조회 실패", e);
+            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getClass().getSimpleName());
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+
+        return new ResponseEntity<Map<String, Object>>(resultMap, status);
+    }
+
+    @GetMapping("/islike/{userNo}/{questionNo}")
+    public ResponseEntity<Map<String, Object>> detailIsLike(@PathVariable("userNo") Integer userNo, @PathVariable("questionNo") Integer questionNo) {
+        Map<String, Object> resultMap = new HashMap<>();
+        HttpStatus status = null;
+        try {
+            Boolean isLike = questionService.getIsLike(userNo, questionNo);
+            resultMap.put("message", MessageFormat.SUCCESS);
+            resultMap.put("isQuetionLiked", isLike);
+            status = HttpStatus.ACCEPTED;
+        } catch (Exception e) {
+            logger.error("질문 isLiked 조회 실패", e);
+            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getClass().getSimpleName());
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
@@ -116,8 +134,8 @@ public class QuestionController {
             resultMap.put("message", MessageFormat.SUCCESS);
             status = HttpStatus.ACCEPTED;
         } catch (Exception e) {
-            logger.error("질문 검색 실패: ", e);
-            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage());
+            logger.error("질문 검색 실패", e);
+            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getClass().getSimpleName());
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 

@@ -9,7 +9,7 @@
   width: 720px;
   margin-right: 20px;
 
-  background-image: url('./LoginBanner.png');
+  background-image: url('/LoginBanner.png');
   background-size: cover;
   background-position: center;
 }
