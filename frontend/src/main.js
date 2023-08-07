@@ -8,6 +8,12 @@ import App from './App.vue'
 import router from './router'
 
 import { fakeBackend } from './helpers'
+// import { process } from 'process'
+
+// import 'dotenv/config'
+
+// console.log(process.env)
+
 fakeBackend()
 
 const app = createApp(App)

@@ -21,6 +21,14 @@ async function onSubmit1(value) {
   }
 }
 
+async function onSubmit2(values) {
+  try {
+    await useOpenAiStore.coverLetterAnalyze(values)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 // const configuration = new Configuration({
 //   // 아래의 organization과 key는 절대 git에 commit 금지!!
 //   organization: "",
@@ -73,6 +81,11 @@ async function onSubmit1(value) {
     <Form @submit="onSubmit">
       <Field name="type" type="text" placeholder="답변 스타일" />
       <Field name="question" type="text" placeholder="질문" />
+      <button type="submit">물어보기</button>
+    </Form>
+    <Form @submit="onSubmit2">
+      <Field name="question" type="text" placeholder="자소서 질문" />
+      <Field name="answer" type="text" placeholder="자소서 답변" />
       <button type="submit">물어보기</button>
     </Form>
     <span id="answerField"></span>
