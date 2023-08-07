@@ -175,6 +175,9 @@
       roomKeywords.value.push(roomKeyword.value)
       store.updateRoomKeywords(roomKeyword.value)
     }
+    else if(!roomKeyword.value){
+      alert('추가할 키워드명을 입력해주세요')
+    }
     else{
       alert('키워드를 더 추가할 수 없습니다.')
     }

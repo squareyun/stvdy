@@ -25,6 +25,7 @@
 
 <template>
   <div style="display:flex">
+    <!-- <a href="http://localhost:5173/main">이렇게 넘겨보기!!!!!!!</a> -->
     <div v-for="room in roomList" :key="room.id" class="card" style="margin: 10px;">
       <div style="position: relative; display: inline-block; width: 300px; height: 300px;" @click="showRoomInfo(room)">
         <img v-if="room.imgPreviewUrl" :src="room.imgPreviewUrl" alt="imgPreview" style="max-width: 100%; max-height: 100%;">

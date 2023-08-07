@@ -104,7 +104,15 @@ const router = createRouter({
       path: '/main',
       name: 'main',
       component: () => import('@/components/main/HomeMain.vue'),
+      children: [],
     },
+    {
+      // path: '/'+{keyword},
+      path: '/keyword',
+      name: 'roomKeyword',
+      component: () => import('@/components/main/RoomList.vue'),
+    },
+    
   ],
 })
 

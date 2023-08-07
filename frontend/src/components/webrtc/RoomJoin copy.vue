@@ -186,12 +186,13 @@
     })
     // window.addEventListener("beforeunload",leaveSession);
   }
+  function handleLeaveSession() {
+    const confirmLeave = confirm("이 페이지를 떠나시겠습니까? 회의가 종료됩니다.")
+    if(session.value && !confirmLeave) return
+    
+  }
 
   function leaveSession(){
-
-    // const confirmLeave = confirm("이 페이지를 떠나시겠습니까? 회의가 종료됩니다.")
-    // console.log('나갈거야!!!!!',confirmLeave)
-    // if(session.value && confirmLeave) session.value.disconnect()
     if(session.value) session.value.disconnect()
     
     // Empty all properties...
@@ -272,6 +273,7 @@
         //response.data.room
         console.log('방 번호 조정중1', response.data.room.id)
         updateRoomId(response.data.room.id)
+        // roomId.value = response.data.room.id
         console.log('방 번호 조정중2')
         return response.data.token;
       }
@@ -507,7 +509,7 @@
     <div>
       <div id="session-header">
         <h1 id="session-title">{{ mySessionId }}</h1>
-        <input type="button" id="buttonLeaveSession" @click="leaveSession" value="Leave session" />
+        <input type="button" id="buttonLeaveSession" @click="handleLeaveSession" value="방 떠나기" />
       </div>
       <!-- 화상이 보이는 곳 -->
       <div id="camScreen"> 
