@@ -12,5 +12,6 @@ public class AnswerResponseDto {
     private Integer id;
     private String detail;
     private LocalDateTime regist_time;
+    private Integer answerScore;
 
 }

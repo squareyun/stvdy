@@ -4,6 +4,7 @@ import com.ssafy.ssap.common.MessageFormat;
 import com.ssafy.ssap.domain.qna.Answer;
 import com.ssafy.ssap.dto.AnswerCreateDto;
 import com.ssafy.ssap.dto.AnswerResponseDto;
+import com.ssafy.ssap.dto.LikesDto;
 import com.ssafy.ssap.service.AnswerService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -62,6 +63,20 @@ public class AnswerController {
                 .body(Map.of("answers", answerList, "message", MessageFormat.SUCCESS));
         } catch (Exception e) {
             logger.error("질문 {} 에 대한 답변 조회 실패: {}", questionNo, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Collections.singletonMap("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage()));
+        }
+    }
+
+    @PutMapping("/likes/{answerNo}")
+    public ResponseEntity<Map<String, Object>> addLikes(@PathVariable("answerNo") Integer answerNo, @RequestBody LikesDto likesDto) {
+        try {
+            answerService.updateLikes(answerNo, likesDto);
+            logger.debug("답변 좋아요 성공");
+            return ResponseEntity.accepted()
+                .body(Collections.singletonMap("message", MessageFormat.SUCCESS));
+        } catch (Exception e) {
+            logger.error("답변 좋아요 실패", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Collections.singletonMap("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage()));
         }

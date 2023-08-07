@@ -12,6 +12,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AnswerRepository extends JpaRepository<Answer, Integer> {
 
-	@Query(value = "select new com.ssafy.ssap.dto.AnswerResponseDto (a.id, a.detail, a.registTime) from Answer a")
+	@Query(value = "SELECT new com.ssafy.ssap.dto.AnswerResponseDto(a.id, a.detail, a.registTime, a.answerScore) FROM Answer a WHERE a.question.id = ?1")
 	List<AnswerResponseDto> findByQuestionId(Integer questionId);
 }

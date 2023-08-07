@@ -2,11 +2,14 @@ package com.ssafy.ssap.service;
 
 import com.ssafy.ssap.common.MessageFormat;
 import com.ssafy.ssap.domain.qna.Answer;
+import com.ssafy.ssap.domain.qna.Likes;
 import com.ssafy.ssap.domain.qna.Question;
 import com.ssafy.ssap.domain.user.User;
 import com.ssafy.ssap.dto.AnswerCreateDto;
 import com.ssafy.ssap.dto.AnswerResponseDto;
+import com.ssafy.ssap.dto.LikesDto;
 import com.ssafy.ssap.repository.AnswerRepository;
+import com.ssafy.ssap.repository.LikesRepository;
 import com.ssafy.ssap.repository.QuestionRepository;
 import com.ssafy.ssap.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,7 @@ public class AnswerService {
     private final AnswerRepository answerRepository;
     private final UserRepository userRepository;
     private final QuestionRepository questionRepository;
+    private final LikesRepository likesRepository;
 
     @Transactional
     public Integer create(AnswerCreateDto answersCreateDto) throws Exception {
@@ -56,4 +60,20 @@ public class AnswerService {
 
         return answerRepository.findByQuestionId(questionNo);
 	}
+
+    public void updateLikes(Integer answerNo, LikesDto likesDto) {
+        Answer answer = answerRepository.findById(answerNo)
+            .orElseThrow(() -> new IllegalArgumentException(MessageFormat.NO_ANSWER_ID));
+
+        User user = userRepository.findById(likesDto.getUserNo())
+            .orElseThrow(() -> new IllegalArgumentException(MessageFormat.NO_USER_ID));
+
+        Likes likes = Likes.builder()
+            .answer(answer)
+            .isGood(likesDto.getIsLike())
+            .user(user)
+            .build();
+
+        likesRepository.save(likes);
+    }
 }
