@@ -1,7 +1,9 @@
 package com.ssafy.ssap.controller;
 
 import com.ssafy.ssap.common.MessageFormat;
+import com.ssafy.ssap.domain.qna.Answer;
 import com.ssafy.ssap.dto.AnswerCreateDto;
+import com.ssafy.ssap.dto.AnswerResponseDto;
 import com.ssafy.ssap.service.AnswerService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -47,6 +50,20 @@ public class AnswerController {
             logger.error("답변 수정 실패: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Collections.singletonMap("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/list/{questionNo}")
+    public ResponseEntity<Map<String, Object>> getList(@PathVariable Integer questionNo) {
+        try {
+            List<AnswerResponseDto> answerList = answerService.getList(questionNo);
+            logger.debug("질문 {} 에 대한 답변 목록 {}개 조회 성공", questionNo, (long)answerList.size());
+            return ResponseEntity.accepted()
+                .body(Map.of("answers", answerList, "message", MessageFormat.SUCCESS));
+        } catch (Exception e) {
+            logger.error("질문 {} 에 대한 답변 조회 실패: {}", questionNo, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Collections.singletonMap("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage()));
         }
     }
 

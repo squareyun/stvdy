@@ -5,6 +5,7 @@ import com.ssafy.ssap.domain.qna.Answer;
 import com.ssafy.ssap.domain.qna.Question;
 import com.ssafy.ssap.domain.user.User;
 import com.ssafy.ssap.dto.AnswerCreateDto;
+import com.ssafy.ssap.dto.AnswerResponseDto;
 import com.ssafy.ssap.repository.AnswerRepository;
 import com.ssafy.ssap.repository.QuestionRepository;
 import com.ssafy.ssap.repository.UserRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -47,4 +49,11 @@ public class AnswerService {
                 .orElseThrow(() -> new IllegalArgumentException(MessageFormat.NO_ANSWER_ID));
         return answer.update(answerCreateDto.getContent());
     }
+
+	public List<AnswerResponseDto> getList(Integer questionNo) {
+        questionRepository.findById(questionNo)
+            .orElseThrow(() -> new IllegalArgumentException(MessageFormat.NO_QUETION_ID));
+
+        return answerRepository.findByQuestionId(questionNo);
+	}
 }
