@@ -194,6 +194,8 @@ async function showDetail(value) {
   top: 21px;
   left: 10px;
 
+  color: var(--hl-light);
+
   font-size: 1.4rem;
 }
 
@@ -204,6 +206,8 @@ async function showDetail(value) {
 
   height: 60px;
   overflow: hidden;
+
+  color: var(--hl-light);
 
   font-family: 'ASDGothicT';
   font-size: 0.9rem;
@@ -231,6 +235,8 @@ async function showDetail(value) {
   position: absolute;
   top: 45px;
   right: 20px;
+
+  color: var(--hl-light);
 
   text-align: right;
 }
