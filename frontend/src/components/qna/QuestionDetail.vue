@@ -98,7 +98,7 @@ questionStore.getQuestionById($route.params.id)
   padding: 0px;
   padding-top: 30px;
 
-  color: var(--hl-light);
+  color: var(--hl-light80);
   font-size: 1.4rem;
   font-family: 'ASDGothicM';
 
@@ -163,16 +163,19 @@ questionStore.getQuestionById($route.params.id)
   text-align: right;
   margin-left: 7px;
 
+  color: var(--hl-light);
   font-family: 'ASDGothicT';
 }
 
 #wrote-time {
+  color: var(--hl-light);
   font-family: 'ASDGothicM';
 }
 
 #answer-write-title {
   margin-top: 40px;
 
+  color: var(--hl-light);
   font-size: 1.2rem;
 }
 
