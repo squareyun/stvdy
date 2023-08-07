@@ -1,12 +1,16 @@
 package com.ssafy.ssap.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.ssap.domain.todo.Todo;
 import com.ssafy.ssap.domain.user.User;
+import com.ssafy.ssap.dto.TodoResponseDto;
 import com.ssafy.ssap.repository.TodoRepository;
 import com.ssafy.ssap.repository.UserRepository;
 
@@ -80,4 +84,31 @@ public class TodoService {
 		todoRepository.save(todo);
 	}
 
+	/**
+	 * todo 목록 - 일별 조회
+	 */
+	public List<TodoResponseDto> getDailyTodoList(LocalDate date) {
+		String userEmail = userService.getMyUserWithAuthorities().getEmail();
+		User user = userRepository.findOneWithAuthoritiesByEmail(userEmail)
+			.orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
+
+		LocalDateTime startOfDay = date.atStartOfDay();
+		LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
+
+		List<Todo> todos = todoRepository.findByRegistTimeBetweenAndUser_Id(startOfDay, endOfDay, user.getId());
+
+		return todos.stream()
+			.map(this::convertToResponseDto)
+			.collect(Collectors.toList());
+	}
+
+	private TodoResponseDto convertToResponseDto(Todo todo) {
+		return TodoResponseDto.builder()
+			.id(todo.getId())
+			.doneFlag(todo.getDoneFlag())
+			.objective(todo.getObjective())
+			.registTime(todo.getRegistTime())
+			.userId(todo.getUser().getId())
+			.build();
+	}
 }
