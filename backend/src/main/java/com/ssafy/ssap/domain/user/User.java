@@ -74,6 +74,10 @@ public class User {
 	@OneToMany(mappedBy = "user")
 	List<Interest> interestList = new ArrayList<>();
 
+	@Builder.Default
+	@OneToMany(mappedBy = "user")
+	List<Interest> todoList = new ArrayList<>();
+
 	@CreationTimestamp
 	@Column(name = "state_time", columnDefinition = "timestamp")
 	private LocalDateTime stateTime;
