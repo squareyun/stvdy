@@ -1,13 +1,15 @@
 package com.ssafy.ssap.service;
 
 import com.ssafy.ssap.common.MessageFormat;
+import com.ssafy.ssap.domain.qna.Likes;
 import com.ssafy.ssap.domain.qna.Question;
-import com.ssafy.ssap.domain.qna.QuestionCategoryNs;
 import com.ssafy.ssap.domain.user.User;
+import com.ssafy.ssap.dto.LikesDto;
 import com.ssafy.ssap.dto.QuestionCreateDto;
 import com.ssafy.ssap.dto.QuestionDetailResponseDto;
 import com.ssafy.ssap.dto.QuestionListResponseDto;
-import com.ssafy.ssap.repository.QueryRepository;
+import com.ssafy.ssap.repository.LikesRepository;
+import com.ssafy.ssap.repository.QuestionQueryRepository;
 import com.ssafy.ssap.repository.QuestionRepository;
 import com.ssafy.ssap.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +25,9 @@ import java.time.LocalDateTime;
 public class QuestionService {
 
     private final QuestionRepository questionRepository;
-    private final QueryRepository queryRepository;
+    private final QuestionQueryRepository questionQueryRepository;
     private final UserRepository userRepository;
+    private final LikesRepository likesRepository;
 
     /**
      * 질문 생성
@@ -37,7 +40,7 @@ public class QuestionService {
                 .title(questionCreateDto.getTitle())
                 .detail(questionCreateDto.getContent())
                 .registTime(LocalDateTime.now())
-                .category(new QuestionCategoryNs(questionCreateDto.getCategory()))
+                .category(questionCreateDto.getCategory())
                 .hit(0)
                 .user(user)
                 .build();
@@ -55,7 +58,7 @@ public class QuestionService {
         Question question = questionRepository.findById(questionNo)
                 .orElseThrow(() -> new IllegalArgumentException(MessageFormat.NO_QUETION_ID));
 
-        return question.update(questionCreateDto.getTitle(), questionCreateDto.getContent(), new QuestionCategoryNs(questionCreateDto.getCategory()));
+        return question.update(questionCreateDto.getTitle(), questionCreateDto.getContent(), questionCreateDto.getCategory());
     }
 
     /**
@@ -71,15 +74,33 @@ public class QuestionService {
      * 전체, 키워드 검색, 사용자 번호 검색을 지원
      * 페이징 지원
      */
-    public Page<QuestionListResponseDto> getList(String keyword, String nickname, Pageable pageable) {
-        return queryRepository.findAllQuestionWithKeywordAndNickName(keyword, nickname, pageable);
+    public Page<QuestionListResponseDto> getList(String keyword, String nickname, Boolean noAnsFilter, Boolean noBestAnsFilter, Pageable pageable) {
+        return questionQueryRepository.findAllQuestionWithKeywordAndNickName(keyword, nickname, noAnsFilter, noBestAnsFilter, pageable);
     }
 
     public QuestionDetailResponseDto detail(Integer questionNo) {
-        return queryRepository.findQuestionById(questionNo);
+        return questionQueryRepository.findQuestionById(questionNo);
     }
 
     public Boolean getIsLike(Integer userNo, Integer questionNo) {
-        return queryRepository.findLikesIsLikedQuestion(userNo, questionNo);
+        return questionQueryRepository.findLikesIsLikedQuestion(userNo, questionNo);
     }
+
+    @Transactional
+    public void updateLikes(Integer questionNo, LikesDto likesDto) {
+        Question question = questionRepository.findById(questionNo)
+                .orElseThrow(() -> new IllegalArgumentException(MessageFormat.NO_QUETION_ID));
+
+        User user = userRepository.findById(likesDto.getUserNo())
+                .orElseThrow(() -> new IllegalArgumentException(MessageFormat.NO_USER_ID));
+
+        Likes likes = Likes.builder()
+                .question(question)
+                .isGood(likesDto.getIsLike())
+                .user(user)
+                .build();
+
+        likesRepository.save(likes);
+    }
+
 }

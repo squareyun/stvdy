@@ -49,10 +49,8 @@ public class Question {
     private Answer answer;
 
     @NotNull
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "category")
     @JsonIgnore
-    private QuestionCategoryNs category;
+    private String category;
 
     @NotNull
     @ManyToOne(fetch = LAZY)
@@ -69,7 +67,7 @@ public class Question {
     @OneToOne(mappedBy = "question")
     Likes likes;
 
-    public Integer update(String title, String detail, QuestionCategoryNs category) {
+    public Integer update(String title, String detail, String category) {
         this.title = title;
         this.detail = detail;
         this.category = category;

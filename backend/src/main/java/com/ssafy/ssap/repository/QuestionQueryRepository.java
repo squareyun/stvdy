@@ -1,6 +1,7 @@
 package com.ssafy.ssap.repository;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -20,15 +21,15 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 
 @Repository
-public class QueryRepository {
+public class QuestionQueryRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
-    public QueryRepository(JPAQueryFactory jpaQueryFactory) {
+    public QuestionQueryRepository(JPAQueryFactory jpaQueryFactory) {
         this.jpaQueryFactory = jpaQueryFactory;
     }
 
-    public Page<QuestionListResponseDto> findAllQuestionWithKeywordAndNickName(String keyword, String nickname, Pageable pageable) {
+    public Page<QuestionListResponseDto> findAllQuestionWithKeywordAndNickName(String keyword, String nickname, Boolean noAnsFilter, Boolean noBestAnsFilter, Pageable pageable) {
         QQuestion question = QQuestion.question;
         QUser user = QUser.user;
         QAnswer answer = QAnswer.answer;
@@ -44,6 +45,14 @@ public class QueryRepository {
             builder.and(question.user.nickname.containsIgnoreCase(nickname));
         }
 
+        if (Boolean.TRUE.equals(noAnsFilter)) {
+            builder.and(question.answerList.isEmpty());
+        }
+
+        if (Boolean.TRUE.equals(noBestAnsFilter)) {
+            builder.and(question.answer.isNull());
+        }
+
         JPAQuery<QuestionListResponseDto> query = jpaQueryFactory
                 .select(Projections.constructor(QuestionListResponseDto.class,
                         question.id,
@@ -55,12 +64,12 @@ public class QueryRepository {
                         question.category,
                         question.user.nickname,
                         question.answerList.size().as("cntAnswer"),
-                        JPAExpressions.select(likes.isGood.when(true).then(1).otherwise(0).sum().castToNum(Integer.class))
+                        JPAExpressions.select(likes.isGood.when(true).then(1).when(false).then(-1).otherwise(0).sum())
                                 .from(likes)
                                 .where(likes.question.id.eq(question.id))))
                 .from(question)
                 .leftJoin(question.likes, likes)
-                .leftJoin(question.answer, answer)
+                .leftJoin(question.answerList, answer)
                 .leftJoin(question.user, user)
                 .where(builder)
                 .offset(pageable.getOffset())
@@ -92,12 +101,12 @@ public class QueryRepository {
                         question.answer.isNotNull(),
                         question.category,
                         question.user.nickname,
-                        JPAExpressions.select(likes.isGood.when(true).then(1).otherwise(0).sum().castToNum(Integer.class))
-                                .from(likes)
-                                .where(likes.question.id.eq(question.id))))
+                        ExpressionUtils.as(
+                                JPAExpressions.select(likes.isGood.when(true).then(1).otherwise(-1).sum().coalesce(0))
+                                        .from(likes)
+                                        .where(likes.question.id.eq(question.id)), "questionScore")))
                 .from(question)
                 .leftJoin(question.user, user)
-                .leftJoin(question.likes, likes)
                 .where(question.id.eq(questionNo))
                 .fetchOne();
     }

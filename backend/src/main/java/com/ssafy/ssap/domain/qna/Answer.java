@@ -1,5 +1,6 @@
 package com.ssafy.ssap.domain.qna;
 
+import com.ssafy.ssap.domain.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -39,6 +40,11 @@ public class Answer {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Question question;
 
+    @NotNull
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @OneToOne(mappedBy = "answer")
     Likes likes;
 
@@ -48,5 +54,10 @@ public class Answer {
     public void addQuestion(Question question) {
         this.question = question;
         question.answerList.add(this);
+    }
+
+    public Integer update(String content) {
+        this.detail = content;
+        return id;
     }
 }
