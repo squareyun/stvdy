@@ -1,17 +1,114 @@
 <script setup>
 import { Form, Field } from 'vee-validate'
 import { useQuestionStore, useAlertStore, useUserStore } from '@/stores'
-import { computed, watch } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { isLikeQuestion, likesQuestion, answerQuestion } from '@/api/question'
 import router from '../../router'
 
-const userStore = useUserStore()
+// const answers = {
+//   data: {
+//     id: 1,
+//     detail: '답답합니다 참',
+//     regist_time: '뭐뭐뭐뭐뭐-뭐뭐뭄-뭐무머',
+//   },
+//   data: {
+//     id: 2,
+//     detail: '답답합니다 참',
+//     regist_time: '뭐뭐뭐뭐뭐-뭐뭐뭄-뭐무머',
+//   },
+//   data: {
+//     id: 3,
+//     detail: '답답합니다 참\n답답합니다 참\n답답합니다 참',
+//     regist_time: '뭐뭐뭐뭐뭐-뭐뭐뭄-뭐무머',
+//   },
+//   data: {
+//     id: 4,
+//     detail: '답답합니다 참',
+//     regist_time: '뭐뭐뭐뭐뭐-뭐뭐뭄-뭐무머',
+//   },
+// }
 
 const $route = useRoute()
 
+let myAnswer = ''
+
+const userStore = useUserStore()
+const user = computed(() => userStore.user)
+
 const questionStore = useQuestionStore()
 const question = computed(() => questionStore.question)
-questionStore.getQuestionById($route.params.id)
+const answers = computed(() => questionStore.answers)
+questionStore.getQuestionById($route.params.id).then(() => {
+  islikeQtn()
+  console.log(answers.value)
+})
+
+const islikeQtn = () => {
+  const values = {
+    userNo: user.value.id,
+    questionNo: question.value.id,
+  }
+  isLikeQuestion(
+    values,
+    (res) => {
+      const likes = res.data.isQuetionLiked
+
+      if (likes) {
+        document.getElementById('content-like-btn-path').style.fill =
+          'var(--hl-purple)'
+        document.getElementById('content-dislike-btn-path').style.fill =
+          'var(--hl-light)'
+      } else if (likes === null) {
+        document.getElementById('content-like-btn-path').style.fill =
+          'var(--hl-light)'
+        document.getElementById('content-dislike-btn-path').style.fill =
+          'var(--hl-light)'
+      } else {
+        document.getElementById('content-like-btn-path').style.fill =
+          'var(--hl-light)'
+        document.getElementById('content-dislike-btn-path').style.fill =
+          'var(--hl-purple)'
+      }
+    },
+    (fail) => console.log(fail),
+  )
+}
+
+const likesQtn = (value) => {
+  const values = {
+    id: question.value.id,
+    userNo: user.value.id,
+    isLike: value,
+  }
+
+  likesQuestion(
+    values,
+    (res) => {
+      questionStore.getQuestionById($route.params.id)
+      console.log(res)
+    },
+    (fail) => console.log(fail),
+  ).then(() => {
+    islikeQtn()
+  })
+}
+
+const answerQtn = () => {
+  const values = {
+    userNo: user.value.id,
+    questionNo: question.value.id,
+    content: myAnswer,
+  }
+
+  console.log(values)
+
+  answerQuestion(
+    values,
+    (res) => console.log(res),
+    (fail) => console.log(fail),
+  )
+}
 </script>
 
 <template>
@@ -19,7 +116,12 @@ questionStore.getQuestionById($route.params.id)
     <span class="content-title">질문</span>
     <span id="question-content-id">#{{ question.id }}</span>
     <div class="content">
-      <span id="question-content-title">{{ question.title }}</span>
+      <span id="question-content-title">
+        {{ question.title }}
+        <span id="question-info">
+          #{{ question.category }} · 조회수 {{ question.hit }}
+        </span>
+      </span>
       <div id="question-detail-main">
         <div
           placeholder="ex) 6.2전쟁은 몇년 도에 발발 했나요?"
@@ -27,7 +129,46 @@ questionStore.getQuestionById($route.params.id)
           name="content">
           {{ question.detail }}
         </div>
-        <div id="author-box">
+        <div id="content-info-box">
+          <div id="content-score">
+            {{ question.questionScore }}
+            <svg
+              width="1.3rem"
+              height="1.1rem"
+              viewBox="0 0 128 117"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              id="content-like-btn"
+              @click="likesQtn(true)">
+              <path
+                id="content-like-btn-path"
+                d="M76.6255 0L34.9091 41.7746V116.364H106.531L128 66.3273V40.7273H79.6509L86.1673 9.42545L76.6255 0ZM0 46.5455H23.2727V116.364H0V46.5455Z"
+                fill="white" />
+            </svg>
+            <svg
+              width="1.3rem"
+              height="1.3rem"
+              viewBox="0 0 128 128"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              id="content-dislike-btn"
+              @click="likesQtn(false)">
+              <g clip-path="url(#clip0_782_927)">
+                <path
+                  id="content-dislike-btn-path"
+                  d="M52.4266 122.667L90.6666 84.3733V16H25.0133L5.33325 61.8667V85.3333H49.6533L43.6799 114.027L52.4266 122.667ZM101.333 16H122.667V80H101.333V16Z"
+                  fill="white" />
+              </g>
+              <defs>
+                <clipPath id="clip0_782_927">
+                  <rect
+                    width="128"
+                    height="128"
+                    fill="white" />
+                </clipPath>
+              </defs>
+            </svg>
+          </div>
           <div id="author-image"></div>
           <div id="author-name">
             {{ question.regist_time }}
@@ -39,11 +180,29 @@ questionStore.getQuestionById($route.params.id)
         <button @click="QtnUpdate(question.id)">수정하기</button>
         <button @click="QtnDelete(question.id)">삭제하기</button>
       </span> -->
-      <div id="answer-write-title">질문에 대한 좋은 답변이 있으신가요?</div>
+      <div id="answers-title">{{ answers.length }}개의 답변이 있습니다.</div>
+      <div id="answers-box">
+        <tr
+          class="answers-row"
+          v-for="ans in answers"
+          :key="ans.id">
+          <div class="answers-detail-box">
+            {{ ans.detail }}
+            <div id="author-image"></div>
+            <div id="author-name">
+              {{ ans.regist_time }}
+              <span id="wrote-time">{{ question.userNickname }}</span>
+            </div>
+          </div>
+        </tr>
+      </div>
+
+      <div id="answers-title">질문에 대한 좋은 답변이 있으신가요?</div>
       <div id="answer-form-main">
-        <Form @submit="postAnswer">
+        <Form @submit="answerQtn">
           <Field
             v-slot="{ field }"
+            v-model="myAnswer"
             name="detail">
             <textarea
               id="answer-form-main-text"
@@ -105,6 +264,14 @@ questionStore.getQuestionById($route.params.id)
   border-bottom: 7px solid var(--font30);
 }
 
+#question-info {
+  float: right;
+  margin-top: 5px;
+
+  font-size: 1rem;
+  font-family: 'ASDGothicM';
+}
+
 #question-detail-main {
   margin-top: 20px;
 
@@ -133,9 +300,54 @@ questionStore.getQuestionById($route.params.id)
   font-size: 1rem;
 }
 
-#author-box {
+#content-info-box {
   position: relative;
   height: 35px;
+}
+
+#content-score {
+  position: absolute;
+  left: 30px;
+  bottom: 12px;
+
+  color: var(--hl-purple);
+  font-size: 1.4rem;
+}
+
+#content-like-btn {
+  position: absolute;
+  bottom: 8px;
+  left: 25px;
+
+  cursor: pointer;
+}
+
+#content-like-btn > path {
+  fill: var(--hl-light);
+  transition: fill 0.4s;
+}
+
+#content-like-btn:hover > path {
+  fill: var(--hl-purple);
+  transition: fill 0.4s;
+}
+
+#content-dislike-btn {
+  position: absolute;
+  bottom: 6px;
+  left: 55px;
+
+  cursor: pointer;
+}
+
+#content-dislike-btn > g > path {
+  fill: var(--hl-light);
+  transition: fill 0.4s;
+}
+
+#content-dislike-btn:hover > g > path {
+  fill: var(--hl-purple);
+  transition: fill 0.4s;
 }
 
 #author-image {
@@ -157,7 +369,7 @@ questionStore.getQuestionById($route.params.id)
 
 #author-name {
   position: absolute;
-  top: -4px;
+  bottom: 15px;
   right: 100px;
 
   text-align: right;
@@ -172,7 +384,28 @@ questionStore.getQuestionById($route.params.id)
   font-family: 'ASDGothicM';
 }
 
-#answer-write-title {
+#answers-box {
+  width: 900px;
+
+  border-radius: 10px;
+  background-color: var(--font50);
+}
+
+.answers-detail-box {
+  position: relative;
+  width: 840px;
+  height: auto;
+
+  color: var(--hl-light);
+
+  padding: 30px;
+  padding-top: 15px;
+  padding-bottom: 50px;
+
+  border-bottom: 1px solid var(--background-window);
+}
+
+#answers-title {
   margin-top: 40px;
 
   color: var(--hl-light);

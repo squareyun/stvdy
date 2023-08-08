@@ -17,4 +17,39 @@ const getQuestion = async (id, success, fail) => {
   await axios.get(`/api/questions/${id}`).then(success).catch(fail)
 }
 
-export { listQuestion, writeQuestion, getQuestion }
+const isLikeQuestion = async (values, success, fail) => {
+  await axios
+    .get(`/api/questions/islike/${values.userNo}/${values.questionNo}`)
+    .then(success)
+    .catch(fail)
+}
+
+const likesQuestion = async (values, success, fail) => {
+  await axios
+    .put(`/api/questions/likes/${values.id}`, values)
+    .then(success)
+    .catch(fail)
+}
+
+// const likesAnswer = async (values, success, fail) => {
+//   await axios.put(`/api/answers/likes/${values.id}`).then(success).catch(fail)
+// }
+
+const answerQuestion = async (values, success, fail) => {
+  await axios.post(`/api/answers/add`, values).then(success).catch(fail)
+}
+
+const getAnswers = async (id, success, fail) => {
+  await axios.get(`/api/answers/list/${id}`).then(success).catch(fail)
+}
+
+export {
+  listQuestion,
+  writeQuestion,
+  getQuestion,
+  isLikeQuestion,
+  likesQuestion,
+  // likesAnswer,
+  answerQuestion,
+  getAnswers,
+}
