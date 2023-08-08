@@ -3,7 +3,6 @@
   import axios from 'axios'
   import { OpenVidu } from "openvidu-browser";
   import UserVideo from "@/components/webrtc/UserVideo.vue";
-  import MessageChat from "@/components/webrtc/MessageChat.vue";
   import { useRouter } from "vue-router"
   import { usewebRtcStore } from "@/stores"
 
@@ -144,7 +143,6 @@
       if(event.from.connectionId === session.value.connection.connectionId){
         messageData['username'] = '나'
       }
-      console.log(messageData)
       messages.value.push(messageData);
     });
 
@@ -283,20 +281,20 @@
     }
   }
 
-  // // 채팅창 구현을 위한 함수 제작
-  // ///////////////////////////
-  // function sendMessage(event) {
-  //   event.preventDefault();
-  //   if(inputMessage.value.trim()){
-  //     // messages.value.push({username : myUserName.value, message : inputMessage.value})
-  //     // 다른 참가원에게 메시지 전송하기
-  //     session.value.signal({
-  //       data: JSON.stringify({username: myUserName.value, message: inputMessage.value}), // 메시지 데이터를 문자열로 변환해서 전송
-  //       type: 'chat' // 신호 타입을 'chat'으로 설정
-  //     });
-  //     inputMessage.value = '';
-  //   }
-  // }
+  // 채팅창 구현을 위한 함수 제작
+  ///////////////////////////
+  function sendMessage(event) {
+    event.preventDefault();
+    if(inputMessage.value.trim()){
+      // messages.value.push({username : myUserName.value, message : inputMessage.value})
+      // 다른 참가원에게 메시지 전송하기
+      session.value.signal({
+        data: JSON.stringify({username: myUserName.value, message: inputMessage.value}), // 메시지 데이터를 문자열로 변환해서 전송
+        type: 'chat' // 신호 타입을 'chat'으로 설정
+      });
+      inputMessage.value = '';
+    }
+  }
 
   ///////////////////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////////////////
@@ -486,6 +484,9 @@
           <UserVideo :stream-manager="publisherComputed" @click.native="updateMainVideoStreamManager(publisher)" />
           <UserVideo v-for="sub in subscribersComputed" :key="sub.stream.connection.connectionId" :stream-manager="sub"
             @click.native="updateMainVideoStreamManager(sub)" />
+          <!-- 이거는 빈 자리 검정박스 --><!--  --><!--  -->
+          <!-- <div v-for="(number, i) in ( quota  - subscribersComputed.length -1)" :key="i" class="blackbox"></div> -->
+          <!-- <div id="emptyBox"></div> -->
         </div>
         <!-- 선택 캠 -->
         <!-- <div id="mainVideo">
@@ -537,9 +538,7 @@
       </ul>
     </div>
     <!-- 나중에 <chat-winow />로 넘길수 있도록 해보자. -->
-    <MessageChat :messages="messages" :session="session" :myUserName="myUserName" v-if="activeFuncTab === 1" />
-    <!-- <div id="chatContainer" v-if="activeFuncTab === 1"> -->
-    <!-- <div v-if="activeFuncTab === 1">
+    <div id="chatContainer" v-if="activeFuncTab === 1">
       <div id="chatWindow">
         <ul id="chatHistory">
           <li v-for="(message, index) in messages" :key="index">
@@ -551,7 +550,7 @@
         <input type="text" placeholder="전달할 내용을 입력하세요." v-model="inputMessage">
         <button @click="sendMessage">전송</button>
       </form>
-    </div> -->
+    </div>
     <!-- 그라운드 룰 -->
     <div v-if="activeFuncTab === 2">
       {{ roomRule }}

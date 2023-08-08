@@ -8,18 +8,24 @@
   const router = useRouter()
   const webRtcStore = usewebRtcStore()
 
-  const roomList = computed(() => webRtcStore.roomList)
-  
+  // const roomList = computed(() => webRtcStore.roomList)
+  const roomList = ref(webRtcStore.roomList)
+
+  onBeforeMount(() => {
+
+  }),
+
   onMounted(() => {
-    webRtcStore.getRtcRooms()
+    webRtcStore.getRtcRooms()  
   })
 
-  watch(() => webRtcStore.roomList, (newRoomList, oldRoomList) => {
-    if (newRoomList) {
-      console.log('흐으음')
-      console.log(roomList.value)
-    }
-  })
+  
+  // watch(() => webRtcStore.roomList, (newRoomList, oldRoomList) => {
+  //   if (newRoomList) {
+  //     console.log('흐으음')
+  //     console.log(roomList.value)
+  //   }
+  // })
 
 </script>
 

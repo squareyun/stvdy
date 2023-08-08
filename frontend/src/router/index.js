@@ -109,8 +109,8 @@ const router = createRouter({
     {
       // path: '/'+{keyword},
       path: '/keyword',
-      name: 'roomKeyword',
-      component: () => import('@/components/main/RoomList.vue'),
+      name: 'KeywordRoom',
+      component: () => import('@/components/main/KeywordRoom.vue'),
     },
     
   ],

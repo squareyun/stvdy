@@ -38,24 +38,143 @@
 
   ////////////////
   // 질문게시판과 관련한 것.
-  const { questions } = storeToRefs(questionsStore);
-  questionsStore.getAll();
+  // const { questions } = storeToRefs(questionsStore);
+  // const questions = ref(questionsStore.questions);
+  const questions = computed(() => questionsStore.questions)
+  const questionsSample = ref([])
+  // questionsStore.getAll();
   ////////////////
 
+  // onMounted(() => {
+  //   webRtcStore.getRtcRooms()
+  //   questionsStore.getAll()   // 모든 질문을 가지고 옴.
+  //   webRtcStore.getEveryRoomKeywords()
+  //   extractSomeQuestions()
+  // })
+
+  // onBeforeMount(() => {
+  //   webRtcStore.getRtcRooms()
+  //   questionsStore.getAll()   // 모든 질문을 가지고 옴.
+  //   webRtcStore.getEveryRoomKeywords()  // 230808 현재는 제대로 구현되어있지 않음
+  //   extractSomeRooms()
+  //   extractSomeQuestions()
+  // })
+  onBeforeMount(async () => {
+    await webRtcStore.getRtcRooms()
+    questionsStore.getAll()
+    await webRtcStore.getEveryRoomKeywords()
+    extractSomeRooms()
+    extractSomeQuestions()
+  })
+
+
   onMounted(() => {
-    webRtcStore.getRtcRooms()
-    questionsStore.getAll()   // 모든 질문을 가지고 옴.
-    webRtcStore.getEveryRoomKeywords()
   })
 
   const roomList = computed(() => webRtcStore.roomList)
+  const roomListSample = ref([])
+  
+  
 
   watch(() => webRtcStore.roomList, (newRoomList, oldRoomList) => {
     if (newRoomList) {
-      console.log('흐으음')
+      console.log('흐으음방리스트')
       console.log(roomList.value)
     }
   })
+  watch(() => questionsStore.questions, (newRoomList, oldRoomList) => {
+    if (newRoomList) {
+      console.log('흐으음퀘스쳔')
+      console.log(questions.value)
+    }
+  })
+
+
+  // // 방 몇 개를 추출 하는 함수
+  // function extractSomeRooms() {
+  //   const tmpRoomList = []
+  //   console.log('방길이',roomList.value.length)
+  //   if(roomList.value.length > 3){
+  //     for (let i=0; i<3; i++) {
+  //       const randomNum = Math.floor(Math.random() * roomList.value.length)
+  //       if (tmpRoomList.indexOf(roomList.value[randomNum]) === -1) {
+  //         console.log('방 여기가문젠가?1')
+  //         tmpRoomList.push(roomList.value[randomNum])
+  //         console.log('방 여기가문젠가?2')  
+  //       }
+  //     }
+  //     roomListSample.value = tmpRoomList
+  //   }
+  //   else{
+  //     roomListSample.value = roomList.value
+  //   }
+  //   console.log('방들 들',roomListSample.value)
+  //   console.log('방들 들0번',roomListSample.value[0]) 
+  // }
+  function extractSomeRooms() {
+    const tmpRoomList = []
+    console.log('방길이', roomList.value.length)
+    if (roomList.value.length > 3) {
+      const usedIndexes = []
+
+      for (let i = 0; i < 3; i++) {
+        let randomNum
+
+        do {
+          randomNum = Math.floor(Math.random() * roomList.value.length)
+        } while (usedIndexes.includes(randomNum))
+
+        usedIndexes.push(randomNum)
+        tmpRoomList.push(roomList.value[randomNum])
+      }
+
+      roomListSample.value = tmpRoomList
+    } else {
+      roomListSample.value = roomList.value
+    }
+  }
+
+
+  // // 질문 글 몇개를 추출 하는 함수
+  // function extractSomeQuestions() {
+  //   const tmpQuestionsSample = []
+  //   console.log('퀘스쳔길이',questions.value.length)
+  //   if(questions.value.length > 3){
+  //     for (let i=0; i<3; i++) {
+  //       const randomNum = Math.floor(Math.random() * questions.value.length)
+  //       if (tmpQuestionsSample.indexOf(questions.value[randomNum]) === -1) {
+  //         tmpQuestionsSample.push(questions.value[randomNum])
+  //       }
+  //     }
+  //     questionsSample.value = tmpQuestionsSample
+  //   }
+  //   else{
+  //     questionsSample.value = questions.value
+  //   }
+  // }
+  function extractSomeQuestions() {
+    const tmpQuestionsSample = []
+    console.log('퀘스쳔길이', questions.value.length)
+    if (questions.value.length > 3) {
+      const usedIndexes = []
+
+      for (let i = 0; i < 3; i++) {
+        let randomNum
+
+        do {
+          randomNum = Math.floor(Math.random() * questions.value.length)
+        } while (usedIndexes.includes(randomNum))
+
+        usedIndexes.push(randomNum)
+        tmpQuestionsSample.push(questions.value[randomNum])
+      }
+
+      questionsSample.value = tmpQuestionsSample
+    } else {
+      questionsSample.value = questions.value
+    }
+  }
+
 
 
   function joinTheRoom(room) {
@@ -152,7 +271,8 @@
       </div>
       <p>중단= 공개 스터디 룸</p>
       <div style="display:flex">
-        <div v-for="room in roomList" :key="room.id" class="card" style="margin: 10px;">
+        <!-- <div v-for="room in roomList" :key="room.id" class="card" style="margin: 10px;"> -->
+        <div v-for="room in roomListSample" :key="room.id" class="card" style="margin: 10px;">
           <div style="position: relative; display: inline-block; width: 300px; height: 300px;" @click="showRoomInfo(room)">
             <img v-if="room.imgPreviewUrl" :src="room.imgPreviewUrl" alt="imgPreview" style="max-width: 100%; max-height: 100%;">
             <div v-else style="width: 100%; height: 100%; background-color: crimson;"></div>
@@ -167,9 +287,9 @@
         </div>
       </div>
       <div style="margin:50px;"></div>      <!-- 임시로 마진값을 줘서 띄움 -->
-      <p>하단= 칼럼</p>
+      <p>하단= 칼럼 => 질문글 몇 개</p>
       <div style="display:flex">
-        <div v-for="question in questions" :key="question.id" style="border-color: white; border: 1px solid white;">
+        <div v-for="question in questionsSample" :key="question.id" style="border-color: white; border: 1px solid white; ">
           <!-- <p>{{ question.id }}</p> -->
           <h3>{{ question.title }}</h3>
           <p>{{ limitQesCon(question.detail, 100) }}</p>

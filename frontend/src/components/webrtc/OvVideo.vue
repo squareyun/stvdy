@@ -1,6 +1,6 @@
 <template>
-  <video ref="videoEl" autoplay />
-  <!-- <video ref="videoEl" width="320" height="240" autoplay /> -->
+  <!-- <video ref="videoEl" autoplay /> -->
+  <video ref="videoEl" width="320" height="240" autoplay />
 </template>
 
 <script>

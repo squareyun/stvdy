@@ -33,7 +33,7 @@ export const usewebRtcStore = defineStore({
     
     //////////////////////////
     // 메인페이지에서 사용되는 방 목록 관련
-    roomList: null,
+    roomList: [],
     roomId : null,
 
     peopleNo : 0, // 우선 peopleNo은 0으로 둠. 방 탈퇴 및 방 정보에 사용할 예정임
@@ -141,9 +141,9 @@ export const usewebRtcStore = defineStore({
         console.log('getEveryRoomKeywords 내부1')
         // const response = await axios.get('http://localhost:8080/rooms/list')
         console.log('getEveryRoomKeywords 내부2')
-        this.roomList = response.data.roomList
+        // this.roomList = response.data.roomList
         console.log(this.roomList)
-        console.log('getEveryRoomKeywords 내부2')
+        console.log('getEveryRoomKeywords 내부3')
       }
       catch(error){
         console.log('getRtcRooms내부 오류')
