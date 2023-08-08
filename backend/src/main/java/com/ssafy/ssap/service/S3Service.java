@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -67,13 +68,20 @@ public class S3Service {
     }
 
     public Map<String, Object> getSingleUrl(String pattern, Integer id) {
+        Map<String, Object> resultMap = new HashMap<>();
+        String url;
         try{
             switch(pattern){
-//                case "profile", "room" -> ;
-//                case "alarm" -> ;
-//            }
-        }catch(){
-
+                case "profile", "room" -> url = userRepository.findImagePathById(id);
+                case "alarm" -> url = alarmRepository.findImagePathById(id);
+                default -> throw new NullPointerException();
+            }
+            resultMap.put("url",url);
+            return resultMap;
+        }catch(NullPointerException e){
+            logger.error("getSingleUrl failed");
+            resultMap.put("message","getSingleUrl failed");
+            throw e;
         }
     }
 
