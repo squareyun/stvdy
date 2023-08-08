@@ -54,6 +54,7 @@
   // 방에서 최대 인원수
   const quota = ref(store.quota)
 
+
   /////////////////////채팅창을 위한 부분임.
   const inputMessage = ref("")
   const messages = ref([])
@@ -160,8 +161,9 @@
             videoSource: undefined, // The source of video. If undefined default webcam
             publishAudio: !muted.value, // Whether you want to start publishing with your audio unmuted or not
             publishVideo: !camerOff.value, // Whether you want to start publishing with your video enabled or not
-            // resolution: "640x480", // The resolution of your video
-            resolution: "160x120", // The resolution of your video
+            resolution: "640x480", // The resolution of your video
+            // resolution: "1280x960", // The resolution of your video
+            // resolution: "160x120", // The resolution of your video
             frameRate: 30, // The frame rate of your video
             insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
             mirror: false, // Whether to mirror your local video or not
@@ -178,6 +180,12 @@
         })
     })
     // window.addEventListener("beforeunload",leaveSession);
+  }
+
+  function handleLeaveSession(){
+    const isOut = confirm('방을 나가시겠습니까?')
+    if(!isOut) return
+    leaveSession()
   }
 
   function leaveSession(){
@@ -236,6 +244,7 @@
     const password = store.password
     const backImgFile = store.backImgFile
     const rule = store.rule
+    const roomKeywords = store.roomKeywords
     ////////////////////////////////////////////////////
     try{
       console.log(roomNo, userNo, inputPassword)
@@ -255,16 +264,16 @@
       try{
       const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/add', 
       {userNo: userNo, title: mySessionId, endHour: endHour, endMinute: endMinute, quota: quota, 
-        isPrivacy: isPrivacy, password: password, iamgePath: backImgFile, rule: rule}, 
+        isPrivacy: isPrivacy, password: password, iamgePath: backImgFile, rule: rule, keywords: roomKeywords}, 
         {headers: { 'Content-Type': 'application/json', },
       });
       console.log('create할때',userNo, mySessionId, endHour, endMinute, quota, isPrivacy, password, backImgFile, rule)
       console.log('크리에이트룸 내부 해치웠나?1')
       console.log('이것이 만든 방의 리스폰스데이터 \n', response.data)
       /////////////////////////////////////////////////
-      // 방 ID 받아와야함. 그리고 그걸로 store및 여기 roomId.value에 저장할 것.ㄴ
+      // 방 ID 받아와야함. 그리고 그걸로 store및 여기 roomId.value에 저장할 것.
       /////////////////////////////////////////////////
-      return response.data;
+      return response.data.token;
       }
       catch(error){
         console.error("방생성에도 오류 났음.",error);
@@ -435,15 +444,19 @@
 
   /////////////////////////
 
-  function shutDownRoom(roomId) {
+  function handleShutDownRoom(roomId) {
     const isShut = confirm("방 폐쇄 버튼을 눌렀습니다. 진심입니까? 휴먼??")
     if(isShut){
       alert('진심이군요 휴먼, 알겠습니다. 방을 폐쇄하도록하죠.')
-      store.shutDownRoom(roomId)
+      shutDownRoom(roomId)
     }
     else{
       alert('거짓말을 하다니 그런짓은 하지마십시오. 휴먼.')
     }
+  }
+  
+  function shutDownRoom(roomId) {
+    store.shutDownRoom(roomId)
   }
 
 </script>
@@ -460,7 +473,7 @@
     <div>
       <div id="session-header">
         <h1 id="session-title">{{ mySessionId }}</h1>
-        <input type="button" id="buttonLeaveSession" @click="leaveSession" value="Leave session" />
+        <input type="button" id="buttonLeaveSession" @click="handleLeaveSession" value="Leave session" />
       </div>
       <!-- 화상이 보이는 곳 -->
       <div id="camScreen"> 
@@ -497,7 +510,7 @@
       </div>
       <!-- 방 종료 버튼 -->
       <div id=''>
-        <button @click="shutDownRoom(roomId)">방 폐쇄하기</button>
+        <button @click="handleShutDownRoom(roomId)">방 폐쇄하기</button>
       </div>
     </div>
   </div>
@@ -549,12 +562,6 @@
 </template>
 
 <style scoped>
-  .blackbox{
-    border : 1px solid;
-    background-color: crimson;
-    width : 160px;
-    height: 120px;
-  }
   #session {
     display: flex;
     width: 100%;

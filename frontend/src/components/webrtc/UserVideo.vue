@@ -1,7 +1,7 @@
 <template>
   <div v-if="streamManager">
     <OvVideo :stream-manager="streamManager" />
-    <!-- {{ clientData }} is the current name -->
+    <!-- {{ clientData }}이게 내 현재 이름임 -->
     <div>
       <p>{{ clientData }}</p>
     </div>
@@ -10,7 +10,7 @@
 
 <script>
   export default {
-    name: 'OvVideo',
+    name: 'UserVideo',
   }
 </script>
 <script setup>
