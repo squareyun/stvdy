@@ -19,6 +19,7 @@ public class QuestionListResponseDto {
     private String userNickname;
     private Integer cntAnswer;
     private Integer questionScore;
+    private Integer userNo;
 
     public int getQuestionScore() {
         return questionScore == null ? 0 : questionScore;

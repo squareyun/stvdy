@@ -1,9 +1,9 @@
 package com.ssafy.ssap.dto;
 
-import java.time.LocalDateTime;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Getter
@@ -14,5 +14,7 @@ public class AnswerResponseDto {
     private LocalDateTime regist_time;
     private Integer answerScore;
     private Boolean bestSelected;
+    private String userNickname;
+    private Integer userNo;
 
 }
