@@ -10,9 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ssafy.ssap.domain.alarm.Alarm;
 import com.ssafy.ssap.domain.user.User;
 import com.ssafy.ssap.dto.alarm.AlarmCreateDto;
+import com.ssafy.ssap.dto.alarm.AlarmDetailResponseDto;
 import com.ssafy.ssap.dto.alarm.AlarmListResponseDto;
 import com.ssafy.ssap.repository.AlarmRepository;
 import com.ssafy.ssap.repository.UserRepository;
+import com.ssafy.ssap.util.SecurityUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -64,12 +66,45 @@ public class AlarmService {
 		);
 	}
 
-	//countUnReadAlarms
-
 	public long countUnReadAlarms(List<AlarmListResponseDto> alarmList) {
 		return alarmList.stream()
 			.filter(alarm -> !alarm.getIsRead()) // isRead가 false인 것들만 필터링
 			.count();
+	}
+
+	public AlarmDetailResponseDto getAlarmDetail(Integer alarmId) {
+
+		String userEmail = SecurityUtil.getCurrentUsername()
+			.orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
+		User user = userRepository.findOneWithAuthoritiesByEmail(userEmail)
+			.orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
+
+		Alarm alarm = alarmRepository.findById(alarmId)
+			.orElseThrow(() -> new IllegalArgumentException("알림 정보를 찾을 수 없습니다."));
+
+		Integer alarmUserNo = alarm.getUser().getId();
+		Boolean flag = false;
+		if (alarmUserNo == 1 || alarmUserNo == 2) {
+			flag = false;
+		} else if (alarmUserNo != user.getId()) {
+			new IllegalArgumentException("사용자 정보를 찾을 수 없습니다.");
+		} else {
+			flag = true;
+		}
+
+		AlarmDetailResponseDto alarmDetail = AlarmDetailResponseDto.builder()
+			.id(alarm.getId())
+			.title(alarm.getTitle())
+			.detail(alarm.getDetail())
+			.isRead(flag)
+			.registTime(alarm.getRegistTime())
+			.userNo(user.getId())
+			.build();
+
+		alarm.setIsRead(flag);
+		alarmRepository.save(alarm);
+
+		return alarmDetail;
 	}
 
 }

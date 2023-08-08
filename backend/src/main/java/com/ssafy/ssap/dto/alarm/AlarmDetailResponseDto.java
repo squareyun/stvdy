@@ -3,8 +3,10 @@ package com.ssafy.ssap.dto.alarm;
 import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
+@Builder
 @AllArgsConstructor
 @Getter
 public class AlarmDetailResponseDto {
