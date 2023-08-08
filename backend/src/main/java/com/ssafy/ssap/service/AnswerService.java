@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.ssap.common.MessageFormat;
+import com.ssafy.ssap.domain.alarm.Alarm;
 import com.ssafy.ssap.domain.qna.Answer;
 import com.ssafy.ssap.domain.qna.Likes;
 import com.ssafy.ssap.domain.qna.Question;
@@ -14,6 +15,7 @@ import com.ssafy.ssap.domain.user.User;
 import com.ssafy.ssap.dto.AnswerCreateDto;
 import com.ssafy.ssap.dto.AnswerResponseDto;
 import com.ssafy.ssap.dto.LikesDto;
+import com.ssafy.ssap.repository.AlarmRepository;
 import com.ssafy.ssap.repository.AnswerRepository;
 import com.ssafy.ssap.repository.LikesRepository;
 import com.ssafy.ssap.repository.QuestionRepository;
@@ -29,6 +31,7 @@ public class AnswerService {
 	private final UserRepository userRepository;
 	private final QuestionRepository questionRepository;
 	private final LikesRepository likesRepository;
+	private final AlarmRepository alarmRepository;
 
 	@Transactional
 	public Integer create(AnswerCreateDto answersCreateDto) throws Exception {
@@ -44,7 +47,20 @@ public class AnswerService {
 			.registTime(LocalDateTime.now())
 			.build();
 
+		// 사용자에게 알림 전송
+		// String detailUrl = "/questions/" + question.getId();
+		String detailUrl = "/mypage";
+
+		Alarm alarm = Alarm.builder()
+			.title(answer.getUser().getNickname() + "님이 질문에 댓글을 달았습니다.")
+			.detail(detailUrl)
+			.isRead(false)
+			.registTime(LocalDateTime.now())
+			.user(user)
+			.build();
+
 		answerRepository.save(answer);
+		alarmRepository.save(alarm);
 
 		return answer.getId();
 	}

@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.ssap.common.MessageFormat;
 import com.ssafy.ssap.dto.alarm.AlarmCreateDto;
-import com.ssafy.ssap.dto.alarm.AlarmDetailResponseDto;
 import com.ssafy.ssap.dto.alarm.AlarmListResponseDto;
 import com.ssafy.ssap.service.AlarmService;
 
@@ -80,27 +79,42 @@ public class AlarmController {
 	}
 
 	/**
-	 * alarm 상세 조회
+	 * alarm 상세 페이지 이동
 	 */
-	@GetMapping("/{alarmno}")
-	public ResponseEntity<Map<String, Object>> getAlarmDetail(@PathVariable Integer alarmno) {
-		Map<String, Object> resultMap = new HashMap<>();
-		HttpStatus status = null;
+	@GetMapping("/{alarmNo}")
+	public String redirectToAlarmDetail(@PathVariable Integer alarmNo) {
+		String questionDetailUrl = null;
 		try {
-			long unreadCnt = 0;
-			AlarmDetailResponseDto alarmDetailResponseDto = alarmService.getAlarmDetail(alarmno);
-
-			logger.info("{} alarm 상세 조회 성공", alarmDetailResponseDto.getId());
-			resultMap.put("message", MessageFormat.SUCCESS);
-			resultMap.put("alarmDetail", alarmDetailResponseDto);
-			status = HttpStatus.ACCEPTED;
+			questionDetailUrl = alarmService.getAlarmDetail(alarmNo).getDetail();
+			logger.info("{} alarm redirect 성공", questionDetailUrl);
 		} catch (Exception e) {
-			logger.error("alarm 상세 조회 실패: {}", e.getMessage());
-			resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getClass().getSimpleName());
-			status = HttpStatus.INTERNAL_SERVER_ERROR;
+			logger.error("alarm redirect 실패: {}", e.getMessage());
 		}
 
-		return new ResponseEntity<Map<String, Object>>(resultMap, status);
+		return "redirect:" + questionDetailUrl;
 	}
 
+	/**
+	 * alarm 상세 조회
+	 *
+	 @GetMapping("/detail/{alarmNo}") public ResponseEntity<Map<String, Object>> getAlarmDetail(@PathVariable Integer alarmNo) {
+	 Map<String, Object> resultMap = new HashMap<>();
+	 HttpStatus status = null;
+	 try {
+	 long unreadCnt = 0;
+	 AlarmDetailResponseDto alarmDetailResponseDto = alarmService.getAlarmDetail(alarmNo);
+
+	 logger.info("{} alarm 상세 조회 성공", alarmDetailResponseDto.getId());
+	 resultMap.put("message", MessageFormat.SUCCESS);
+	 resultMap.put("alarmDetail", alarmDetailResponseDto);
+	 status = HttpStatus.ACCEPTED;
+	 } catch (Exception e) {
+	 logger.error("alarm 상세 조회 실패: {}", e.getMessage());
+	 resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getClass().getSimpleName());
+	 status = HttpStatus.INTERNAL_SERVER_ERROR;
+	 }
+
+	 return new ResponseEntity<Map<String, Object>>(resultMap, status);
+	 }
+	 */
 }
