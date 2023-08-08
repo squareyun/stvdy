@@ -82,13 +82,13 @@ public class AlarmController {
 	/**
 	 * alarm 상세 조회
 	 */
-	@GetMapping("/{alarmId}")
-	public ResponseEntity<Map<String, Object>> getAlarmDetail(@PathVariable Integer alarmId) {
+	@GetMapping("/{alarmno}")
+	public ResponseEntity<Map<String, Object>> getAlarmDetail(@PathVariable Integer alarmno) {
 		Map<String, Object> resultMap = new HashMap<>();
 		HttpStatus status = null;
 		try {
 			long unreadCnt = 0;
-			AlarmDetailResponseDto alarmDetailResponseDto = alarmService.getAlarmDetail(alarmId);
+			AlarmDetailResponseDto alarmDetailResponseDto = alarmService.getAlarmDetail(alarmno);
 
 			logger.info("{} alarm 상세 조회 성공", alarmDetailResponseDto.getId());
 			resultMap.put("message", MessageFormat.SUCCESS);
