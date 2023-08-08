@@ -41,7 +41,7 @@ public class Answer {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Question question;
 
-    @Formula("(SELECT coalesce(SUM(case when l.is_good = 1 then 1 else -1 end), 0) FROM Likes l WHERE l.answer_id = id)")
+    @Formula("(SELECT coalesce(SUM(case when l.is_good = 1 then 1 else -1 end), 0) FROM likes l WHERE l.answer_id = id)")
     private Integer answerScore;
 
     @NotNull
