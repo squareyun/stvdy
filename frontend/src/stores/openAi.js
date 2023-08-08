@@ -24,15 +24,16 @@ export const useAiAssist = defineStore({
     // string 형태로 답변자의 정체성을 설정할 수 있음
     // 정체성에 따른 다양한 답변 스펙트럼을 가짐
     async qna(values) {
+      console.log('배포시에는 본 콘솔출력문을 삭제하시오. qna activated')
       const sampleQuestion = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo',
         messages: [
           { role: 'system', content: values.type },
-          { role: 'user', content: values.question.text },
+          { role: 'user', content: values.question },
         ],
       })
       let result = sampleQuestion.data.choices[0].message.content
-      console.log(result)
+      console.log(`배포시에는 본 콘솔출력문을 삭제하시오. ${result}`)
       this.answer = result
     },
 
@@ -41,16 +42,19 @@ export const useAiAssist = defineStore({
     // 등을 감지하여 각 카테고리 True/False 및 0~1 사이의 수치로도 결과를 반환함
     // 영어 이외의 언어는 감지하지 못하여 영어로 번역 후에 텍스트를 검사함
     async violationDetect(value) {
+      console.log(
+        '배포시에는 본 콘솔출력문을 삭제하시오. violation detection activated',
+      )
       let values = {
         type: 'You have to translate my message into English',
-        question: value,
+        question: value.text,
       }
       await this.qna(values)
       const violationAI = await openai.createModeration({
         input: this.answer,
       })
       let result = violationAI.data.results
-      console.log(result)
+      console.log(`배포시에는 본 콘솔출력문을 삭제하시오. ${result}`)
       this.answer = result
     },
 
@@ -76,17 +80,6 @@ export const useAiAssist = defineStore({
       let result = coverLetter.data.choices[0].message.content
       console.log(result)
     },
-
-    // async imageGenerator(values) {
-    //   const response = await openai.createImage({
-    //     prompt:
-    //       'a software developer suffering from unexpected errors on his computer screen',
-    //     n: 1,
-    //     size: '512x512',
-    //   })
-    //   let image_url = response
-    //   console.log(image_url)
-    // },
   },
   persist: {
     enable: true,
