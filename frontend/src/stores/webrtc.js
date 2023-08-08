@@ -23,9 +23,10 @@ export const usewebRtcStore = defineStore({
     isHost : false,
     rule: '모두 열공해서 합격합시다 Ψ(￣∀￣)Ψ',
     backImgFile: null,
-    roomKeywords : [],
+    roomTags : [],
 
     /// 참여시 사용할 것
+    isMaking: false,
     inputPassword: null,
 
     realname: useUsersStore().user.realname,
@@ -43,6 +44,13 @@ export const usewebRtcStore = defineStore({
 
   }),
   actions: {
+    isMakingTrue(){
+      this.isMaking = true
+    },
+    isMakingFalse(){
+      this.isMaking = false
+    },
+
     creatorIsHost(){
       this.isHost = true
     },
@@ -88,8 +96,8 @@ export const usewebRtcStore = defineStore({
     updateRule(newRule){
       this.rule = newRule
     },
-    updateRoomKeywords(newKeywords){
-      this.roomKeywords = newKeywords
+    updateRoomTags(newTags){
+      this.roomTags = newTags
     },
     
     //  방 생성시에 roomId를 모르고 있으므로 그 값을 적용시킴
@@ -138,15 +146,15 @@ export const usewebRtcStore = defineStore({
       }
     },
     
-    async getEveryRoomKeywords() {
+    async getEveryRoomTags() {
       try{
         // const response = axios.get('http://54.180.9.43:8080/rooms/list/')
-        console.log('getEveryRoomKeywords 내부1')
+        console.log('getEveryRoomTags 내부1')
         // const response = await axios.get('http://localhost:8080/rooms/list')
-        console.log('getEveryRoomKeywords 내부2')
+        console.log('getEveryRoomTags 내부2')
         // this.roomList = response.data.roomList
         console.log(this.roomList)
-        console.log('getEveryRoomKeywords 내부3')
+        console.log('getEveryRoomTags 내부3')
       }
       catch(error){
         console.log('getRtcRooms내부 오류')

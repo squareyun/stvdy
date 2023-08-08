@@ -1,39 +1,32 @@
-<!-- <script setup>
-
-</script>
-
-<template>
-  <div>
-    메인.vue
-  </div>
-</template> -->
 <script setup>
   import SideBar from '@/components/SideBar.vue'
   import { ref, computed, watch, onMounted, onBeforeMount } from 'vue'
   import { useRouter } from "vue-router"
   import { usewebRtcStore } from "@/stores"
   import { useQuestionsStore } from "@/stores"
-  import { storeToRefs } from 'pinia';
-
+  // import { storeToRefs } from 'pinia';
   import axios from 'axios'
 
   const webRtcStore = usewebRtcStore()
   const questionsStore = useQuestionsStore()
-
-
-  // const roomList = ref(webRtcStore.roomList)
   const router = useRouter();
-
+  
   ////////////////
   // 화상 회의 방과 관련된 것들
+  // const roomList = ref(webRtcStore.roomList)
+  const roomList = computed(() => webRtcStore.roomList)
+  const roomListSample = ref([])
+
   const title = ref(null)
   const isRoomInfo = ref(false)
   const selectedRoom = ref(null)    // 선택한 방의 정보
   const selectedRoomPw = ref(null)  // 선택한 방의 비밀번호
   const inputPw = ref(null)         // 선택한 방 입장시 입력하는 비밀번호
   const isSeeInputPw = ref(false)
+  const isHost = ref(false)
 
-  const everyRoomKeywords = ref([])
+
+  const everyRoomTags = ref([])
   ////////////////
 
   ////////////////
@@ -42,84 +35,38 @@
   // const questions = ref(questionsStore.questions);
   const questions = computed(() => questionsStore.questions)
   const questionsSample = ref([])
-  // questionsStore.getAll();
   ////////////////
 
-  // onMounted(() => {
-  //   webRtcStore.getRtcRooms()
-  //   questionsStore.getAll()   // 모든 질문을 가지고 옴.
-  //   webRtcStore.getEveryRoomKeywords()
-  //   extractSomeQuestions()
-  // })
 
-  // onBeforeMount(() => {
-  //   webRtcStore.getRtcRooms()
-  //   questionsStore.getAll()   // 모든 질문을 가지고 옴.
-  //   webRtcStore.getEveryRoomKeywords()  // 230808 현재는 제대로 구현되어있지 않음
-  //   extractSomeRooms()
-  //   extractSomeQuestions()
-  // })
   onBeforeMount(async () => {
     await webRtcStore.getRtcRooms()
-    questionsStore.getAll()
-    await webRtcStore.getEveryRoomKeywords()
+    questionsStore.getAll()                 // 모든 질문을 가지고 옴.
+    await webRtcStore.getEveryRoomTags()    // 230808 현재는 제대로 구현되어있지 않음
     extractSomeRooms()
     extractSomeQuestions()
+    webRtcStore.notIsHost()
   })
 
 
   onMounted(() => {
   })
 
-  const roomList = computed(() => webRtcStore.roomList)
-  const roomListSample = ref([])
-  
-  
-
   watch(() => webRtcStore.roomList, (newRoomList, oldRoomList) => {
     if (newRoomList) {
-      console.log('흐으음방리스트')
-      console.log(roomList.value)
     }
   })
   watch(() => questionsStore.questions, (newRoomList, oldRoomList) => {
     if (newRoomList) {
-      console.log('흐으음퀘스쳔')
-      console.log(questions.value)
     }
   })
 
-
   // // 방 몇 개를 추출 하는 함수
-  // function extractSomeRooms() {
-  //   const tmpRoomList = []
-  //   console.log('방길이',roomList.value.length)
-  //   if(roomList.value.length > 3){
-  //     for (let i=0; i<3; i++) {
-  //       const randomNum = Math.floor(Math.random() * roomList.value.length)
-  //       if (tmpRoomList.indexOf(roomList.value[randomNum]) === -1) {
-  //         console.log('방 여기가문젠가?1')
-  //         tmpRoomList.push(roomList.value[randomNum])
-  //         console.log('방 여기가문젠가?2')  
-  //       }
-  //     }
-  //     roomListSample.value = tmpRoomList
-  //   }
-  //   else{
-  //     roomListSample.value = roomList.value
-  //   }
-  //   console.log('방들 들',roomListSample.value)
-  //   console.log('방들 들0번',roomListSample.value[0]) 
-  // }
   function extractSomeRooms() {
     const tmpRoomList = []
-    console.log('방길이', roomList.value.length)
     if (roomList.value.length > 3) {
       const usedIndexes = []
-
       for (let i = 0; i < 3; i++) {
         let randomNum
-
         do {
           randomNum = Math.floor(Math.random() * roomList.value.length)
         } while (usedIndexes.includes(randomNum))
@@ -127,40 +74,19 @@
         usedIndexes.push(randomNum)
         tmpRoomList.push(roomList.value[randomNum])
       }
-
       roomListSample.value = tmpRoomList
     } else {
       roomListSample.value = roomList.value
     }
   }
 
-
   // // 질문 글 몇개를 추출 하는 함수
-  // function extractSomeQuestions() {
-  //   const tmpQuestionsSample = []
-  //   console.log('퀘스쳔길이',questions.value.length)
-  //   if(questions.value.length > 3){
-  //     for (let i=0; i<3; i++) {
-  //       const randomNum = Math.floor(Math.random() * questions.value.length)
-  //       if (tmpQuestionsSample.indexOf(questions.value[randomNum]) === -1) {
-  //         tmpQuestionsSample.push(questions.value[randomNum])
-  //       }
-  //     }
-  //     questionsSample.value = tmpQuestionsSample
-  //   }
-  //   else{
-  //     questionsSample.value = questions.value
-  //   }
-  // }
   function extractSomeQuestions() {
     const tmpQuestionsSample = []
-    console.log('퀘스쳔길이', questions.value.length)
     if (questions.value.length > 3) {
       const usedIndexes = []
-
       for (let i = 0; i < 3; i++) {
         let randomNum
-
         do {
           randomNum = Math.floor(Math.random() * questions.value.length)
         } while (usedIndexes.includes(randomNum))
@@ -176,16 +102,15 @@
   }
 
 
-
+  // 선택한 방에 참여하는 함수
   function joinTheRoom(room) {
     if(selectedRoomPw.value != inputPw.value){   // 비밀번호 불일치시
-      alert(selectedRoomPw.value+'이거랑'+inputPw.value,'ㅇㅋ비밀번호가 일치하지 않습니다.')
+      alert('비밀번호가 일치하지 않습니다.')
       return
     } 
     console.log('되긴되나',room)
 
     webRtcStore.joinTheRoom(room)
-
   }
 
   /// 방 입장 전 방 정보 모달 창 켜기
@@ -209,6 +134,7 @@
     console.log(inputPw.value)
   }
 
+  // 방 모달 창에서의 비밀번호 보기 여부
   function updateIsSeeInputPw(event) {
     isSeeInputPw.value = event.target.checked
   }
@@ -232,13 +158,25 @@
   // }
 
   //////////////////////////////////
-  //
+  // 질문글의 내용을 일부만 보여주기 위한 함수
   function limitQesCon(str, maxLength) {
     return str.length > maxLength ? str.slice(0, maxLength-3) + '...' : str;
   }
 
+  // 해당 질문글을 보러 가는 글
+ function goThisQuestion(question) {
+  console.log('질문정보', question)
+  router.push({
+    name:'qtndetail',
+    params: { 
+      // roomName: encodeURIComponent(question.id),
+      roomName: question.id,
+    },
+  })
+ }
 
 </script>
+
 
 <template>
   <main style="color: white;">
@@ -264,8 +202,8 @@
     <div style="margin-top: 30px; margin-left: 100px;"> <!-- 임시로 마진값을 줘서 띄움 -->
       <p>상단</p>
       <div>상단 왼쪽 = 인기 키워드
-          <div v-for="(keyword,i) in everyRoomKeywords" :key="i">
-            {{ keyword }}
+          <div v-for="(tag,i) in everyRoomTags" :key="i">
+            {{ tag }}
           </div>
           <div>상단 오른쪽 = (배너)들어갈 자리 </div>
       </div>
@@ -291,7 +229,7 @@
       <div style="display:flex">
         <div v-for="question in questionsSample" :key="question.id" style="border-color: white; border: 1px solid white; ">
           <!-- <p>{{ question.id }}</p> -->
-          <h3>{{ question.title }}</h3>
+          <h3 @click="goThisQuestion(question)">{{ question.title }}</h3>
           <p>{{ limitQesCon(question.detail, 100) }}</p>
           <!-- <p>{{ question.regist_time }}</p> -->
         </div>

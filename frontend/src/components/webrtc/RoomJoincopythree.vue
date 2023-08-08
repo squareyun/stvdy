@@ -7,8 +7,7 @@
   import { useRouter } from "vue-router"
   import { usewebRtcStore } from "@/stores"
 
-  // const store = usewebRtcStore()
-  const webrtcstore = usewebRtcStore()
+  const store = usewebRtcStore()
   const router = useRouter()
 
   ///////////////////////////////////////////
@@ -43,19 +42,19 @@
   const subscribers = ref([]) //
 
   // Join form
-  const mySessionId = ref(decodeURIComponent(webrtcstore.mySessionId))  // 인코딩값을 디코딩한 해줘서 받아야만 작동가능함
-  // const mySessionId = ref(webrtcstore.mySessionId)
+  const mySessionId = ref(decodeURIComponent(store.mySessionId))  // 인코딩값을 디코딩한 해줘서 받아야만 작동가능함
+  // const mySessionId = ref(store.mySessionId)
   // 만약 인코딩해서 받은 값이 아니라면, 디코딩하지 않은 상태로 받기 위함.
-  if (webrtcstore.mySessionId === encodeURIComponent(webrtcstore.mySessionId)) {
-    mySessionId.value = webrtcstore.mySessionId
+  if (store.mySessionId === encodeURIComponent(store.mySessionId)) {
+    mySessionId.value = store.mySessionId
   }
-  const myUserName = ref(webrtcstore.myUserName)
+  const myUserName = ref(store.myUserName)
 
-  const roomId = ref(webrtcstore.roomId)
+  const roomId = ref(store.roomId)
   
   // 방에서 최대 인원수
-  const quota = ref(webrtcstore.quota)
-  const isHost =  ref(webrtcstore.isHost)
+  const quota = ref(store.quota)
+  const isHost =  ref(store.isHost)
 
   /////////////////////채팅창을 위한 부분임.
   const inputMessage = ref("")
@@ -75,7 +74,7 @@
   ///////////////////
   // 방 탈퇴를 위한 변수들
   // const peopleNo = ref(1)
-  const peopleNo = ref(webrtcstore.peopleNo)
+  const peopleNo = ref(store.peopleNo)
   const peopleNoComputed = computed(() => (peopleNo.value));
   ///////////////////
 
@@ -96,12 +95,12 @@
   //// 페이지 벗어나면 
   onBeforeUnmount(()=>{
     leaveSession()
-    webrtcstore.roomExit(roomId.value)  // 방나가면 방나갔음을 백엔드로 전송.
+    store.roomExit(roomId.value)  // 방나가면 방나갔음을 백엔드로 전송.
     /////////////////////////////////////////////
     // 방을 나가는데 사람이 없으면 방을 폐쇄할 거임.
     // peopleNo.value 를 subscriber를 이용하게된다면 너무나 위험하군....
     // if(peopleNoComputed.value == 1){  // 사람 수가 1이면 결국 혼자인거니까.
-    //   webrtcstore.shutDownRoom(roomId.value)
+    //   store.shutDownRoom(roomId.value)
     // }
     /////////////////////////////////////////////
   })
@@ -232,47 +231,38 @@
   */
    //// Edited code with Beom's code
   async function createToken(mySessionId, roomId) {
-    // 방 생성과 참가를 가르는 변수
-    const isMaking = webrtcstore.isMaking // 해당 참여자의 isMaking의 값이 true인지 false인지 확인함,
     /////////////////////////////////////////////////////
     // 방 참가시에 관련한 것
     const roomNo = roomId  // join하면서 
-    const userNo = webrtcstore.userNo // 임시로 랜덤 값으로 보내는 중
-    const inputPassword = webrtcstore.inputPassword
+    const userNo = store.userNo // 임시로 랜덤 값으로 보내는 중
+    const inputPassword = store.inputPassword
     ////////////////////////////////////////////////////
     // 방 생성시에 관련한 것
-    // const userNo = webrtcstore.userNo
-    const endHour = webrtcstore.endHour
-    const endMinute = webrtcstore.endMinute
-    const quota = webrtcstore.quota
-    const isPrivacy = webrtcstore.isPrivacy
-    const password = webrtcstore.password
-    const backImgFile = webrtcstore.backImgFile
-    const rule = webrtcstore.rule
-    const roomTags = webrtcstore.roomTags
+    // const userNo = store.userNo
+    const endHour = store.endHour
+    const endMinute = store.endMinute
+    const quota = store.quota
+    const isPrivacy = store.isPrivacy
+    const password = store.password
+    const backImgFile = store.backImgFile
+    const rule = store.rule
+    const roomTags = store.roomTags
     ////////////////////////////////////////////////////
-    if(!isMaking){
-      try{
-        console.log(roomNo, userNo, inputPassword)
-        // const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/' + roomNo, {userNo: userNo, password: inputPassword}, {
-        const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/' + roomNo, {userNo: userNo, password: inputPassword}, {
-        headers: { 'Content-Type': 'application/json', },
-        });
-        /////////////////////////////////
-        // 유저 누구누구 있는지 받아와야함.
-        ////////////////////////////////
-        console.log('조인룸 내부 해치웠나?1')
-        console.log('joinRoom 리스폰스데이터 잘 받음',response.data)
-        webrtcstore.isMakingFalse()
-        return response.data
-      }
-      catch(error){
-        console.error('만들어진 방이없어서 발생한 에러:', error);
-        webrtcstore.isMakingFalse()
-        leaveSession()
-      }
+    try{
+      console.log(roomNo, userNo, inputPassword)
+      // const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/' + roomNo, {userNo: userNo, password: inputPassword}, {
+      const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/' + roomNo, {userNo: userNo, password: inputPassword}, {
+      headers: { 'Content-Type': 'application/json', },
+      });
+      /////////////////////////////////
+      // 유저 누구누구 있는지 받아와야함.
+      ////////////////////////////////
+      console.log('조인룸 내부 해치웠나?1')
+      console.log('joinRoom 리스폰스데이터 잘 받음',response.data)
+      return response.data
     }
-    else{
+    catch(error){
+      console.error('만들어진 방이없어서 발생한 에러:', error);
       try{
         const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/add', 
         {userNo: userNo, title: mySessionId, endHour: endHour, endMinute: endMinute, quota: quota, 
@@ -283,15 +273,12 @@
         console.log('크리에이트룸 내부 해치웠나?1')
         console.log('이것이 만든 방의 리스폰스데이터 \n', response.data)
         /////////////////////////////////////////////////
-        // 방 ID 받아와야함. 그리고 그걸로 webrtcstore및 여기 roomId.value에 저장할 것.
+        // 방 ID 받아와야함. 그리고 그걸로 store및 여기 roomId.value에 저장할 것.
         /////////////////////////////////////////////////
-        webrtcstore.isMakingFalse()
         return response.data.token;
       }
       catch(error){
         console.error("방생성에도 오류 났음.",error);
-        webrtcstore.isMakingFalse()
-        leaveSession()
       }
     }
   }
@@ -483,7 +470,7 @@
   // 탭 메뉴 관련
   const funcTabs = ref(['참여멤버', '메시지', '그라운드 룰', '공유'])
   const activeFuncTab = ref(0)
-  const roomRule = ref(webrtcstore.rule)
+  const roomRule = ref(store.rule)
 
   function changeTab(index) {
     activeFuncTab.value = index
@@ -504,7 +491,7 @@
   }
   
   function shutDownRoom(roomId) {
-    webrtcstore.shutDownRoom(roomId)
+    store.shutDownRoom(roomId)
   }
 
 </script>

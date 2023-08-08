@@ -10,17 +10,18 @@
   const localUser = usersStore.user
   console.log(localUser)
 
-  const store = usewebRtcStore()
+  // const store = usewebRtcStore()
+  const webrtcstore = usewebRtcStore()
   const userstore = useUsersStore()
   const router = useRouter()
   
   // 방 생성에 사용할 변수들 
-  const myUserName = ref(store.myUserName)
+  const myUserName = ref(webrtcstore.myUserName)
   // const myUserName = ref(localUser.username)
-  const mySessionId = ref(store.mySessionId)
+  const mySessionId = ref(webrtcstore.mySessionId)
   
   // 방 이미지 관련 내용
-  const backImgFile = ref(store.backImgFile)
+  const backImgFile = ref(webrtcstore.backImgFile)
   const imgPreviewUrl = ref(null)
 
   // 방 시간 관련 내용
@@ -28,19 +29,19 @@
   const hours = ref([...Array(25).keys()])
   // const minutes = ref([...Array(60).keys()].map(minute=> minute.toString()))
   const minutes = ref([...Array(60).keys()])
-  const endHour = ref(store.endHour)
-  const endMinute = ref(store.endMinute)
+  const endHour = ref(webrtcstore.endHour)
+  const endMinute = ref(webrtcstore.endMinute)
   const timeSet = ref(false)
   // 방 비공개 관련 내용
-  const isPassword = ref(store.isPassword)
-  const password = ref(store.password)
+  const isPassword = ref(webrtcstore.isPassword)
+  const password = ref(webrtcstore.password)
   // 방 인원설정 관련 내용
-  const quota = ref(store.quota)
+  const quota = ref(webrtcstore.quota)
   // 방장의 방장여부 등록
-  const isHost = ref(store.isHost)
+  const isHost = ref(webrtcstore.isHost)
 
   // 방 참여자들의 캠 전체 비활성화 여부를 의미
-  const isPrivacy = ref(store.isPrivacy)
+  const isPrivacy = ref(webrtcstore.isPrivacy)
 
   onMounted(() => {
     // creatorIsHost()
@@ -49,15 +50,15 @@
   //tiemSet이 flase면 종료시간 초기화.
   watch(timeSet, (newtimeSet) => {
     if (!newtimeSet) {
-      store.updateEndHour(0);
+      webrtcstore.updateEndHour(0);
       endHour.value = 0;
-      store.updateEndMinute(0);
+      webrtcstore.updateEndMinute(0);
       endMinute.value = 0;
     }
     else{
-      store.updateEndHour(0);
+      webrtcstore.updateEndHour(0);
       endHour.value = 0;
-      store.updateEndMinute(0);
+      webrtcstore.updateEndMinute(0);
       endMinute.value = 1;
     }
   })
@@ -98,60 +99,62 @@
       isPrivacySpan.innerText = "미설정"
     }
   })
-  // isPassword가 변동되면 store의 isPassword도 변동
+  // isPassword가 변동되면 webrtcstore의 isPassword도 변동
   
   // 방 생성에 사용할 함수들
   function updateMyuserName(event) {
-    store.updateMyUserName(event.target.value)    // pinia에 의해 dispatch로 접근X
+    webrtcstore.updateMyUserName(event.target.value)    // pinia에 의해 dispatch로 접근X
     myUserName.value = event.target.value
   }
 
   function updateMysessionId(event) {
-    store.updateMySessionId(event.target.value)
+    webrtcstore.updateMySessionId(event.target.value)
     mySessionId.value = event.target.value
   }
   
   function updateEndHour(event) {
-    store.updateEndHour(Number(event.target.value))
+    webrtcstore.updateEndHour(Number(event.target.value))
     endHour.value = Number(event.target.value)
   }
   function updateEndMinute(event) {
-    store.updateEndMinute(Number(event.target.value))
+    webrtcstore.updateEndMinute(Number(event.target.value))
     endMinute.value = Number(event.target.value)
   }
   
   function updateIsPassword(event) {
-    store.updateIsPassword(event.target.checked)
+    webrtcstore.updateIsPassword(event.target.checked)
     isPassword.value = event.target.checked
-    password.value = store.password
+    password.value = webrtcstore.password
   }
   function updateIsPrivacy(event) {
-    store.updateIsPrivacy(event.target.checked)
+    webrtcstore.updateIsPrivacy(event.target.checked)
     isPrivacy.value = event.target.checked
   }
 
   function updatePassword(event){
-    store.updatePassword(event.target.value)
+    webrtcstore.updatePassword(event.target.value)
     password.value = event.target.value
   }
 
   function updateQuota(event){
-    store.updateQuota(Number(event.target.value))
+    webrtcstore.updateQuota(Number(event.target.value))
     quota.value = Number(event.target.value)
   }
   
-  function creatorIsHost() {  // store의 isHost값을 true로 만들어줌
-    store.creatorIsHost()
+  function creatorIsHost() {  // webrtcstore의 isHost값을 true로 만들어줌
+    webrtcstore.creatorIsHost()
     isHost.value=true
   }
 
   function joinSession() {
 
-    if(!store.myUserName || !store.mySessionId){
+    if(!webrtcstore.myUserName || !webrtcstore.mySessionId){
       alert("이름과 방제목을 작성해주세요.")
       return
     }
-    creatorIsHost() // 방을 만듦과 동시에 isHost를 true로 만듬
+    creatorIsHost() // 방장권한 부여
+    webrtcstore.isMakingTrue() // 방을 만들수 있는 권한 부여
+    webrtcstore
     router.push({
       name:'roomJoin',
       params: { 
@@ -161,40 +164,40 @@
   }
 
   // 키워드 관련 함수
-  const roomKeywords = ref([])
-  const roomKeyword = ref(null)
+  const roomTags = ref([])
+  const roomTag = ref(null)
   // 키워드 추가하는 함수
-  function addKeyword(event) {
+  function addTag(event) {
     event.preventDefault();
-    // if(roomKeyword.value in roomKeywords.value){
-    if(roomKeywords.value.includes(roomKeyword.value)){
+    // if(roomTag.value in roomTags.value){
+    if(roomTags.value.includes(roomTag.value)){
       alert('이미 추가된 키워드입니다.')
-      roomKeyword.value = null  
+      roomTag.value = null  
       return
     }
-    // roomKeyword는 최대 3개만 사용할 수 있게하기 위해
-    else if(roomKeyword.value && roomKeywords.value.length < 3){
-      roomKeywords.value.push(roomKeyword.value)
-      store.updateRoomKeywords(roomKeyword.value)
+    // roomTag는 최대 3개만 사용할 수 있게하기 위해
+    else if(roomTag.value && roomTags.value.length < 3){
+      roomTags.value.push(roomTag.value)
+      webrtcstore.updateRoomTags(roomTag.value)
     }
-    else if(!roomKeyword.value){
+    else if(!roomTag.value){
       alert('추가할 키워드명을 입력해주세요')
     }
     else{
       alert('키워드를 더 추가할 수 없습니다.')
     }
-    roomKeyword.value = null
+    roomTag.value = null
   }
   // 키워드 삭제하는 함수
-  function removeKeyword(index) {
-    roomKeywords.value.splice(index, 1)
-    store.updateRoomKeywords(roomKeyword.value)
+  function removeTag(index) {
+    roomTags.value.splice(index, 1)
+    webrtcstore.updateRoomTags(roomTag.value)
   }
   // 키워드는 최대 15글자.
   function limitInput() {
    const maxLength = 15
-    if (roomKeyword && roomKeyword.value && roomKeyword.value.length > maxLength) {
-      roomKeyword.value = roomKeyword.value.slice(0, maxLength)
+    if (roomTag && roomTag.value && roomTag.value.length > maxLength) {
+      roomTag.value = roomTag.value.slice(0, maxLength)
     }
   }
 
@@ -202,7 +205,7 @@
   // 이미지 업로드 및 미리보기 함수
   function readInputImage(event){
     // console.log(event.target.files[0])
-    store.updateBackImg(event.target.files[0])
+    webrtcstore.updateBackImg(event.target.files[0])
     backImgFile.value = event.target.files[0]
 
     // 이미지 파일을 데이터 Url로 변환하기
@@ -215,9 +218,9 @@
     reader.readAsDataURL(backImgFile.value)
   }
 
-  const rule = ref(store.rule)
+  const rule = ref(webrtcstore.rule)
   function updateRule(event){
-    store.updateRule(event.target.value)
+    webrtcstore.updateRule(event.target.value)
     rule.value = event.target.value
   }
 </script>
@@ -254,17 +257,17 @@
         </p> -->
         <!-- 키워드 설정 -->
         <p>
-          <form @submit="addKeyword"> <!-- 메서드 생성 -->
+          <form @submit="addTag"> <!-- 메서드 생성 -->
             <div>
-              <label for="keyword">키워드</label>
-              <input id="keyword" type="text" v-model="roomKeyword" @input="limitInput">
+              <label for="tag">키워드</label>
+              <input id="tag" type="text" v-model="roomTag" @input="limitInput">
             </div>
             <button type="submit">키워드 추가</button>
           </form>
-          <span v-for="(keyword, i) in roomKeywords" :key="i">
-            {{ keyword }}
+          <span v-for="(tag, i) in roomTags" :key="i">
+            {{ tag }}
             <!-- <button id="kwDelBtn{{i}}">X</button> -->
-            <button @click="removeKeyword(i)">X</button>
+            <button @click="removeTag(i)">X</button>
           </span>
         </p>
         <!-- 비밀번호 설정여부 -->
