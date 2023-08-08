@@ -3,8 +3,8 @@ import { Configuration, OpenAIApi } from 'openai'
 
 const configuration = new Configuration({
   // 아래의 organization과 key는 절대 git에 commit 금지!!
-  organization: '',
-  apiKey: '',
+  organization: import.meta.env.VITE_organization_key,
+  apiKey: import.meta.env.VITE_openAI_key,
   // 위의 organization과 key는 절대 git에 commit 금지!!
   // commit 전 공란으로 두기 - 차후 별도의 파일로 관리 예정
 })
@@ -38,7 +38,7 @@ export const useAiAssist = defineStore({
 
     // 아래기능은 규정위반을 감지하는 기능
     // string 형태의 텍스트를 매개변수로 받으면 해당 텍스트의 폭력성, 선정성, 자해가능성
-    // 등을 감지하여 True/False 및 0~1 사이의 수치로도 결과를 반환함
+    // 등을 감지하여 각 카테고리 True/False 및 0~1 사이의 수치로도 결과를 반환함
     // 영어 이외의 언어는 감지하지 못하여 영어로 번역 후에 텍스트를 검사함
     async violationDetect(value) {
       let values = {
@@ -53,6 +53,40 @@ export const useAiAssist = defineStore({
       console.log(result)
       this.answer = result
     },
+
+    // 아래기능은 자기소개서 답변을 분석하는 기능
+    // question과 answer를 담은 values를 매개변수로 보내면 질문에 따른 답변을 분석하고
+    // 개선 방향을 제시해줌
+    async coverLetterAnalyze(values) {
+      console.log('function activated')
+      const coverLetter = await openai.createChatCompletion({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'system',
+            content:
+              '자기소개서 질문과 답변을 줄거야. 답변을 분석해서 어떻게 개선할 수 있을지 알려줘',
+          },
+          {
+            role: 'user',
+            content: `질문: ${values.question} 답변: ${values.answer}`,
+          },
+        ],
+      })
+      let result = coverLetter.data.choices[0].message.content
+      console.log(result)
+    },
+
+    // async imageGenerator(values) {
+    //   const response = await openai.createImage({
+    //     prompt:
+    //       'a software developer suffering from unexpected errors on his computer screen',
+    //     n: 1,
+    //     size: '512x512',
+    //   })
+    //   let image_url = response
+    //   console.log(image_url)
+    // },
   },
   persist: {
     enable: true,
