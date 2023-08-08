@@ -18,3 +18,5 @@ INSERT INTO user_authority (user_no, authority_name) VALUES (2, 'ROLE_USER');
 ALTER TABLE LIKES DROP FOREIGN KEY FK3p9ex2qw452lgox5sboky1e98;
 ALTER TABLE LIKES DROP FOREIGN KEY FKnbhujedlj8a26j6mj51fkelve;
 ALTER TABLE LIKES DROP INDEX `UK_km61ii1hqf3jniq96ukax3839`, DROP INDEX `UK_4ro7n9gk362k031ltbevy40oi`;
+
+INSERT INTO report_category_ns VALUES ('욕설'), ('음란'), ('스터디룸 룰 미준수');
