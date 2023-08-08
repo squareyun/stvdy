@@ -68,10 +68,11 @@ public class AlarmService {
 
 	public long countUnReadAlarms(List<AlarmListResponseDto> alarmList) {
 		return alarmList.stream()
-			.filter(alarm -> !alarm.getIsRead()) // isRead가 false인 것들만 필터링
+			.filter(alarm -> !alarm.getIsRead() && alarm.getUserNo() != 1 && alarm.getUserNo() != 2)
 			.count();
 	}
 
+	@Transactional
 	public AlarmDetailResponseDto getAlarmDetail(Integer alarmId) {
 
 		String userEmail = SecurityUtil.getCurrentUsername()
