@@ -64,4 +64,12 @@ public class AlarmService {
 		);
 	}
 
+	//countUnReadAlarms
+
+	public long countUnReadAlarms(List<AlarmListResponseDto> alarmList) {
+		return alarmList.stream()
+			.filter(alarm -> !alarm.getIsRead()) // isRead가 false인 것들만 필터링
+			.count();
+	}
+
 }

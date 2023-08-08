@@ -58,10 +58,16 @@ public class AlarmController {
 		Map<String, Object> resultMap = new HashMap<>();
 		HttpStatus status = null;
 		try {
+			long unreadCnt = 0;
 			List<AlarmListResponseDto> alarmList = alarmService.getAlarmList();
+			System.out.println("리스트 사이즈는 과연!!" + alarmList.size());
+			if (alarmList.size() > 0) {
+				unreadCnt = alarmService.countUnReadAlarms(alarmList);
+			}
 			logger.info("{} alarm 목록 조회 성공", alarmList.size());
 			resultMap.put("message", MessageFormat.SUCCESS);
 			resultMap.put("alarmList", alarmList);
+			resultMap.put("unreadCnt", unreadCnt);
 			status = HttpStatus.ACCEPTED;
 		} catch (Exception e) {
 			logger.error("alarm 목록 조회 실패: {}", e.getMessage());
