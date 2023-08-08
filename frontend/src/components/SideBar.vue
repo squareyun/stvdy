@@ -70,7 +70,7 @@ const logout = async () => {
       </svg>
       질문 게시판
     </router-link>
-    <div class="div-line"></div>
+    <div class="side-bar-div-line"></div>
     <router-link
       to="mypage"
       id="side-lecture">
@@ -236,10 +236,10 @@ path {
   fill: var(--hl-light);
 }
 
-.div-line {
+.side-bar-div-line {
   width: 120px;
   height: 1px;
-  margin-left: 20px;
+  margin-left: 10px;
   margin-top: 10px;
   margin-bottom: 30px;
 

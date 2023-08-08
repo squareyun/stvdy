@@ -164,7 +164,7 @@ async function onSubmit(values) {
   margin-top: 40px;
 
   /* text-align: center; */
-  font-family: 'ASDGothicT';
+  font-family: 'ASDGothicUL';
 }
 
 .field {

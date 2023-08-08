@@ -7,8 +7,8 @@
 }
 
 @font-face {
-  font-family: 'ASDGothicT';
-  src: url('@/assets/fonts/AppleSDGothicNeoT.ttf') format('truetype');
+  font-family: 'ASDGothicUL';
+  src: url('@/assets/fonts/AppleSDGothicNeoUL.ttf') format('truetype');
   font-weight: normal;
 }
 

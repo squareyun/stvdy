@@ -247,7 +247,8 @@ const answerQtn = () => {
 
 <style>
 #question-content-id {
-  font-family: 'ASDGothicT';
+  font-family: ASDGothicUL
+    ';
 }
 #question-question-content-title {
   display: inline-block;
@@ -259,7 +260,9 @@ const answerQtn = () => {
 
   color: var(--hl-light80);
   font-size: 1.4rem;
-  font-family: 'ASDGothicM';
+  font-family: '
+    ASDGothicM
+    ';
 
   border-bottom: 7px solid var(--font30);
 }
@@ -269,7 +272,9 @@ const answerQtn = () => {
   margin-top: 5px;
 
   font-size: 1rem;
-  font-family: 'ASDGothicM';
+  font-family: '
+    ASDGothicM
+    ';
 }
 
 #question-detail-main {
@@ -296,7 +301,9 @@ const answerQtn = () => {
   white-space: pre-wrap;
 
   color: var(--hl-light);
-  font-family: 'ASDGothicM';
+  font-family: '
+    ASDGothicM
+    ';
   font-size: 1rem;
 }
 
@@ -359,7 +366,9 @@ const answerQtn = () => {
   width: 60px;
   height: 30px;
 
-  background-image: url('/authorImage.png');
+  background-image: url(' /
+    authorImage.png
+    ');
   background-size: cover;
   background-position: center;
   cursor: pointer;
@@ -376,7 +385,7 @@ const answerQtn = () => {
   margin-left: 7px;
 
   color: var(--hl-light);
-  font-family: 'ASDGothicT';
+  font-family: 'ASDGothicUL';
 }
 
 #wrote-time {
