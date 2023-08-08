@@ -113,10 +113,10 @@ const answerQtn = () => {
 
 <template>
   <div v-if="question">
-    <span class="content-title">질문</span>
+    <span class="question-content-title">질문</span>
     <span id="question-content-id">#{{ question.id }}</span>
-    <div class="content">
-      <span id="question-content-title">
+    <div class="question-content">
+      <span id="question-question-content-title">
         {{ question.title }}
         <span id="question-info">
           #{{ question.category }} · 조회수 {{ question.hit }}
@@ -191,7 +191,7 @@ const answerQtn = () => {
             <div id="author-image"></div>
             <div id="author-name">
               {{ ans.regist_time }}
-              <span id="wrote-time">{{ question.userNickname }}</span>
+              <span id="wrote-time">{{ ans.userNickname }}</span>
             </div>
           </div>
         </tr>
@@ -249,7 +249,7 @@ const answerQtn = () => {
 #question-content-id {
   font-family: 'ASDGothicT';
 }
-#question-content-title {
+#question-question-content-title {
   display: inline-block;
   height: 30px;
   width: 900px;

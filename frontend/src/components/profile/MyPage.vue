@@ -42,15 +42,15 @@ const schema = Yup.object().shape({
 
 <template>
   <div>
-    <span class="content-title">프로필</span>
-    <div class="content">
+    <span class="mypage-content-title">프로필</span>
+    <div class="mypage-content">
       <div id="user-background-img"></div>
       <div id="user-profile-img"></div>
       <h1 id="user-name">{{ user.username }}#{{ user.id }}</h1>
       <div id="user-edit">
         <Form
           autocomplete="off"
-          @submit="onSubmit"
+          @submit="onSubmit()"
           :validation-schema="schema"
           v-slot="{ errors, isSubmitting }">
           <p class="field-name">
@@ -93,7 +93,7 @@ const schema = Yup.object().shape({
       <div id="edit-menu">
         <a href="">대표 이미지(스터디룸) 변경</a>
         <a href="">프로필 이미지 변경</a>
-        <router-link to="/changepwd">비밀번호 변경</router-link>
+        <router-link to="mypage/changepwd">비밀번호 변경</router-link>
       </div>
     </div>
     <RouterView />

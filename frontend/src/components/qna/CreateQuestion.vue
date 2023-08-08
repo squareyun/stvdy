@@ -51,8 +51,8 @@ async function onSubmit(values) {
 
 <template>
   <div>
-    <span class="content-title">질문 작성</span>
-    <div class="content">
+    <span class="question-content-title">질문 작성</span>
+    <div class="question-content">
       <Form
         id="question-form"
         @submit="onSubmit"

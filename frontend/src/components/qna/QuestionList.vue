@@ -52,7 +52,7 @@ async function showDetail(id) {
 
 <template>
   <div>
-    <span class="content-title">질문 게시판</span>
+    <span class="question-content-title">질문 게시판</span>
     <router-link
       id="add-question"
       to="/createquestion">
