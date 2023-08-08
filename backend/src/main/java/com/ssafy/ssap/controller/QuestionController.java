@@ -57,11 +57,15 @@ public class QuestionController {
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);
 	}
 
+	/**
+	 * 질문 수정
+	 */
 	@PutMapping("/{questionNo}")
 	public ResponseEntity<Map<String, Object>> update(@PathVariable("questionNo") Integer questionNo,
 		@RequestBody QuestionCreateDto questionCreateDto) {
 		Map<String, Object> resultMap = new HashMap<>();
-		HttpStatus status = null;
+		HttpStatus status;
+
 		try {
 			Integer updateQuestionId = questionService.update(questionNo, questionCreateDto);
 			logger.debug("{} 질문 수정 성공", updateQuestionId);
@@ -73,13 +77,18 @@ public class QuestionController {
 			status = HttpStatus.INTERNAL_SERVER_ERROR;
 		}
 
-		return new ResponseEntity<Map<String, Object>>(resultMap, status);
+		return ResponseEntity.status(status).body(resultMap);
 	}
 
+	/**
+	 * 질문 삭제
+	 */
 	@DeleteMapping("/{questionNo}")
 	public ResponseEntity<Map<String, Object>> delete(@PathVariable("questionNo") Integer questionNo) {
+
 		Map<String, Object> resultMap = new HashMap<>();
-		HttpStatus status = null;
+		HttpStatus status;
+
 		try {
 			questionService.delete(questionNo);
 			logger.debug("{} 질문 삭제 성공", questionNo);
@@ -91,7 +100,7 @@ public class QuestionController {
 			status = HttpStatus.INTERNAL_SERVER_ERROR;
 		}
 
-		return new ResponseEntity<Map<String, Object>>(resultMap, status);
+		return ResponseEntity.status(status).body(resultMap);
 	}
 
 	@GetMapping("/{questionNo}")
