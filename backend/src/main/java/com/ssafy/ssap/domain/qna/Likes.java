@@ -1,5 +1,6 @@
 package com.ssafy.ssap.domain.qna;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ssafy.ssap.domain.user.User;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
@@ -44,4 +45,8 @@ public class Likes {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @Nullable
     private Answer answer;
+
+    public void updateIsGood(Boolean isGood) {
+        this.isGood = isGood;
+    }
 }

@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -39,6 +40,9 @@ public class Answer {
     @JoinColumn(name = "question_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Question question;
+
+    @Formula("(SELECT coalesce(SUM(case when l.is_good = 1 then 1 else -1 end), 0) FROM Likes l WHERE l.answer_id = id)")
+    private Integer answerScore;
 
     @NotNull
     @ManyToOne(fetch = LAZY)
