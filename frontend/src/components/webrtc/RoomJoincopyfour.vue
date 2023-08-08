@@ -7,7 +7,6 @@
   import MessageChat from "@/components/webrtc/MessageChat.vue";
   import { useRouter } from "vue-router"
   import { usewebRtcStore } from "@/stores"
-  import { storeToRefs } from 'pinia';
 
   // const store = usewebRtcStore()
   const webrtcstore = usewebRtcStore()
@@ -27,6 +26,8 @@
     }
   }
   ///////////////////////////////////////////
+
+
 
   axios.defaults.headers.post["Content-Type"] = "application/json;charset=utf-8";
   // 추후 배포와 관련해서 이부분에 대해서 설정을 할 필요가 있게 될것.
@@ -50,10 +51,14 @@
     mySessionId.value = webrtcstore.mySessionId
   }
   const myUserName = ref(webrtcstore.myUserName)
+
   const roomId = ref(webrtcstore.roomId)
+  // const roomId = computed(() => {webrtcstore.roomId})
+  
   // 방에서 최대 인원수
   const quota = ref(webrtcstore.quota)
   const isHost =  ref(webrtcstore.isHost)
+
   /////////////////////채팅창을 위한 부분임.
   const inputMessage = ref("")
   const messages = ref([])
@@ -71,8 +76,12 @@
   ////
   ///////////////////
   // 방 탈퇴를 위한 변수들
-  const isExitRoom = ref(webrtcstore.isExitRoom)  // leave
+  // const peopleNo = ref(1)
+  // const peopleNo = ref(webrtcstore.peopleNo)
+  // const peopleNoComputed = computed(() => (peopleNo.value));
   ///////////////////
+  const isLeavingSession = ref(false)
+
 
   onBeforeMount(() => {
     window.addEventListener("beforeunload",leaveSession)
@@ -88,7 +97,8 @@
 
   //// 페이지 벗어나면 
   onBeforeUnmount(()=>{
-    if(!isExitRoom.value){
+    if(!isLeavingSession.value){
+      webrtcstore.roomExit(roomId.value)  // 방나가면 방나갔음을 백엔드로 전송.
       // 방을 나가는데 사람이 없으면 방을 폐쇄할 거임.
       console.log('나감으로 방폐쇄1')
       if(subscribersComputed.value.length == 0){  // 다른사람이 없으면 실행
@@ -97,17 +107,7 @@
       }
       leaveSession()
     }
-    webrtcstore.roomExit(roomId.value)  // 방나가면 방나갔음을 백엔드로 전송.
-    isExitFalse()
   })
-  function isExitTrue() {
-    webrtcstore.isExitTrue()
-    isExitRoom.value = true
-  }
-  function isExitFalse() {
-    webrtcstore.isExitFalse()
-    isExitRoom.value = false
-  }
 
   // vue2에서의 methods 부분을 vue3화 handleUnload
   function joinSession() {
@@ -135,7 +135,6 @@
         subscribers.value.splice(index, 1)
       }
     })
-
 
     // 모두 asynchronous exception 처리 할거임...
     session.value.on("exception", ({ exception }) => {
@@ -171,6 +170,7 @@
             publishVideo: !camerOff.value, // Whether you want to start publishing with your video enabled or not
             resolution: "640x480", // The resolution of your video
             // resolution: "1280x960", // The resolution of your video
+            // resolution: "160x120", // The resolution of your video
             frameRate: 30, // The frame rate of your video
             insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
             mirror: false, // Whether to mirror your local video or not
@@ -192,18 +192,15 @@
   function handleLeaveSession(){
     const isOut = confirm('방을 나가시겠습니까?')
     if(!isOut) return
-    // 방을 나가는데 사람이 없으면 방을 폐쇄할 거임.
-    console.log('핸들 나감으로 방폐쇄1')
-    if(subscribersComputed.value.length == 0){  // 다른사람이 없으면 실행
-      webrtcstore.shutDownRoom(roomId.value)
-      console.log('핸들 나감으로 방폐쇄2')
-    }
     leaveSession()
   }
 
   function leaveSession(){
+    isLeavingSession.value = true
     console.log('콘솔로그',subscribersComputed.value)
     console.log('콘솔로그',subscribersComputed.value.length)
+    // const confirmLeave = confirm("이 페이지를 떠나시겠습니까? 회의가 종료됩니다.")
+    // console.log('나갈거야!!!!!',confirmLeave)
     // if(session.value && confirmLeave) session.value.disconnect()
     if(session.value) session.value.disconnect()
     
@@ -218,10 +215,13 @@
     window.removeEventListener("beforeunload", leaveSession)
     document.removeEventListener('keydown', preventRefresh)
 
-    isExitTrue()
     // 메인페이지로 넘어감
     router.push({
+      // name:'roomAdd',// 임시로 roomAdd로 보냄.
       name:'main',// 임시 이름 main으로 넘겨줌.
+      // params: { 
+      //   roomName: mySessionId.value,
+      // },
     })
   }
 
@@ -231,6 +231,12 @@
   }
 
   //// 방 참여에 있어 방을 생성해주고, 방에 참석할 수 있게 해주는 것.
+  /**
+  * --------------------------------------------
+  * GETTING A TOKEN FROM YOUR APPLICATION SERVER
+  * --------------------------------------------
+  */
+   //// Edited code with Beom's code
   async function createToken(mySessionId, roomId) {
     // 방 생성과 참가를 가르는 변수
     const isMaking = webrtcstore.isMaking // 해당 참여자의 isMaking의 값이 true인지 false인지 확인함,
@@ -280,7 +286,10 @@
           {headers: { 'Content-Type': 'application/json', },
         });
         console.log('create할때',userNo, mySessionId, endHour, endMinute, quota, isPrivacy, password, backImgFile, rule)
-        webrtcstore.updateRoomId(response.data.room.id) // 만든 방의 룸Id,
+        console.log('크리에이트룸 내부 해치웠나?1')
+        console.log('이것이 만든 방의 리스폰스데이터 \n', response.data)
+        console.log('이것이 만든 방의 룸Id\n',response.data.room.id)
+        webrtcstore.updateRoomId(response.data.room.id)
         /////////////////////////////////////////////////
         // 방 ID 받아와야함. 그리고 그걸로 webrtcstore및 여기 roomId.value에 저장할 것.
         /////////////////////////////////////////////////
@@ -295,6 +304,22 @@
     }
   }
 
+  // // 채팅창 구현을 위한 함수 제작
+  // ///////////////////////////
+  // function sendMessage(event) {
+  //   event.preventDefault();
+  //   if(inputMessage.value.trim()){
+  //     // messages.value.push({username : myUserName.value, message : inputMessage.value})
+  //     // 다른 참가원에게 메시지 전송하기
+  //     session.value.signal({
+  //       data: JSON.stringify({username: myUserName.value, message: inputMessage.value}), // 메시지 데이터를 문자열로 변환해서 전송
+  //       type: 'chat' // 신호 타입을 'chat'으로 설정
+  //     });
+  //     inputMessage.value = '';
+  //   }
+  // }
+
+  ///////////////////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////////////////
   ///////기타 기능
   // 캠, 오디오 등 기기와 관련된 함수
@@ -307,8 +332,10 @@
       const audios = devices.filter((device) => device.kind === 'audioinput');
       console.log('마이크들',audios)
       // const audios = undefined
+
       const cameraSelect = document.querySelector('select[name="cameras"]');
       const audioSelect = document.querySelector('select[name="audios"]');
+      
       // 카메라 및 오디오 선택기 요소가 존재하는지 확인
       // if (cameraSelect && audioSelect) {
       if (cameras) {
@@ -362,6 +389,7 @@
     }
   }
 
+
   // 음소거, 캠 활성화 버튼 작동
   function handleCameraBtn() {
     if (!publisher.value) return;
@@ -373,6 +401,7 @@
     }else{                //카메라 활성화상태
       cameraActivate.innerText = '카메라 비활성화'
     }
+    
     // 카메라 작동 상태를 적용
     publisher.value.publishVideo(!camerOff.value);
   }
@@ -391,7 +420,12 @@
     // 음소거 설정을 적용
     publisher.value.publishAudio(!muted.value);
   }
-
+  
+  // // select태그에서 사용할 기기를 선택했을때
+  // async function handleCameraChange(event) {
+  //   selectedCamera.value = event.target.value;
+  //   await replaceCameraTrack(selectedCamera.value);
+  // }
   async function handleCameraChange(event) {
     // 스크린 공유 선택 옵션 확인 및 호출
     if (event.target.value === "screenShare") {
@@ -401,6 +435,7 @@
       await replaceCameraTrack(selectedCamera.value);
     }
   }
+
 
   async function handleAudioChange(event) {
     selectedAudio.value = event.target.value;
@@ -450,6 +485,8 @@
         console.error("Error replacing audio track:", error);
     }
   }
+
+
   /////////////////////////
   // 탭 메뉴 관련
   const funcTabs = ref(['참여멤버', '메시지', '그라운드 룰', '공유'])
@@ -460,7 +497,9 @@
     activeFuncTab.value = index
     console.log(myUserName.value)
   }
+
   /////////////////////////
+
   function handleShutDownRoom(roomId) {
     console.log(roomId)
     const isShut = confirm("방을 페쇄 하시겠습니까?")
@@ -469,6 +508,7 @@
       console.log('방 폐쇄하기로 결정')
       shutDownRoom(roomId)
       leaveSession()
+      
     }
     else{
       console.log('방 페쇄 안하기로 결정')
@@ -494,6 +534,9 @@
   }
 </script>
 
+<!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  -->
+<!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  -->
+<!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  -->
 <!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  -->
 
 <template>

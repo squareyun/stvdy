@@ -24,7 +24,9 @@
   const inputPw = ref(null)         // 선택한 방 입장시 입력하는 비밀번호
   const isSeeInputPw = ref(false)
   const isHost = ref(false)
+  const isnotFull = ref(true)         // 선택한 방의 입장가능 여부. default는 true
 
+  // const participantNo = ref(0)
 
   const everyRoomTags = ref([])
   ////////////////
@@ -119,7 +121,7 @@
     isRoomInfo.value = true
     selectedRoom.value = room
     selectedRoomPw.value = room.password
-    console.log(selectedRoom.value)
+    console.log('해당 방의 정보',selectedRoom.value)
   }
   /// 방 입장 전 방 정보 모달 창 닫기
   function hideRoomInfo() {
@@ -211,7 +213,7 @@
       <div style="display:flex">
         <!-- <div v-for="room in roomList" :key="room.id" class="card" style="margin: 10px;"> -->
         <div v-for="room in roomListSample" :key="room.id" class="card" style="margin: 10px;">
-          <div style="position: relative; display: inline-block; width: 300px; height: 300px;" @click="showRoomInfo(room)">
+          <div v-if="isnotFull" style="position: relative; display: inline-block; width: 300px; height: 300px;" @click="showRoomInfo(room)">
             <img v-if="room.imgPreviewUrl" :src="room.imgPreviewUrl" alt="imgPreview" style="max-width: 100%; max-height: 100%;">
             <div v-else style="width: 100%; height: 100%; background-color: crimson;"></div>
             <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;">{{ room.title }}</div>

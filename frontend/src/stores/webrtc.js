@@ -9,7 +9,7 @@ export const usewebRtcStore = defineStore({
     // userNo: null,
     userNo: useUsersStore().user.id,
     // userNo: Math.floor(Math.random() * (200 - 1 + 1)) + 1,
-    mySessionId: '이젠 될때가 되지 않았나???',
+    mySessionId: '되라'+ (Math.floor(Math.random() * (200 - 1 + 1)) + 1),
     // myUserName : null,
     myUserName : useUsersStore().user.username,
     // myUserName : Math.floor(Math.random() * (200 - 1 + 1)) + 1+'제발되라',
@@ -25,9 +25,11 @@ export const usewebRtcStore = defineStore({
     backImgFile: null,
     roomTags : [],
 
-    /// 참여시 사용할 것
+    // 방  참여 시 사용할 것
     isMaking: false,
     inputPassword: null,
+    // 방 이탈 시 사용할 것
+    isExitRoom : false,
 
     realname: useUsersStore().user.realname,
     // realname: '홍길동'+ Math.floor(Math.random() * (200 - 1 + 1)) + 1,
@@ -50,7 +52,12 @@ export const usewebRtcStore = defineStore({
     isMakingFalse(){
       this.isMaking = false
     },
-
+    isExitTrue(){
+      this.isExitRoom = true
+    },
+    isExitFalse(){
+      this.isExitRoom = false
+    },
     creatorIsHost(){
       this.isHost = true
     },
@@ -103,6 +110,7 @@ export const usewebRtcStore = defineStore({
     //  방 생성시에 roomId를 모르고 있으므로 그 값을 적용시킴
     updateRoomId(newRoomId){
       this.roomId = newRoomId
+      console.log('이건 store의 roomId', this.roomId)
     },
 
     // main 화면에서 방 입장 비밀번호 입력시
@@ -150,7 +158,7 @@ export const usewebRtcStore = defineStore({
       try{
         // const response = axios.get('http://54.180.9.43:8080/rooms/list/')
         console.log('getEveryRoomTags 내부1')
-        // const response = await axios.get('http://localhost:8080/rooms/list')
+        // const response = await axios.get('http://localhost:8080/rooms/tags')
         console.log('getEveryRoomTags 내부2')
         // this.roomList = response.data.roomList
         console.log(this.roomList)
@@ -179,16 +187,18 @@ export const usewebRtcStore = defineStore({
       })
       console.log('조인더룸내부2')
     },
-    // async shutDownRoom(roomId){
-    //   try{
-    //     const response = await axios.delete(`http://localhost:8080/rooms/${roomId}`)
-    //     console.log(response.data)
-    //     console.log('방이 성공적으로 제거되었습니다.')
-    //   }
-    //   catch(error){
-    //     console.error('방을 제거하지 못했습니다.',error.code, error.message)
-    //   }
-    // },
+    async shutDownRoom(roomId){
+      console.log('shutDownRoom내부1\n',roomId)
+      try{
+        console.log('shutDownRoom내부2')
+        const response = await axios.delete(`http://localhost:8080/rooms/${roomId}`)
+        console.log('shutDownRoom',response.data)
+        console.log('방이 성공적으로 제거되었습니다.')
+      }
+      catch(error){
+        console.error('방을 제거하지 못했습니다.',error.code, error.message)
+      }
+    },
 
     async roomExit(roomId){
       console.log('나갈방번호',roomId)

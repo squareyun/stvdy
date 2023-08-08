@@ -102,7 +102,7 @@ const router = createRouter({
     },
     {
       // path: '/'+{keyword},
-      path: '/keyword',
+      path: '/keyword/:TagName',
       name: 'KeywordRoom',
       component: () => import('@/components/main/KeywordRoom.vue'),
     },
