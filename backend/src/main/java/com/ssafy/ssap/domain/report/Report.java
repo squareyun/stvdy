@@ -7,6 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 import static jakarta.persistence.FetchType.LAZY;
 
@@ -39,5 +42,10 @@ public class Report {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "category")
     private ReportCategoryNs category;
+
+    @NotNull
+    @CreationTimestamp
+    @Column(name = "regist_time", columnDefinition = "timestamp")
+    private LocalDateTime registTime;
     
 }

@@ -54,13 +54,13 @@ public class SecurityConfig {
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
 
-			.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-				.requestMatchers("/users/hello", "/users/login", "/users/join/**", "/users/findpwd", "/rooms/**", "/questions/**", "answers/**")
-				.permitAll()
-				//                        .requestMatchers(PathRequest.toH2Console()).permitAll()
-				.anyRequest()
-				.authenticated()
-			)
+                .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+                        .requestMatchers("/users/hello", "/users/login", "/users/join/**", "/users/findpwd", "users/report", "/rooms/**", "/questions/**", "answers/**")
+                        .permitAll()
+                        //                        .requestMatchers(PathRequest.toH2Console()).permitAll()
+                        .anyRequest()
+                        .authenticated()
+                )
 
                 // 세션을 사용하지 않기 때문에 STATELESS로 설정
                 .sessionManagement(sessionManagement ->
