@@ -16,8 +16,8 @@ import static jakarta.persistence.FetchType.LAZY;
 @Entity
 @Getter
 @NoArgsConstructor
-@Builder
 @AllArgsConstructor
+@Builder
 public class Report {
 
     @Id
@@ -47,5 +47,5 @@ public class Report {
     @CreationTimestamp
     @Column(name = "regist_time", columnDefinition = "timestamp")
     private LocalDateTime registTime;
-    
+
 }
