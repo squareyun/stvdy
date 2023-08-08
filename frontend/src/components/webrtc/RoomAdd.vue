@@ -43,7 +43,7 @@
   const isPrivacy = ref(store.isPrivacy)
 
   onMounted(() => {
-    creatorIsHost()
+    // creatorIsHost()
   })
 
   //tiemSet이 flase면 종료시간 초기화.
@@ -146,10 +146,12 @@
   }
 
   function joinSession() {
+
     if(!store.myUserName || !store.mySessionId){
       alert("이름과 방제목을 작성해주세요.")
       return
     }
+    creatorIsHost() // 방을 만듦과 동시에 isHost를 true로 만듬
     router.push({
       name:'roomJoin',
       params: { 

@@ -54,7 +54,7 @@
   
   // 방에서 최대 인원수
   const quota = ref(store.quota)
-
+  const isHost =  ref(store.isHost)
 
   /////////////////////채팅창을 위한 부분임.
   const inputMessage = ref("")
@@ -324,10 +324,20 @@
           option.text = camera.label;
           cameraSelect.appendChild(option);
         });
+        // 화면 공유 기능 추가를 위한 option
+        const screenShareOpt = document.createElement('option')
+        screenShareOpt.value = 'screenShare'
+        screenShareOpt.innerText = '화면공유'
+        cameraSelect.appendChild(screenShareOpt)
       } else {
         const notCamera = cameraSelect.querySelector('option:disabled');
         notCamera.innerText = '사용 가능한 카메라가 없습니다.'
         // console.error('Camera selector not found');
+        // 화면 공유 기능 추가를 위한 option
+        const screenShareOpt = document.createElement('option')
+        screenShareOpt.value = 'screenShare'
+        screenShareOpt.innerText = '화면공유'
+        cameraSelect.appendChild(screenShareOpt)
       }
       if(audios){
         audios.forEach((audio) => {
@@ -341,10 +351,23 @@
         notAudio.innerText = '사용 가능한 마이크가 없습니다.'
         // console.error('Audio selector not found');
       }
+      
     } catch (error) {
       console.error('Error getting media devices:', error);
     }
   }
+  /////// 화면 공유기능
+  async function screenShare() {
+    try {
+      const displayMediaStream = await navigator.mediaDevices.getDisplayMedia({video: true});
+      const newVideoTrack = displayMediaStream.getVideoTracks()[0];
+      await publisher.value.replaceTrack(newVideoTrack);
+      mainStreamManager.value = publisher.value;
+    } catch (error) {
+      console.error("Error starting screen share:", error);
+    }
+  }
+
 
   // 음소거, 캠 활성화 버튼 작동
   function handleCameraBtn() {
@@ -377,11 +400,21 @@
     publisher.value.publishAudio(!muted.value);
   }
   
-  // select태그에서 사용할 기기를 선택했을때
+  // // select태그에서 사용할 기기를 선택했을때
+  // async function handleCameraChange(event) {
+  //   selectedCamera.value = event.target.value;
+  //   await replaceCameraTrack(selectedCamera.value);
+  // }
   async function handleCameraChange(event) {
-    selectedCamera.value = event.target.value;
-    await replaceCameraTrack(selectedCamera.value);
+    // 스크린 공유 선택 옵션 확인 및 호출
+    if (event.target.value === "screenShare") {
+      screenShare();
+    } else {
+      selectedCamera.value = event.target.value;
+      await replaceCameraTrack(selectedCamera.value);
+    }
   }
+
 
   async function handleAudioChange(event) {
     selectedAudio.value = event.target.value;
@@ -501,6 +534,7 @@
         <div>
           <select name="cameras" @change="handleCameraChange">
             <option disabled>사용할 카메라를 선택하세요</option>
+            <!-- <option value="screenShare">스크린 공유</option> -->
           </select>
           <select name="audios" @change="handleAudioChange">
             <option disabled>사용할 마이크를 선택하세요</option>
@@ -508,7 +542,7 @@
         </div>
       </div>
       <!-- 방 종료 버튼 -->
-      <div id=''>
+      <div id='' v-if="isHost">
         <button @click="handleShutDownRoom(roomId)">방 폐쇄하기</button>
       </div>
     </div>
@@ -536,22 +570,8 @@
         </li>
       </ul>
     </div>
-    <!-- 나중에 <chat-winow />로 넘길수 있도록 해보자. -->
+    <!-- 메시지 -->
     <MessageChat :messages="messages" :session="session" :myUserName="myUserName" v-if="activeFuncTab === 1" />
-    <!-- <div id="chatContainer" v-if="activeFuncTab === 1"> -->
-    <!-- <div v-if="activeFuncTab === 1">
-      <div id="chatWindow">
-        <ul id="chatHistory">
-          <li v-for="(message, index) in messages" :key="index">
-            <strong>{{ message.username }}:</strong> {{ message.message }}
-          </li>
-        </ul>
-      </div>
-      <form id="chat-write">
-        <input type="text" placeholder="전달할 내용을 입력하세요." v-model="inputMessage">
-        <button @click="sendMessage">전송</button>
-      </form>
-    </div> -->
     <!-- 그라운드 룰 -->
     <div v-if="activeFuncTab === 2">
       {{ roomRule }}

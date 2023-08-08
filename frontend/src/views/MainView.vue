@@ -15,11 +15,14 @@ const selectedRoom = ref(null)    // 선택한 방의 정보
 const selectedRoomPw = ref(null)  // 선택한 방의 비밀번호
 const inputPw = ref(null)         // 선택한 방 입장시 입력하는 비밀번호
 const isSeeInputPw = ref(false)
+const isHost = ref(false)
 // onBeforeMount(() => {
 //   webRtcStore.getRtcRooms()
 // })
 onMounted(() => {
   webRtcStore.getRtcRooms()
+  webRtcStore.notIsHost()
+  
 })
 
 const roomList = computed(() => webRtcStore.roomList)

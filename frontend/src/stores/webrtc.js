@@ -46,6 +46,9 @@ export const usewebRtcStore = defineStore({
     creatorIsHost(){
       this.isHost = true
     },
+    notIsHost(){
+      this.isHost = false
+    },
     checkmyUserName(){
       console.log(this.myUserName)
       console.log(this.userNo)
