@@ -18,6 +18,8 @@ async function onSubmit(values) {
     chatList.appendChild(newMessage)
     values.question = qnaQuery + values.question
 
+    const imgEle = document.createElement("img")
+
     const questionBox = document.getElementById('ai-question')
     questionBox.value = ''
 
@@ -52,12 +54,14 @@ async function onSubmit2(values) {
 
 <template>
   <div id="aiChatBox">
+    <img src="/loading.gif" alt="">
     Test function - AI Assist
     <ul id="aiChatList">
     </ul>
     <Form @submit="onSubmit">
       <!-- <Field name="type" type="text" placeholder="답변 스타일" /> -->
       <Field name="type" as="select">
+        <option value="" disabled selected>답변해줄 인물을 고르세요.</option>
         <option value="You are a good assistant">기본 AI</option>
         <option value="You are Marv, a chatbot with a soul of nasty sarcasm">가명_까칠이</option>
         <option value="You are Emily, a chatbot with a soul of my teenage bestie girl who is always cheerful">가명_베프
