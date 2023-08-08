@@ -476,9 +476,9 @@
           <!-- <div id="emptyBox"></div> -->
         </div>
         <!-- 선택 캠 -->
-        <div id="mainVideo">
+        <!-- <div id="mainVideo">
           <UserVideo :stream-manager="mainStreamManagerComputed" />
-        </div>
+        </div> -->
       </div>
       <!-- 캠 및 오디오 관련 -->
       <div id="deviceDiv">
