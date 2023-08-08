@@ -85,7 +85,18 @@ async function showDetail(id) {
           v-for="qtn in questions"
           :key="qtn.id"
           @click="showDetail(qtn.id)">
-          <td class="question-done"><div>채택안됨</div></td>
+          <td class="question-done">
+            <div
+              id="best-selected"
+              v-if="qtn.bestSelected">
+              채택됨
+            </div>
+            <div
+              id="best-not-selected"
+              v-if="!qtn.bestSelected">
+              채택안됨
+            </div>
+          </td>
           <td class="question-main">
             <div class="question-title">
               {{ qtn.title }}
@@ -172,7 +183,23 @@ async function showDetail(id) {
   left: 0px;
 }
 
-.question-done > div {
+#best-selected {
+  position: absolute;
+  top: 20px;
+  right: 0px;
+  padding: 0.3rem 0.6rem 0.2rem 0.6rem;
+
+  color: var(--hl-light);
+  display: inline-block;
+  font-family: 'ASDGothicM';
+  text-align: center;
+
+  border: 1px solid var(--hl-purple);
+  border-radius: 20px;
+  background-color: var(--hl-purple);
+}
+
+#best-not-selected {
   position: absolute;
   top: 20px;
   right: 0px;
@@ -197,7 +224,7 @@ async function showDetail(id) {
   top: 52px;
   left: 10px;
 
-  width: 590px;
+  width: 580px;
   height: 1px;
 
   background-color: var(--hl-light30);
