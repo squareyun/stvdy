@@ -184,13 +184,13 @@ public class RoomService {
         }
     }
 
-    public Map<String, Object> getRoom(String roomCode) {
+    public Map<String, Object> getRoom(String code) {
         Map<String, Object> resultMap = new HashMap<>();
-        Room room = roomRepository.findByCode(roomCode).orElse(null);
-        try{
+        Room room = roomRepository.findByCode(code).orElse(null);
+        if(room!=null){
             resultMap.put("room",room);
             resultMap.put("matched",true);
-        }catch(NullPointerException e){
+        }else{
             resultMap.put("matched",false);
         }
         return resultMap;
@@ -295,7 +295,6 @@ public class RoomService {
 
             if(session.getConnection(connectionId) == null) {
                 //강제 disconnect 성공 시 db처리
-
                 //participant 테이블 수정 (is_Out 수정)
                 participant.setIsOut(true);
                 logger.trace("is_out 수정 완료");
@@ -408,6 +407,7 @@ public class RoomService {
                 logger.trace("roomCode의 반복문 실행");
                 if (roomRepository.findByCode(code).orElse(null) == null) {
                     //code에 해당하는 room이 없으면 해당 코드를 room에 set하고 return
+                    //noinspection DataFlowIssue
                     room.setCode(code); //저장용
                     resultMap.put("code",code); //전달용
                     return resultMap;
