@@ -58,6 +58,7 @@ export const useQuestionStore = defineStore('questions', () => {
   }
 
   const getQuestionById = async (id) => {
+    question.value = {}
     await getQuestion(
       id,
       (res) => {

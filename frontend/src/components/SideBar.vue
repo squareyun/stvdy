@@ -72,7 +72,7 @@ const logout = async () => {
     </router-link>
     <div class="side-bar-div-line"></div>
     <router-link
-      to="mypage"
+      to="/mypage"
       id="side-lecture">
       <div class="selected"></div>
       <svg

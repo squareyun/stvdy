@@ -4,6 +4,7 @@ import TopSearch from '@/components/TopSearch.vue'
 import Advertisment from '../components/home/advertisment.vue'
 import TagRank from '../components/home/TagRank.vue'
 import MeetingRoom from '../components/home/MeetingRoom.vue'
+import RecentAsk from '../components/home/RecentAsk.vue'
 </script>
 
 <template>
@@ -13,6 +14,7 @@ import MeetingRoom from '../components/home/MeetingRoom.vue'
     <Advertisment />
     <TagRank />
     <MeetingRoom />
+    <RecentAsk />
   </main>
 </template>
 
@@ -51,7 +53,6 @@ import MeetingRoom from '../components/home/MeetingRoom.vue'
     top: 70px;
 
     width: calc(960px);
-    background-color: aqua;
   }
 }
 </style>

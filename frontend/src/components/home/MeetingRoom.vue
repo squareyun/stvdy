@@ -12,6 +12,7 @@
   height: 300px;
 
   background-color: brown;
+  opacity: 0.3;
 }
 
 #room-list-tile {

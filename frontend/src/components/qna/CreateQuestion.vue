@@ -65,11 +65,11 @@ async function onSubmit(values) {
           id="question-form-title"
           placeholder="제목을 입력해주세요."
           :class="{ 'is-invalid': errors.title }" />
-        <button
+        <div
           id="question-form-title-btn"
           @click="openTextArea(question.title)">
           다음
-        </button>
+        </div>
         <div id="category-select">
           <Form autocomplete="off">
             <p class="field-name">

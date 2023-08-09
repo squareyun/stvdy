@@ -6,29 +6,6 @@ import { useRoute } from 'vue-router'
 import { isLikeQuestion, likesQuestion, answerQuestion } from '@/api/question'
 import router from '../../router'
 
-// const answers = {
-//   data: {
-//     id: 1,
-//     detail: '답답합니다 참',
-//     regist_time: '뭐뭐뭐뭐뭐-뭐뭐뭄-뭐무머',
-//   },
-//   data: {
-//     id: 2,
-//     detail: '답답합니다 참',
-//     regist_time: '뭐뭐뭐뭐뭐-뭐뭐뭄-뭐무머',
-//   },
-//   data: {
-//     id: 3,
-//     detail: '답답합니다 참\n답답합니다 참\n답답합니다 참',
-//     regist_time: '뭐뭐뭐뭐뭐-뭐뭐뭄-뭐무머',
-//   },
-//   data: {
-//     id: 4,
-//     detail: '답답합니다 참',
-//     regist_time: '뭐뭐뭐뭐뭐-뭐뭐뭄-뭐무머',
-//   },
-// }
-
 const $route = useRoute()
 
 let myAnswer = ''
@@ -105,7 +82,10 @@ const answerQtn = () => {
 
   answerQuestion(
     values,
-    (res) => console.log(res),
+    (res) => {
+      console.log(res)
+      router.go(0)
+    },
     (fail) => console.log(fail),
   )
 }
@@ -174,14 +154,18 @@ const answerQtn = () => {
             {{ question.regist_time }}
             <span id="wrote-time">{{ question.userNickname }}</span>
           </div>
+          <div
+            id="edit-delete-box"
+            v-if="question.userNo === user.id">
+            <button @click="QtnUpdate(question.id)">수정하기</button>
+            <button @click="QtnDelete(question.id)">삭제하기</button>
+          </div>
         </div>
       </div>
-      <!-- <span v-if="question.user_id === localUser.id">
-        <button @click="QtnUpdate(question.id)">수정하기</button>
-        <button @click="QtnDelete(question.id)">삭제하기</button>
-      </span> -->
       <div id="answers-title">{{ answers.length }}개의 답변이 있습니다.</div>
-      <div id="answers-box">
+      <div
+        id="answers-box"
+        v-if="answers.length > 0">
         <tr
           class="answers-row"
           v-for="ans in answers"
@@ -189,7 +173,14 @@ const answerQtn = () => {
           <div class="answers-detail-box">
             {{ ans.detail }}
             <div id="author-image"></div>
+
             <div id="author-name">
+              <span
+                id="answer-edit-delete-box"
+                v-if="ans.userNo === user.id">
+                <button @click="QtnUpdate(question.id)">수정</button>
+                <button @click="QtnDelete(question.id)">삭제</button>
+              </span>
               {{ ans.regist_time }}
               <span id="wrote-time">{{ ans.userNickname }}</span>
             </div>
@@ -197,7 +188,7 @@ const answerQtn = () => {
         </tr>
       </div>
 
-      <div id="answers-title">질문에 대한 좋은 답변이 있으신가요?</div>
+      <div id="my-answer-title">질문에 대한 좋은 답변이 있으신가요?</div>
       <div id="answer-form-main">
         <Form @submit="answerQtn">
           <Field
@@ -247,8 +238,7 @@ const answerQtn = () => {
 
 <style>
 #question-content-id {
-  font-family: ASDGothicUL
-    ';
+  font-family: 'ASDGothicUL';
 }
 #question-question-content-title {
   display: inline-block;
@@ -260,9 +250,7 @@ const answerQtn = () => {
 
   color: var(--hl-light80);
   font-size: 1.4rem;
-  font-family: '
-    ASDGothicM
-    ';
+  font-family: 'ASDGothicM';
 
   border-bottom: 7px solid var(--font30);
 }
@@ -272,9 +260,7 @@ const answerQtn = () => {
   margin-top: 5px;
 
   font-size: 1rem;
-  font-family: '
-    ASDGothicM
-    ';
+  font-family: 'ASDGothicM';
 }
 
 #question-detail-main {
@@ -301,9 +287,7 @@ const answerQtn = () => {
   white-space: pre-wrap;
 
   color: var(--hl-light);
-  font-family: '
-    ASDGothicM
-    ';
+  font-family: 'ASDGothicM';
   font-size: 1rem;
 }
 
@@ -366,9 +350,7 @@ const answerQtn = () => {
   width: 60px;
   height: 30px;
 
-  background-image: url(' /
-    authorImage.png
-    ');
+  background-image: url('/authorImage.png');
   background-size: cover;
   background-position: center;
   cursor: pointer;
@@ -393,9 +375,53 @@ const answerQtn = () => {
   font-family: 'ASDGothicM';
 }
 
+#edit-delete-box {
+  position: absolute;
+  bottom: -30px;
+  right: 0px;
+}
+
+#edit-delete-box > button {
+  font-family: 'ASDGothicM';
+  font-size: 1rem;
+  color: var(--hl-light80);
+
+  border: none;
+  background-color: transparent;
+
+  cursor: pointer;
+}
+
+#edit-delete-box > button:nth-child(2) {
+  color: var(--hl-warn);
+  opacity: 0.9;
+}
+
+#answer-edit-delete-box {
+  display: inline-block;
+}
+
+#answer-edit-delete-box > button {
+  font-family: 'ASDGothicM';
+  font-size: 0.8rem;
+  color: var(--hl-light80);
+  padding-left: 0px;
+
+  border: none;
+  background-color: transparent;
+
+  cursor: pointer;
+}
+
+#answer-edit-delete-box > button:nth-child(2) {
+  color: var(--hl-purple);
+  opacity: 0.8;
+}
+
 #answers-box {
   width: 900px;
 
+  margin-bottom: 38px;
   border-radius: 10px;
   background-color: var(--font50);
 }
@@ -417,6 +443,11 @@ const answerQtn = () => {
 #answers-title {
   margin-top: 40px;
 
+  color: var(--hl-light);
+  font-size: 1.2rem;
+}
+
+#my-answer-title {
   color: var(--hl-light);
   font-size: 1.2rem;
 }
