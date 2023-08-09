@@ -1,8 +1,10 @@
 package com.ssafy.ssap.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -126,6 +128,11 @@ public class QuestionService {
 			curLikes.updateIsGood(likesDto.getIsLike());
 			likesRepository.save(curLikes);
 		}
+	}
+
+	public List<String> getCategoryRanking() {
+		Pageable pageable = PageRequest.of(0, 30);
+		return questionRepository.findCategoryRanking(pageable);
 	}
 
 }
