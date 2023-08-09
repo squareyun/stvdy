@@ -10,6 +10,7 @@ import com.ssafy.ssap.dto.RoomDto;
 import com.ssafy.ssap.repository.*;
 import com.ssafy.ssap.util.RoomUtil;
 import io.openvidu.java.client.*;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,15 +33,14 @@ public class RoomService {
     private final RoomLogRepository roomLogRepository;
     private final UserRepository userRepository;
     private final RoomUtil roomutil;
-
-    /**
-     * OpenVidu variables
-     */
     private OpenVidu openVidu;
-    @SuppressWarnings("FieldCanBeLocal")
-    private final String OPENVIDU_URL = "http://localhost:4443/";
-    @SuppressWarnings("FieldCanBeLocal")
-    private final String SECRET = "MY_SECRET";
+
+    @PostConstruct
+    public void roomServiceInitialize(){
+        String OPENVIDU_URL = "http://localhost:4443/";
+        String SECRET = "MY_SECRET";
+        openVidu = new OpenVidu(OPENVIDU_URL,SECRET);
+    }
 
     public Map<String, Object> makeSession(RoomCreateDto roomCreateDto) throws OpenViduJavaClientException, OpenViduHttpException {
         //session 생성, connection 생성, 토큰 생성
@@ -48,7 +48,6 @@ public class RoomService {
         Session session;
         Connection connection;
         try {
-            openVidu = new OpenVidu(OPENVIDU_URL,SECRET);
             //세션 생성
             session = openVidu.createSession();
             logger.debug("세션 생성 성공");
@@ -91,7 +90,7 @@ public class RoomService {
         //입장 요청한 session 객체 획득
         Session session = openVidu.getActiveSession(sessionId);
         if (session == null) {
-            logger.error("session Id not matching");
+            logger.error("session Id not matching"+sessionId);
             return null;
         }
         return createConnection(session);
@@ -126,10 +125,12 @@ public class RoomService {
                 .connectionId(connectionId)
                 .build();
         participantRepository.save(participant);
+        logger.debug("addParticipant 최종 메소드 종료 : "+participant.getId());
     }
 
     public void addParticipant(Integer roomNo, String role, Integer userNo, String connectionId) {
         Room room = roomRepository.findById(roomNo).orElse(null);
+        logger.debug("add Participant find Room 결과 :"+room.getId());
         addParticipant(room, role, userNo, connectionId);
     }
 
@@ -143,6 +144,7 @@ public class RoomService {
                 .user(user)
                 .build();
         roomLogRepository.save(roomLog);
+        logger.debug("addRoomLog 최종 메소드 종료 : "+roomLog.getId());
     }
 
     @SuppressWarnings("DataFlowIssue")
@@ -172,8 +174,13 @@ public class RoomService {
         Room room = roomRepository.findById(roomNo).orElse(null);
         Session session;
         try{
+            logger.debug("openVidu 디버깅"+openVidu);
+            for(Session s : openVidu.getActiveSessions()){
+                logger.debug("Iterator:"+s.getSessionId()+"/"+s.getActiveConnections()+"/"+s.getConnections());
+            }
             String sessionId = room.getSessionId();
             session = openVidu.getActiveSession(sessionId);
+
             session.close();
         } catch(NullPointerException e){
             logger.error("can't find room by roomNo");
@@ -326,10 +333,10 @@ public class RoomService {
 
     public void getRoomList(Map<String,Object> resultMap) {
 //        resultMap.put("roomList", roomRepository.findAllRooms()); //키워드와 페이지 검색 수정필요
-        List<RoomDto> roomList = roomRepository.findAllRooms();
-        for(RoomDto dto : roomList){
-            Integer num = participantRepository.countByRoomIdAndIsOut(dto.getId(),false);
-            dto.setCurrentNumber(num);
+        List<RoomDto> roomList = roomRepository.findAllValidRooms();
+        for(RoomDto roomDto : roomList){
+            Integer num = participantRepository.countByRoomIdAndIsOut(roomDto.getId(),false);
+            roomDto.setCurrentNumber(num);
         }
         resultMap.put("roomList",roomList);
     }
@@ -350,6 +357,7 @@ public class RoomService {
 
     }
 
+    @Transactional
     public String joinRoom(Integer roomNo, String password, Integer userNo) throws OpenViduJavaClientException, OpenViduHttpException {
         String sessionId;
         Connection connection;
@@ -357,10 +365,12 @@ public class RoomService {
             //OPENVIDU > session 접속을 위한 token 생성
             sessionId = getSessionIdByRoomNo(roomNo); //2번 단계
             connection = createConnection(sessionId); //3번 단계
-            logger.debug("토큰처리 수행 완료");
+            logger.debug("토큰처리 수행 완료 : "+connection+" / "+connection.getConnectionId());
             //DB처리
             addParticipant(roomNo,"참여자", userNo, connection.getConnectionId()); //4번
+            logger.debug("JoinRoom - addParticipant 종료");
             addRoomLog(roomNo,userNo); //5번
+            logger.debug("JoinRoom - addRoomLog 종료");
         } else{
             logger.debug("방 접근이 유효하지 않음.");
             return null;
