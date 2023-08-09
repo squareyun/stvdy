@@ -45,7 +45,7 @@ public class Alarm {
 
 	// @Column(name = "image_path", columnDefinition = "blob")
 	// @Lob
-	// private byte[] imagePath;
+	// private String imagePath;
 
 	@NotNull
 	@Column(name = "is_read", columnDefinition = "bit(1)")
