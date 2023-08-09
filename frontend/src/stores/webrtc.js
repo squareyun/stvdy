@@ -24,10 +24,11 @@ export const usewebRtcStore = defineStore({
     rule: '모두 열공해서 합격합시다 Ψ(￣∀￣)Ψ',
     backImgFile: null,
     roomTags : [],
-
+    
     // 방  참여 시 사용할 것
     isMaking: false,
     inputPassword: null,
+    roomUsers: [],    
     // 방 이탈 시 사용할 것
     isExitRoom : false,
 
@@ -190,10 +191,11 @@ export const usewebRtcStore = defineStore({
     async shutDownRoom(roomId){
       console.log('shutDownRoom내부1\n',roomId)
       try{
-        console.log('shutDownRoom내부2')
+        console.log('shutDownRoom내부2', roomId)
         const response = await axios.delete(`http://localhost:8080/rooms/${roomId}`)
         console.log('shutDownRoom',response.data)
         console.log('방이 성공적으로 제거되었습니다.')
+        this.roomId = null
       }
       catch(error){
         console.error('방을 제거하지 못했습니다.',error.code, error.message)
@@ -226,8 +228,19 @@ export const usewebRtcStore = defineStore({
         console.error('checkCurrentConnection에 문제가 생겼습니다.', error.code, error.message);
       }
     },
-    
-    
+
+    // 강제퇴장 시키기
+    async checkCurrentConnection(roomId){
+      console.log('현재 커넥션 확인할 방 번호',roomId)
+      try{
+        const response = await axios.get(`http://localhost:8080//rooms/kick`,{roomNo: this.roomId, userNo: userNo, reason: reason})
+        console.log('확인함')
+        console.log('현재 커넥션',response.data)
+      }
+      catch(error){
+        console.error('checkCurrentConnection에 문제가 생겼습니다.', error.code, error.message);
+      }
+    },
   },
   mutations: {
     GETMYSESSIONID(state, datas){
