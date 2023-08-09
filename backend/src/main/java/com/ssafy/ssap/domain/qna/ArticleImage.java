@@ -24,7 +24,7 @@ public class ArticleImage {
 
     @Column(columnDefinition = "blob")
     @Lob
-    private byte[] path;
+    private String path;
 
     @OneToOne(fetch = LAZY)
     @JoinColumn(name = "question_id")
