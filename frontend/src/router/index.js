@@ -49,6 +49,7 @@ const router = createRouter({
         },
         {
           path: '/createquestion',
+          alias: '/modifyquestion/:id',
           name: 'createquestion',
           component: () => import('../components/qna/CreateQuestion.vue'),
           children: [],

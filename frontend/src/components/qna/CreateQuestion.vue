@@ -2,16 +2,25 @@
 import { Form, Field } from 'vee-validate'
 import * as Yup from 'yup'
 import { useQuestionStore, useAlertStore, useUserStore } from '@/stores'
-
 import { writeQuestion } from '@/api/question'
+import { computed } from 'vue'
 import router from '@/router'
+import { useRoute } from 'vue-router'
+const $route = useRoute()
+
+const questionStore = useQuestionStore()
+let question = {}
+
+if ($route.path == '/modifyquestion') {
+  console.log('edit')
+  question = computed(() => questionStore.question)
+  questionStore.getQuestionById($route.params.id)
+}
 
 const schema = Yup.object().shape({
   title: Yup.string().required('제목을 작성해주세요.'),
   content: Yup.string().required('본문을 작성해주세요.'),
 })
-
-let question = {}
 
 const userStore = useUserStore()
 const user = userStore.user

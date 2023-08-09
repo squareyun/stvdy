@@ -4,8 +4,8 @@ import { useQuestionStore, useAlertStore, useUserStore } from '@/stores'
 import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { isLikeQuestion, likesQuestion, answerQuestion } from '@/api/question'
-import router from '../../router'
 
+import router from '../../router'
 const $route = useRoute()
 
 let myAnswer = ''
@@ -18,7 +18,6 @@ const question = computed(() => questionStore.question)
 const answers = computed(() => questionStore.answers)
 questionStore.getQuestionById($route.params.id).then(() => {
   islikeQtn()
-  console.log(answers.value)
 })
 
 const islikeQtn = () => {
