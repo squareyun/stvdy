@@ -2,6 +2,7 @@ package com.ssafy.ssap.controller;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -170,6 +171,23 @@ public class QuestionController {
 			logger.error("질문 좋아요 실패", e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 				.body(Collections.singletonMap("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage()));
+		}
+	}
+
+	@GetMapping("/category-list")
+	public ResponseEntity<Map<String, Object>> categoryList() {
+		try {
+			List<String> categoryList = questionService.getCategoryRanking();
+			logger.debug("{} 개의 category 조회 성공", categoryList.size());
+
+			return ResponseEntity.accepted()
+				.body(Map.of("category", categoryList, "message", MessageFormat.SUCCESS));
+
+		} catch (Exception e) {
+			logger.error("category 조회 실패", e);
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body(Map.of("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage()));
 		}
 	}
 }
