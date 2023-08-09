@@ -48,8 +48,7 @@ public class AnswerService {
 			.build();
 
 		// 사용자에게 알림 전송
-		// TODO: 질문 URL이 맞는지 확인 필요
-		String detailUrl = "/questions/" + question.getId();
+		String detailUrl = "/questiondetail/" + question.getId();
 
 		Alarm alarm = Alarm.builder()
 			.title(answer.getUser().getNickname() + " 님이 질문에 댓글을 달았습니다.")
@@ -121,8 +120,7 @@ public class AnswerService {
 		question.selectAnswer(answer);
 
 		// 답변 채택시, 답변 작성자에게 알림 전송
-		// TODO: 질문 URL이 맞는지 확인 필요
-		String detailUrl = "/questions/" + question.getId();
+		String detailUrl = "/questiondetail/" + question.getId();
 
 		Alarm alarm = Alarm.builder()
 			.title(answer.getUser().getNickname() + " 님의 댓글이 채택되었습니다.")
