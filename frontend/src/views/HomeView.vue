@@ -13,7 +13,7 @@ import AiAssist from '@/components/main/AiAssist.vue'
     <div id="testDiv">
       <AiAssist />
     </div>
-    <router-view id="contents" />
+    <router-view id="home-contents" />
   </main>
 </template>
 
@@ -22,7 +22,7 @@ import AiAssist from '@/components/main/AiAssist.vue'
   z-index: 100;
 }
 
-#contents {
+#home-contents {
   position: absolute;
   top: 120px;
   left: calc(50vw - 480px);
@@ -34,17 +34,17 @@ import AiAssist from '@/components/main/AiAssist.vue'
 }
 
 @media (max-width: 1360px) {
-  #contents {
+  #home-contents {
     left: 200px;
   }
 }
 
-.content-title {
+.home-content-title {
   margin: 0;
   color: var(--hl-light);
 }
 
-.content {
+.home-content {
   position: relative;
 
   background-color: var(--background-window);

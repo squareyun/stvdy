@@ -25,21 +25,19 @@ async function deactivate() {
 
 <template>
   <div>
-    <span class="content-title">계정 삭제</span>
-    <div class="content others">
+    <span class="mypage-content-title">계정 삭제</span>
+    <div class="mypage-content others">
       <p id="confirm-test">
         "본인은 {{ user.username }}#{{ user.id }} 계정을 삭제하겠습니다."
       </p>
 
-      <Form
-        autocomplete="off"
-        @submit="onSubmit">
+      <form autocomplete="off">
         <p class="field-name">&nbsp;&nbsp;위 문장을 따라 입력해주세요 &nbsp;</p>
-        <Input
+        <input
           name="username"
           type="text"
           class="field" />
-      </Form>
+      </form>
 
       <p
         id="delete-btn"
