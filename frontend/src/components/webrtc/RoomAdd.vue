@@ -45,6 +45,7 @@
 
   onMounted(() => {
     // creatorIsHost()
+    // localStorage.removeItem('roomId')
   })
 
   //tiemSet이 flase면 종료시간 초기화.

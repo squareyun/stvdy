@@ -6,13 +6,9 @@ import axios from 'axios'
 export const usewebRtcStore = defineStore({
   id: 'webrtc',
   state: () => ({
-    // userNo: null,
     userNo: useUsersStore().user.id,
-    // userNo: Math.floor(Math.random() * (200 - 1 + 1)) + 1,
     mySessionId: '되라'+ (Math.floor(Math.random() * (200 - 1 + 1)) + 1),
-    // myUserName : null,
     myUserName : useUsersStore().user.username,
-    // myUserName : Math.floor(Math.random() * (200 - 1 + 1)) + 1+'제발되라',
     endHour: 0,
     endMinute: 0,
     quota: 16,
@@ -195,7 +191,7 @@ export const usewebRtcStore = defineStore({
         const response = await axios.delete(`http://localhost:8080/rooms/${roomId}`)
         console.log('shutDownRoom',response.data)
         console.log('방이 성공적으로 제거되었습니다.')
-        this.roomId = null
+        // this.roomId = null
       }
       catch(error){
         console.error('방을 제거하지 못했습니다.',error.code, error.message)

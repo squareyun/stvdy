@@ -13,8 +13,7 @@
   const webrtcstore = usewebRtcStore()
   const router = useRouter()
 
-  ///////////////////////////////////////////
-  // 새로고침 방지!
+  //////////// 새로고침 방지!
   document.addEventListener('keydown', preventRefresh)
   function preventRefresh(event) {
     const key_f5 = 116; // 116 = F5
@@ -26,7 +25,6 @@
       return false;
     }
   }
-  ///////////////////////////////////////////
 
   axios.defaults.headers.post["Content-Type"] = "application/json;charset=utf-8";
   // 추후 배포와 관련해서 이부분에 대해서 설정을 할 필요가 있게 될것.
@@ -58,7 +56,6 @@
   const inputMessage = ref("")
   const messages = ref([])
   // const isChatContainer = ref(true)   /// 채팅창!!!!!
-  ///////////////////
   ///////////////////카메라 및 오디오 설정을 위한 부분임
   const muted = ref(false)       // 기본은 음소거 비활성화
   const camerOff = ref(false)    // 기본 카메라 활성화
@@ -68,14 +65,14 @@
   const mainStreamManagerComputed = computed(() => mainStreamManager.value);
   const publisherComputed = computed(() => publisher.value);
   const subscribersComputed = computed(() => subscribers.value);
-  ////
   ///////////////////
-  // 방 탈퇴를 위한 변수들
+  // 방 이탈를 위한 변수들
   const isExitRoom = ref(webrtcstore.isExitRoom)  // leave
   ///////////////////
 
   onBeforeMount(() => {
-    window.addEventListener("beforeunload",leaveSession)
+    // window.addEventListener("beforeunload",leaveSession)
+    window.addEventListener("beforeunload",escapePage)
     // mySessionId가 없으면 잘못된 접근이므로 
     if(mySessionId.value !== null && mySessionId.value !== undefined && mySessionId.value !== 'null'){
       joinSession()
@@ -85,23 +82,41 @@
       leaveSession()
     }
   })
-  
+
+  function escapePage() {
+    const localRoomId = localStorage.getItem('roomId')
+    openNewWindow2(`이스케이프페이지 탐 ${subscribersComputed.value.length}`)
+    if (!subscribersComputed.value.length){ // 다른 참여자가 없으면.
+      shutDownRoom(localRoomId)
+    }
+    leaveSession()
+  }
 
   //// 페이지 벗어나면 
   onBeforeUnmount(()=>{
-    if(!isExitRoom.value){
+    if(!isExitRoom.value){  // leaveSession버튼을 누르지 않았을때만.
       // 방을 나가는데 사람이 없으면 방을 폐쇄할 거임.
       console.log('나감으로 방폐쇄1')
-      if(subscribersComputed.value.length == 0){  // 다른사람이 없으면 실행
+      if(!subscribersComputed.value.length){  // 다른 참여자가 없으면 실행
         // openNewWindow2(webrtcstore.roomId)
-        webrtcstore.shutDownRoom(webrtcstore.roomId)
-        roomId.value = null             //방 폐쇄하고 브라우저의 roomId도 null값으로 만듬
+        // webrtcstore.shutDownRoom(webrtcstore.roomId)
+        openNewWindow2(`제발좀 되라${subscribersComputed.value.length}`)
+        const localRoomId = localStorage.getItem('roomId')
+        webrtcstore.shutDownRoom(localRoomId)
+        // roomId.value = null             //방 폐쇄하고 브라우저의 roomId도 null값으로 만듬
         console.log('나감으로 방폐쇄2')
       }
-      leaveSession()
+      openNewWindow2('왜안됨')
+      // leaveSession()
+      escapePage()
     }
+    // window.removeEventListener("beforeunload", leaveSession)
+    window.removeEventListener("beforeunload", escapePage)
+    document.removeEventListener('keydown', preventRefresh)
     webrtcstore.roomExit(roomId.value)  // 방나가면 방나갔음을 백엔드로 전송.
     isExitFalse()
+    // localStorage.removeItem('roomId')
+
     // window.removeEventListener("beforeunload", leaveSession)
     // document.removeEventListener('keydown', preventRefresh)
   })
@@ -114,35 +129,11 @@
     isExitRoom.value = false
   }
 
-  /////////////// 확인용으로 tmp  임시로 만들어둠
-  // function openNewWindow() {
-  //   const url = `https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=${roomId.value}`;
-  //   const windowName = "새 창";
-  //   const windowFeatures = "width=800,height=600";
-    
-  //   window.open(url, windowName, windowFeatures);
-  // }
-  // function openNewWindow2(roomabc) {
-  //   const url = `https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=${roomabc}`;
-  //   const windowName = "새 창";
-  //   const windowFeatures = "width=800,height=600";
-    
-  //   window.open(url, windowName, windowFeatures);
-  // }
-
-  // vue2에서의 methods 부분을 vue3화 handleUnload
   function joinSession() {
-    // --- 1) Openvdiu object 가져오기
     OV.value = new OpenVidu()
-    
-    // --- 2) session 값 집어넣기
     session.value = OV.value.initSession()
     console.log('이게뭐람',session.value)
-
-    // --- 3) 세션에서 이벤트가 발생할때 수행할 작업 지정
-    // new Stream 을 수신할 때마다 수행...
     session.value.on("streamCreated", ( {stream} )=> {
-      // const subscriber = session.subscribe(stream)
       const subscriber = session.value.subscribe(stream)
       subscribers.value.push(subscriber)
     })
@@ -154,8 +145,6 @@
         subscribers.value.splice(index, 1)
       }
     })
-
-    // 모두 asynchronous exception 처리 할거임...
     session.value.on("exception", ({ exception }) => {
       console.warn(exception);
     });
@@ -173,7 +162,14 @@
     // createToken(mySessionId.value).then((token) => {
     createToken(mySessionId.value, roomId.value).then((token) => {
       roomId.value = webrtcstore.roomId
+      if(roomId.value !== undefined && roomId.value !== null){
+        // roomId가 변경되면 localstorage에 저장합니다.
+        localStorage.setItem('roomId', roomId.value)  // 로컬스토리지에 roomId를 저장시켰으니 shutDown시킬때
+      }
+      
+      console.log('진짜로 룸아이디 되는거야?>??????',roomId.value)
       console.log(myUserName.value)
+      console.log('세션연결전이다!!!',token, {clientData: myUserName.value})
       session.value.connect(token, {clientData: myUserName.value})
       .then(() => {
         console.log('방생성 및 입장완료나 다름없음')
@@ -201,14 +197,16 @@
     })
     // window.addEventListener("beforeunload",leaveSession);
   }
-
-  function handleLeaveSession(){
+  
+  function handleLeaveSession(event){
     const isOut = confirm('방을 나가시겠습니까?')
     if(!isOut) return
     // 방을 나가는데 사람이 없으면 방을 폐쇄할 거임.
     console.log('핸들 나감으로 방폐쇄1')
     if(subscribersComputed.value.length == 0){  // 다른사람이 없으면 실행
-      webrtcstore.shutDownRoom(roomId.value)
+      // webrtcstore.shutDownRoom(roomId.value)
+      const localRoomId = localStorage.getItem('roomId')
+      webrtcstore.shutDownRoom(localRoomId)
       console.log('핸들 나감으로 방폐쇄2')
     }
     leaveSession()
@@ -217,7 +215,6 @@
   function leaveSession(){
     console.log('참여자',subscribersComputed.value)
     console.log('참여자수',subscribersComputed.value.length)
-    // if(session.value && confirmLeave) session.value.disconnect()
     if(session.value) session.value.disconnect()
     
     // Empty all properties...
@@ -227,12 +224,14 @@
     subscribers.value = [];
     OV.value = undefined;
 
-    // Remove beforeunload listener
-    window.removeEventListener("beforeunload", leaveSession)
-    document.removeEventListener('keydown', preventRefresh)
+    // 이벤트리스너 제거하기 beforeunload listener
+    // window.removeEventListener("beforeunload", handleLeaveSession)
+    // window.removeEventListener("beforeunload", leaveSession)
+    // document.removeEventListener('keydown', preventRefresh)
 
     isExitTrue()
-    // openNewWindow()
+    // const localRoomId = localStorage.getItem('roomId')
+    // openNewWindow2(`이건 리브세션버튼 누른거` + '섭스크라이브'+ subscribersComputed.value.length+'방id'+localRoomId)
     // 메인페이지로 넘어감
     router.push({
       name:'main',// 임시 이름 main으로 넘겨줌.
@@ -248,12 +247,10 @@
   async function createToken(mySessionId, roomId) {
     // 방 생성과 참가를 가르는 변수
     const isMaking = webrtcstore.isMaking // 해당 참여자의 isMaking의 값이 true인지 false인지 확인함,
-    /////////////////////////////////////////////////////
     // 방 참가시에 관련한 것
     const roomNo = roomId  // join하면서 
     const userNo = webrtcstore.userNo // 임시로 랜덤 값으로 보내는 중
     const inputPassword = webrtcstore.inputPassword
-    ////////////////////////////////////////////////////
     // 방 생성시에 관련한 것
     // const userNo = webrtcstore.userNo
     const endHour = webrtcstore.endHour
@@ -283,6 +280,8 @@
       catch(error){
         console.error('만들어진 방이없어서 발생한 에러:', error);
         webrtcstore.isMakingFalse()
+        // webrtcstore.roomExit(roomId.value)  // 방나가면 방나갔음을 백엔드로 전송.
+        openNewWindow2('방에 참가하다 leaveSession함 방아이디는'+localStorage.getItem('roomId'))
         leaveSession()
       }
     }
@@ -294,23 +293,22 @@
           {headers: { 'Content-Type': 'application/json', },
         });
         console.log('create할때',userNo, mySessionId, endHour, endMinute, quota, isPrivacy, password, backImgFile, rule)
-        webrtcstore.updateRoomId(response.data.room.id) // 만든 방의 룸Id,
-        /////////////////////////////////////////////////
-        // 방 ID 받아와야함. 그리고 그걸로 webrtcstore및 여기 roomId.value에 저장할 것.
-        /////////////////////////////////////////////////
+        webrtcstore.updateRoomId(response.data.room.id) // 만든 방의 룸Id를 store에 표기,
         webrtcstore.isMakingFalse()
+        console.log('방만들때 roomId 로컬에 저장!!!!!',  response.data.room.id)
+        // roomId가 변경되면 localstorage에 저장합니다.
+        localStorage.setItem('roomId', response.data.room.id)  // 로컬스토리지에 roomId를 저장시켰으니 shutDown시킬때
         return response.data.token;
       }
       catch(error){
         console.error("방 생성에도 오류 났음.",error);
         webrtcstore.isMakingFalse()
+        openNewWindow2('방을 만들다가 leaveSession함 방아이디는'+localStorage.getItem('roomId'))
         leaveSession()
       }
     }
   }
-
   ///////////////////////////////////////////////////////////////////////////////////////
-  ///////기타 기능
   // 캠, 오디오 등 기기와 관련된 함수
   // 카메라와 오디오를 가져옴.
   async function getMedia() {
@@ -324,7 +322,6 @@
       const cameraSelect = document.querySelector('select[name="cameras"]');
       const audioSelect = document.querySelector('select[name="audios"]');
       // 카메라 및 오디오 선택기 요소가 존재하는지 확인
-      // if (cameraSelect && audioSelect) {
       if (cameras) {
         cameras.forEach((camera) => {
           const option = document.createElement('option');
@@ -340,7 +337,6 @@
       } else {
         const notCamera = cameraSelect.querySelector('option:disabled');
         notCamera.innerText = '사용 가능한 카메라가 없습니다.'
-        // console.error('Camera selector not found');
         // 화면 공유 기능 추가를 위한 option
         const screenShareOpt = document.createElement('option')
         screenShareOpt.value = 'screenShare'
@@ -357,7 +353,6 @@
       } else {
         const notAudio = audioSelect.querySelector('option:disabled');
         notAudio.innerText = '사용 가능한 마이크가 없습니다.'
-        // console.error('Audio selector not found');
       }
       
     } catch (error) {
@@ -492,10 +487,26 @@
       console.log('방 페쇄 안하기로 결정')
     }
   }
+
+  ///////////// 확인용으로 tmp  임시로 만들어둠
+  function openNewWindow() {
+    const url = `https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=${roomId.value}`;
+    const windowName = "새 창";
+    const windowFeatures = "width=800,height=600";
+    
+    window.open(url, windowName, windowFeatures);
+  }
+  function openNewWindow2(roomabc) {
+    const url = `https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=${roomabc}`;
+    const windowName = "새 창";
+    const windowFeatures = "width=800,height=600";
+    
+    window.open(url, windowName, windowFeatures);
+  }
   
   function shutDownRoom(roomId) {
     webrtcstore.shutDownRoom(roomId)
-    roomId.value = null             // 방 폐쇄하고 브라우저의 roomId도 null값으로 만듬
+    // roomId.value = null             // 방 폐쇄하고 브라우저의 roomId도 null값으로 만듬
   }
 
   async function checkConnection(roomId) {
@@ -511,18 +522,26 @@
       console.error('체크커넥션 실패...',error.code, error.message)
     }
   }
-</script>
 
-<!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  --><!--  -->
+
+  ////// 나중에 지울거임
+  function checkSubScirbers(){
+    alert(subscribersComputed.value.length+'현재명수')
+  }
+
+</script>
 
 <template>
   <!-- session이 true일때! 즉, 방에 들어갔을 때 -->
   <!-- <div id="session" v-if="session" style="color: white;"> -->
   <div id="session" style="color: white;">
     <div>
+      <div>
+        <input type="button" value="참가자 수 확인" @click="checkSubScirbers">
+      </div>
       <div id="session-header">
         <h1 id="session-title">{{ mySessionId }}</h1>
-        <input type="button" id="buttonLeaveSession" @click="handleLeaveSession" value="Leave session" />
+        <input type="button" id="buttonLeaveSession" @click="handleLeaveSession" value="방 떠나기" />
       </div>
       <!-- 화상이 보이는 곳 -->
       <div id="camScreen"> 
@@ -575,7 +594,7 @@
       <div v-if="activeFuncTab === 1">메시지</div>
       <div v-if="activeFuncTab === 2">그라운드 룰</div>
       <div v-if="activeFuncTab === 3">공유</div>
-      <div v-if="isHost && activeFuncTab === 4">강제퇴장</div>
+      <!-- <div v-if="isHost && activeFuncTab === 4">강제퇴장</div> -->
     </div>
     <!-- 참여 멤버 -->
     <div v-if="activeFuncTab === 0">
@@ -594,12 +613,11 @@
     </div>
     <!-- 공유 -->
     <div v-if="activeFuncTab === 3"></div>
-    <div v-if="isHost && activeFuncTab === 4">
-      강제 퇴장
+    <!-- <div v-if="isHost && activeFuncTab === 4">
       <div>
 
       </div>
-    </div>
+    </div> -->
   </div>
     
 </template>
