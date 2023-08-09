@@ -30,8 +30,8 @@ public class S3Controller {
         HttpStatus status = HttpStatus.OK;
         Map<String, Object> resultMap;
         switch(pattern){
-            case "profile", "alarm", "room" -> resultMap = s3Service.getSingleUrl(pattern, id);
-            case "question", "answer" -> resultMap = s3Service.getMultiUrl(pattern, id);
+            case "profile", "alarm", "room" -> resultMap = s3Service.getUrl(pattern, id);
+            case "question", "answer" -> resultMap = s3Service.getUrlList(pattern, id);
             default -> {
                 resultMap = new HashMap<>();
                 resultMap.put("message", "Failed, "+pattern+" 스펠링 확인");
