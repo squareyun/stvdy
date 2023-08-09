@@ -6,6 +6,9 @@ import axios from 'axios'
 export const usewebRtcStore = defineStore({
   id: 'webrtc',
   state: () => ({
+    APPLICATION_SERVER_URL : 'http://localhost:8080/',
+
+
     userNo: useUsersStore().user.id,
     mySessionId: '되라'+ (Math.floor(Math.random() * (200 - 1 + 1)) + 1),
     myUserName : useUsersStore().user.username,
@@ -120,7 +123,7 @@ export const usewebRtcStore = defineStore({
       axios({
         method: 'get',
         // url: 'http://54.180.9.43:8080/rooms/add/'',
-        url: 'http://localhost:8080/rooms/add/',
+        url: this.APPLICATION_SERVER_URL+'rooms/add/',
         headers: store.getters.authHeader,
       })
         .then((res) => {
@@ -139,7 +142,7 @@ export const usewebRtcStore = defineStore({
       try{
         // const response = axios.get('http://54.180.9.43:8080/rooms/list/')
         console.log('getRtcRooms내부1')
-        const response = await axios.get('http://localhost:8080/rooms/list')
+        const response = await axios.get(this.APPLICATION_SERVER_URL+'rooms/list')
         console.log('getRtcRooms내부2')
         this.roomList = response.data.roomList
         console.log(this.roomList)
@@ -155,7 +158,7 @@ export const usewebRtcStore = defineStore({
       try{
         // const response = axios.get('http://54.180.9.43:8080/rooms/list/')
         console.log('getEveryRoomTags 내부1')
-        // const response = await axios.get('http://localhost:8080/rooms/tags')
+        // const response = await axios.get(this.APPLICATION_SERVER_URL+'rooms/tags')
         console.log('getEveryRoomTags 내부2')
         // this.roomList = response.data.roomList
         console.log(this.roomList)
@@ -188,7 +191,7 @@ export const usewebRtcStore = defineStore({
       console.log('shutDownRoom내부1\n',roomId)
       try{
         console.log('shutDownRoom내부2', roomId)
-        const response = await axios.delete(`http://localhost:8080/rooms/${roomId}`)
+        const response = await axios.delete(this.APPLICATION_SERVER_URL+`rooms/${roomId}`)
         console.log('shutDownRoom',response.data)
         console.log('방이 성공적으로 제거되었습니다.')
         // this.roomId = null
@@ -199,14 +202,12 @@ export const usewebRtcStore = defineStore({
     },
 
     async roomExit(roomId){
-      console.log('나갈방번호',roomId)
-      console.log("방나갈거야!!!!!!!!!!!")
+      console.log('함수 roomExit 들어옴',roomId)
       try{
         // participan~~ 는 방에 참여한 사람 번호,  userNo는 내 번호.
         // participantNo는 방에 독립적인 참여자 번호,
-        const response = await axios.post('http://localhost:8080/rooms/exit',{roomNo:roomId, userNo: this.userNo})
-        console.log('방나감의 리스폰스',response.data)
-        console.log("방나갔다!!!!!!!")
+        const response = await axios.post(this.APPLICATION_SERVER_URL+'rooms/exit',{roomNo:roomId, userNo: this.userNo})
+        console.log('함수 roomExit 의 리스폰스',response.data)
       }
       catch(error){
         console.error('RoomExit에 문제가 생겼습니다.', error.code, error.message);
@@ -216,7 +217,7 @@ export const usewebRtcStore = defineStore({
     async checkCurrentConnection(roomId){
       console.log('현재 커넥션 확인할 방 번호',roomId)
       try{
-        const response = await axios.get(`http://localhost:8080//rooms/currentConnection/${roomId}`)
+        const response = await axios.get(this.APPLICATION_SERVER_URL+`rooms/currentConnection/${roomId}`)
         console.log('확인함')
         console.log('현재 커넥션',response.data)
       }
@@ -229,14 +230,24 @@ export const usewebRtcStore = defineStore({
     async checkCurrentConnection(roomId){
       console.log('현재 커넥션 확인할 방 번호',roomId)
       try{
-        const response = await axios.get(`http://localhost:8080//rooms/kick`,{roomNo: this.roomId, userNo: userNo, reason: reason})
-        console.log('확인함')
+        const response = await axios.get(this.APPLICATION_SERVER_URL+`rooms/kick`,{roomNo: this.roomId, userNo: userNo, reason: reason})
         console.log('현재 커넥션',response.data)
       }
       catch(error){
         console.error('checkCurrentConnection에 문제가 생겼습니다.', error.code, error.message);
       }
     },
+
+    async shareRoomAddress(roomId){
+      console.log('방 공유 함수 들어옴')
+      try{
+        const response = await axios.get(this.APPLICATION_SERVER_URL+`rooms/code/`+roomId)
+        console.log('방 공유 백엔드 연결완료',response.data)
+      }
+      catch(error){
+        console.error('방 공유 함수에 문제가 생겼습니다.', error.code, error.message);
+      }
+    }
   },
   mutations: {
     GETMYSESSIONID(state, datas){

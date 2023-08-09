@@ -65,10 +65,8 @@
   const mainStreamManagerComputed = computed(() => mainStreamManager.value);
   const publisherComputed = computed(() => publisher.value);
   const subscribersComputed = computed(() => subscribers.value);
-  ///////////////////
   // 방 이탈를 위한 변수들
   const isExitRoom = ref(webrtcstore.isExitRoom)  // leave
-  ///////////////////
 
   onBeforeMount(() => {
     // window.addEventListener("beforeunload",leaveSession)
@@ -82,16 +80,6 @@
       leaveSession()
     }
   })
-
-  function escapePage() {
-    const localRoomId = localStorage.getItem('roomId')
-    openNewWindow2(`이스케이프페이지 탐 ${subscribersComputed.value.length}`)
-    if (!subscribersComputed.value.length){ // 다른 참여자가 없으면.
-      shutDownRoom(localRoomId)
-    }
-    leaveSession()
-  }
-
   //// 페이지 벗어나면 
   onBeforeUnmount(()=>{
     if(!isExitRoom.value){  // leaveSession버튼을 누르지 않았을때만.
@@ -103,7 +91,7 @@
         openNewWindow2(`제발좀 되라${subscribersComputed.value.length}`)
         const localRoomId = localStorage.getItem('roomId')
         webrtcstore.shutDownRoom(localRoomId)
-        // roomId.value = null             //방 폐쇄하고 브라우저의 roomId도 null값으로 만듬
+        // roomId.value = null                //방 폐쇄하고 브라우저의 roomId도 null값으로 만듬
         console.log('나감으로 방폐쇄2')
       }
       openNewWindow2('왜안됨')
@@ -116,7 +104,6 @@
     webrtcstore.roomExit(roomId.value)  // 방나가면 방나갔음을 백엔드로 전송.
     isExitFalse()
     // localStorage.removeItem('roomId')
-
     // window.removeEventListener("beforeunload", leaveSession)
     // document.removeEventListener('keydown', preventRefresh)
   })
@@ -165,11 +152,7 @@
       if(roomId.value !== undefined && roomId.value !== null){
         // roomId가 변경되면 localstorage에 저장합니다.
         localStorage.setItem('roomId', roomId.value)  // 로컬스토리지에 roomId를 저장시켰으니 shutDown시킬때
-      }
-      
-      console.log('진짜로 룸아이디 되는거야?>??????',roomId.value)
-      console.log(myUserName.value)
-      console.log('세션연결전이다!!!',token, {clientData: myUserName.value})
+      }      
       session.value.connect(token, {clientData: myUserName.value})
       .then(() => {
         console.log('방생성 및 입장완료나 다름없음')
@@ -190,14 +173,15 @@
           session.value.publish(publisher.value)
           getMedia()  // 세션이 만들어졌을때 미디어 불러옴
           console.log('방생성 완료!!!')
+          webrtcstore.shareRoomAddress(localStorage.getItem('roomId'))  // 방 공유관련 정보 받음
         })
         .catch((error) => {
           console.log("session 커넥팅에 문제생김(createToken):", error.code, error.message);
+          escapePage()
         })
     })
     // window.addEventListener("beforeunload",leaveSession);
   }
-  
   function handleLeaveSession(event){
     const isOut = confirm('방을 나가시겠습니까?')
     if(!isOut) return
@@ -211,24 +195,20 @@
     }
     leaveSession()
   }
-
   function leaveSession(){
     console.log('참여자',subscribersComputed.value)
     console.log('참여자수',subscribersComputed.value.length)
     if(session.value) session.value.disconnect()
-    
     // Empty all properties...
     session.value = undefined;
     mainStreamManager.value = undefined;
     publisher.value = undefined;
     subscribers.value = [];
     OV.value = undefined;
-
     // 이벤트리스너 제거하기 beforeunload listener
     // window.removeEventListener("beforeunload", handleLeaveSession)
     // window.removeEventListener("beforeunload", leaveSession)
     // document.removeEventListener('keydown', preventRefresh)
-
     isExitTrue()
     // const localRoomId = localStorage.getItem('roomId')
     // openNewWindow2(`이건 리브세션버튼 누른거` + '섭스크라이브'+ subscribersComputed.value.length+'방id'+localRoomId)
@@ -237,12 +217,38 @@
       name:'main',// 임시 이름 main으로 넘겨줌.
     })
   }
+  function escapePage() {
+    const localRoomId = localStorage.getItem('roomId')
+    openNewWindow2(`이스케이프페이지 탐 ${subscribersComputed.value.length}`)
+    if (!subscribersComputed.value.length){ // 다른 참여자가 없으면.
+      shutDownRoom(localRoomId)
+    }
+    leaveSession()
+  }
+  function handleShutDownRoom(roomId) {
+    const isShut = confirm("방을 페쇄 하시겠습니까?")
+    if(isShut){
+      alert('알겠습니다. 방을 폐쇄하겠습니다.')
+      try{shutDownRoom(roomId)}
+      catch(error){
+        console.log('이상생김',error)
+      }
+      leaveSession()
+    }
+    else{
+      console.log('방 페쇄 안하기로 결정')
+    }
+  }
 
+  function shutDownRoom(roomId) {
+    webrtcstore.shutDownRoom(roomId)
+    // roomId.value = null             // 방 폐쇄하고 브라우저의 roomId도 null값으로 만듬
+  }
+  ////////////////////////
   function updateMainVideoStreamManager(stream) {
     if (mainStreamManager.value === stream) return
     mainStreamManager.value = stream
   }
-
   //// 방 참여에 있어 방을 생성해주고, 방에 참석할 수 있게 해주는 것.
   async function createToken(mySessionId, roomId) {
     // 방 생성과 참가를 가르는 변수
@@ -370,7 +376,6 @@
       console.error("Error starting screen share:", error);
     }
   }
-
   // 음소거, 캠 활성화 버튼 작동
   function handleCameraBtn() {
     if (!publisher.value) return;
@@ -385,7 +390,6 @@
     // 카메라 작동 상태를 적용
     publisher.value.publishVideo(!camerOff.value);
   }
-
   function handleMuteBtn() {
     if (!publisher.value) return;
 
@@ -400,7 +404,6 @@
     // 음소거 설정을 적용
     publisher.value.publishAudio(!muted.value);
   }
-
   async function handleCameraChange(event) {
     // 스크린 공유 선택 옵션 확인 및 호출
     if (event.target.value === "screenShare") {
@@ -410,12 +413,10 @@
       await replaceCameraTrack(selectedCamera.value);
     }
   }
-
   async function handleAudioChange(event) {
     selectedAudio.value = event.target.value;
     await replaceAudioTrack(selectedAudio.value);
   }
-
   async function replaceCameraTrack(deviceId) {
     if (!publisher.value) return;
 
@@ -440,17 +441,14 @@
 
     }
   }
-
   async function replaceAudioTrack(deviceId) {
     if (!publisher.value) return;
-
     const newConstraints = {
         audio: {
             deviceId: { exact: deviceId },
         },
         video: false,
     };
-
     try {
         const newStream = await navigator.mediaDevices.getUserMedia(newConstraints);
         const newAudioTrack = newStream.getAudioTracks()[0];
@@ -471,23 +469,6 @@
     console.log(myUserName.value)
   }
   /////////////////////////
-  function handleShutDownRoom(roomId) {
-    console.log(roomId)
-    const isShut = confirm("방을 페쇄 하시겠습니까?")
-    if(isShut){
-      alert('알겠습니다. 방을 폐쇄하겠습니다.')
-      console.log('방 폐쇄하기로 결정')
-      try{shutDownRoom(roomId)}
-      catch(error){
-        console.log('이상생김',error)
-      }
-      leaveSession()
-    }
-    else{
-      console.log('방 페쇄 안하기로 결정')
-    }
-  }
-
   ///////////// 확인용으로 tmp  임시로 만들어둠
   function openNewWindow() {
     const url = `https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=${roomId.value}`;
@@ -503,12 +484,6 @@
     
     window.open(url, windowName, windowFeatures);
   }
-  
-  function shutDownRoom(roomId) {
-    webrtcstore.shutDownRoom(roomId)
-    // roomId.value = null             // 방 폐쇄하고 브라우저의 roomId도 null값으로 만듬
-  }
-
   async function checkConnection(roomId) {
     console.log(subscribersComputed.value)
     console.log(subscribersComputed.value.length)
@@ -522,13 +497,10 @@
       console.error('체크커넥션 실패...',error.code, error.message)
     }
   }
-
-
   ////// 나중에 지울거임
   function checkSubScirbers(){
     alert(subscribersComputed.value.length+'현재명수')
   }
-
 </script>
 
 <template>
