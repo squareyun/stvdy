@@ -48,11 +48,11 @@ public class AnswerService {
 			.build();
 
 		// 사용자에게 알림 전송
-		// String detailUrl = "/questions/" + question.getId();
-		String detailUrl = "/mypage";
+		// TODO: 질문 URL이 맞는지 확인 필요
+		String detailUrl = "/questions/" + question.getId();
 
 		Alarm alarm = Alarm.builder()
-			.title(answer.getUser().getNickname() + "님이 질문에 댓글을 달았습니다.")
+			.title(answer.getUser().getNickname() + " 님이 질문에 댓글을 달았습니다.")
 			.detail(detailUrl)
 			.isRead(false)
 			.registTime(LocalDateTime.now())

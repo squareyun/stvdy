@@ -55,22 +55,22 @@ public class AlarmController {
 	 * alarm 리스트 조회 - 최신순 정렬
 	 */
 	@GetMapping("/")
-	public ResponseEntity<Map<String, Object>> getAlarmList() {
+	public ResponseEntity<Map<String, Object>> getAlarms() {
 		Map<String, Object> resultMap = new HashMap<>();
 		HttpStatus status = null;
 		try {
 			long unreadCnt = 0;
-			List<AlarmListResponseDto> alarmList = alarmService.getAlarmList();
-			if (alarmList.size() > 0) {
-				unreadCnt = alarmService.countUnReadAlarms(alarmList);
+			List<AlarmListResponseDto> alarms = alarmService.getRecentAlarms();
+			if (alarms.size() > 0) {
+				unreadCnt = alarmService.countUnReadAlarms(alarms);
 			}
-			logger.info("{} alarm 목록 조회 성공", alarmList.size());
+			logger.info("{} alarm 한달 이내 목록 조회 성공", alarms.size());
 			resultMap.put("message", MessageFormat.SUCCESS);
-			resultMap.put("alarmList", alarmList);
+			resultMap.put("alarms", alarms);
 			resultMap.put("unreadCnt", unreadCnt);
 			status = HttpStatus.ACCEPTED;
 		} catch (Exception e) {
-			logger.error("alarm 목록 조회 실패: {}", e.getMessage());
+			logger.error("alarm 한달 이내 목록 조회 실패: {}", e.getMessage());
 			resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getClass().getSimpleName());
 			status = HttpStatus.INTERNAL_SERVER_ERROR;
 		}
@@ -93,6 +93,33 @@ public class AlarmController {
 
 		return "redirect:" + questionDetailUrl;
 	}
+
+	/**
+	 * alarm 리스트 조회 - 최신순 정렬
+	 *
+	 @GetMapping("/list") public ResponseEntity<Map<String, Object>> getAlarmList() {
+	 Map<String, Object> resultMap = new HashMap<>();
+	 HttpStatus status = null;
+	 try {
+	 long unreadCnt = 0;
+	 List<AlarmListResponseDto> alarmList = alarmService.getAlarmList();
+	 if (alarmList.size() > 0) {
+	 unreadCnt = alarmService.countUnReadAlarms(alarmList);
+	 }
+	 logger.info("{} alarm 목록 조회 성공", alarmList.size());
+	 resultMap.put("message", MessageFormat.SUCCESS);
+	 resultMap.put("alarms", alarmList);
+	 resultMap.put("unreadCnt", unreadCnt);
+	 status = HttpStatus.ACCEPTED;
+	 } catch (Exception e) {
+	 logger.error("alarm 목록 조회 실패: {}", e.getMessage());
+	 resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getClass().getSimpleName());
+	 status = HttpStatus.INTERNAL_SERVER_ERROR;
+	 }
+
+	 return new ResponseEntity<Map<String, Object>>(resultMap, status);
+	 }
+	 */
 
 	/**
 	 * alarm 상세 조회

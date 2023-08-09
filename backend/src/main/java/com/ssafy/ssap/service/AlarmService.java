@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,6 +53,26 @@ public class AlarmService {
 		List<Alarm> alarmList = alarmRepository.findByUserIdInOrderByRegistTimeDesc(targetUserIds);
 
 		return alarmList.stream()
+			.map(this::mapToDto)
+			.collect(Collectors.toList());
+	}
+
+	public List<AlarmListResponseDto> getRecentAlarms() {
+		String userEmail = userService.getMyUserWithAuthorities().getEmail();
+		User user = userRepository.findOneWithAuthoritiesByEmail(userEmail)
+			.orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
+
+		List<Integer> targetUserIds = List.of(1, 2, user.getId());
+
+		LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
+
+		Sort sort = Sort.by(Sort.Direction.DESC, "registTime");
+		PageRequest pageRequest = PageRequest.of(0, 20, sort);
+
+		List<Alarm> alarms = alarmRepository.findByUserIdInAndRegistTimeAfterOrderByRegistTimeDesc(targetUserIds,
+			oneMonthAgo, pageRequest);
+
+		return alarms.stream()
 			.map(this::mapToDto)
 			.collect(Collectors.toList());
 	}
