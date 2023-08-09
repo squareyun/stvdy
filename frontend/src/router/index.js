@@ -1,6 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 // import RoomView from '../views/RoomView.vue'
 import { useAuthStore, useAlertStore, useUserStore } from '@/stores'
+import TestView from '../views/TestView.vue'
+import Test from '../components/Test.vue'
+import MyPageView from '../views/MyPageView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,34 +11,25 @@ const router = createRouter({
     {
       path: '/',
       alias: ['/home'],
-      name: 'home',
-      component: () => import('../views/HomeView.vue'),
+      component: TestView,
       children: [
         {
           path: '',
           name: 'main',
-          component: () => import('../components/Test.vue'),
+          component: Test,
         },
       ],
     },
     {
       path: '/mypage',
-      name: 'mypage',
-      component: () => import('../views/MyPageView.vue'),
+      component: MyPageView,
       children: [
         {
           path: '',
-          name: 'profile',
           component: () => import('../components/profile/MyPage.vue'),
           children: [
             {
-              path: '/deactivate',
-              name: 'deactivate',
-              component: () => import('../components/profile/Deactivate.vue'),
-            },
-            {
-              path: '/changepwd',
-              name: 'changepwd',
+              path: 'changepwd',
               component: () => import('../components/profile/ChangePwd.vue'),
             },
           ],

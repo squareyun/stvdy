@@ -29,7 +29,7 @@ const logout = async () => {
 
       홈
     </router-link>
-    <router-link
+    <!-- <router-link
       to="/lecture"
       id="side-lecture">
       <div class="selected"></div>
@@ -53,7 +53,7 @@ const logout = async () => {
           fill="white" />
       </svg>
       강의 정보 공유
-    </router-link>
+    </router-link> -->
     <router-link
       to="/question"
       id="side-question">
@@ -70,7 +70,7 @@ const logout = async () => {
       </svg>
       질문 게시판
     </router-link>
-    <div class="div-line"></div>
+    <div class="side-bar-div-line"></div>
     <router-link
       to="/mypage"
       id="side-lecture">
@@ -87,7 +87,7 @@ const logout = async () => {
       </svg>
       프로필
     </router-link>
-    <router-link
+    <!-- <router-link
       to="/myquestion"
       id="side-myquestion">
       <div class="selected"></div>
@@ -102,8 +102,8 @@ const logout = async () => {
           fill="white" />
       </svg>
       내 질문
-    </router-link>
-    <router-link
+    </router-link> -->
+    <!-- <router-link
       to="/alarms"
       id="side-alarms">
       <div class="selected"></div>
@@ -118,7 +118,7 @@ const logout = async () => {
           fill="white" />
       </svg>
       알림
-    </router-link>
+    </router-link> -->
 
     <div id="side-foot">
       <a
@@ -161,7 +161,7 @@ const logout = async () => {
   position: fixed;
   left: 0;
   top: 110px;
-  width: 250px;
+  width: 200px;
   height: calc(100vh - 110px);
   /*
   background-color: rgb(65, 65, 65); */
@@ -236,10 +236,10 @@ path {
   fill: var(--hl-light);
 }
 
-.div-line {
+.side-bar-div-line {
   width: 120px;
   height: 1px;
-  margin-left: 20px;
+  margin-left: 10px;
   margin-top: 10px;
   margin-bottom: 30px;
 

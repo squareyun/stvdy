@@ -52,7 +52,7 @@ async function showDetail(id) {
 
 <template>
   <div>
-    <span class="content-title">질문 게시판</span>
+    <span class="question-content-title">질문 게시판</span>
     <router-link
       id="add-question"
       to="/createquestion">
@@ -140,7 +140,7 @@ async function showDetail(id) {
   position: absolute;
   right: -6.5rem;
 
-  font-family: 'ASDGothicT';
+  font-family: 'ASDGothicUL';
   color: var(--hl-light);
 }
 
@@ -207,7 +207,7 @@ async function showDetail(id) {
 
   color: var(--hl-light);
   display: inline-block;
-  font-family: 'ASDGothicT';
+  font-family: 'ASDGothicUL';
   text-align: center;
 
   border: 1px solid var(--hl-purple);
@@ -253,7 +253,7 @@ async function showDetail(id) {
 
   color: var(--hl-light);
 
-  font-family: 'ASDGothicT';
+  font-family: 'ASDGothicUL';
   font-size: 0.9rem;
 }
 
@@ -272,7 +272,7 @@ async function showDetail(id) {
 
 .wrote-from {
   font-size: 0.9rem;
-  font-family: 'ASDGothicT';
+  font-family: 'ASDGothicUL';
 }
 
 .info-status {
@@ -287,7 +287,7 @@ async function showDetail(id) {
 
 .info-status > p {
   margin: 0px;
-  font-family: 'ASDGothicT';
+  font-family: 'ASDGothicUL';
   font-size: 0.9rem;
 }
 

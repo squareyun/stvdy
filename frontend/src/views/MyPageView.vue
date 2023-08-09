@@ -8,7 +8,7 @@ import TopSearch from '@/components/TopSearch.vue'
   <TopSearch id="top-items" />
   <main>
     <!-- <TheWelcome /> -->
-    <router-view id="contents" />
+    <router-view id="mypage-contents" />
   </main>
 </template>
 
@@ -17,7 +17,7 @@ import TopSearch from '@/components/TopSearch.vue'
   z-index: 100;
 }
 
-#contents {
+#mypage-contents {
   position: absolute;
   top: 120px;
   left: calc(50vw - 480px);
@@ -29,17 +29,17 @@ import TopSearch from '@/components/TopSearch.vue'
 }
 
 @media (max-width: 1360px) {
-  #contents {
+  #mypage-contents {
     left: 200px;
   }
 }
 
-.content-title {
+.mypage-content-title {
   margin: 0;
   color: var(--hl-light);
 }
 
-.content {
+.mypage-content {
   position: relative;
 
   background-color: var(--background-window);

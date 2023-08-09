@@ -51,8 +51,8 @@ async function onSubmit(values) {
 
 <template>
   <div>
-    <span class="content-title">질문 작성</span>
-    <div class="content">
+    <span class="question-content-title">질문 작성</span>
+    <div class="question-content">
       <Form
         id="question-form"
         @submit="onSubmit"
@@ -65,11 +65,11 @@ async function onSubmit(values) {
           id="question-form-title"
           placeholder="제목을 입력해주세요."
           :class="{ 'is-invalid': errors.title }" />
-        <button
+        <div
           id="question-form-title-btn"
           @click="openTextArea(question.title)">
           다음
-        </button>
+        </div>
         <div id="category-select">
           <Form autocomplete="off">
             <p class="field-name">
@@ -164,7 +164,7 @@ async function onSubmit(values) {
   margin-top: 40px;
 
   /* text-align: center; */
-  font-family: 'ASDGothicT';
+  font-family: 'ASDGothicUL';
 }
 
 .field {
