@@ -320,7 +320,7 @@
         </p>
         <p>
           <button @click="joinSession">
-            생성! 또는 참가!(임시)
+            방 생성하기
           </button>
         </p>
       </div>

@@ -85,6 +85,7 @@
       leaveSession()
     }
   })
+  
 
   //// 페이지 벗어나면 
   onBeforeUnmount(()=>{
@@ -92,13 +93,17 @@
       // 방을 나가는데 사람이 없으면 방을 폐쇄할 거임.
       console.log('나감으로 방폐쇄1')
       if(subscribersComputed.value.length == 0){  // 다른사람이 없으면 실행
-        webrtcstore.shutDownRoom(roomId.value)
+        // openNewWindow2(webrtcstore.roomId)
+        webrtcstore.shutDownRoom(webrtcstore.roomId)
+        roomId.value = null             //방 폐쇄하고 브라우저의 roomId도 null값으로 만듬
         console.log('나감으로 방폐쇄2')
       }
       leaveSession()
     }
     webrtcstore.roomExit(roomId.value)  // 방나가면 방나갔음을 백엔드로 전송.
     isExitFalse()
+    // window.removeEventListener("beforeunload", leaveSession)
+    // document.removeEventListener('keydown', preventRefresh)
   })
   function isExitTrue() {
     webrtcstore.isExitTrue()
@@ -108,6 +113,22 @@
     webrtcstore.isExitFalse()
     isExitRoom.value = false
   }
+
+  /////////////// 확인용으로 tmp  임시로 만들어둠
+  // function openNewWindow() {
+  //   const url = `https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=${roomId.value}`;
+  //   const windowName = "새 창";
+  //   const windowFeatures = "width=800,height=600";
+    
+  //   window.open(url, windowName, windowFeatures);
+  // }
+  // function openNewWindow2(roomabc) {
+  //   const url = `https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=${roomabc}`;
+  //   const windowName = "새 창";
+  //   const windowFeatures = "width=800,height=600";
+    
+  //   window.open(url, windowName, windowFeatures);
+  // }
 
   // vue2에서의 methods 부분을 vue3화 handleUnload
   function joinSession() {
@@ -124,8 +145,6 @@
       // const subscriber = session.subscribe(stream)
       const subscriber = session.value.subscribe(stream)
       subscribers.value.push(subscriber)
-      console.log('이게바로 섭스크라이버들',subscribers.value)
-      console.log('이게바로 섭스크라이버들',subscribersComputed.value)
     })
 
     // 모든 스트림 파괴...
@@ -135,7 +154,6 @@
         subscribers.value.splice(index, 1)
       }
     })
-
 
     // 모두 asynchronous exception 처리 할거임...
     session.value.on("exception", ({ exception }) => {
@@ -155,12 +173,7 @@
     // createToken(mySessionId.value).then((token) => {
     createToken(mySessionId.value, roomId.value).then((token) => {
       roomId.value = webrtcstore.roomId
-      console.log('이게 이방의 roomId',roomId.value)
-      console.log('createToken들어옴')
-      console.log('토큰임',token)
       console.log(myUserName.value)
-      
-      console.log('여긴가1')
       session.value.connect(token, {clientData: myUserName.value})
       .then(() => {
         console.log('방생성 및 입장완료나 다름없음')
@@ -202,8 +215,8 @@
   }
 
   function leaveSession(){
-    console.log('콘솔로그',subscribersComputed.value)
-    console.log('콘솔로그',subscribersComputed.value.length)
+    console.log('참여자',subscribersComputed.value)
+    console.log('참여자수',subscribersComputed.value.length)
     // if(session.value && confirmLeave) session.value.disconnect()
     if(session.value) session.value.disconnect()
     
@@ -219,6 +232,7 @@
     document.removeEventListener('keydown', preventRefresh)
 
     isExitTrue()
+    // openNewWindow()
     // 메인페이지로 넘어감
     router.push({
       name:'main',// 임시 이름 main으로 넘겨줌.
@@ -261,8 +275,8 @@
         /////////////////////////////////
         // 유저 누구누구 있는지 받아와야함.
         ////////////////////////////////
-        console.log('조인룸 내부 해치웠나?1')
-        console.log('joinRoom 리스폰스데이터 잘 받음',response.data)
+        console.log('방에 참여하나')
+        console.log('방에 참여 리스폰스데이터 잘 받음',response.data)
         webrtcstore.isMakingFalse()
         return response.data
       }
@@ -288,7 +302,7 @@
         return response.data.token;
       }
       catch(error){
-        console.error("방생성에도 오류 났음.",error);
+        console.error("방 생성에도 오류 났음.",error);
         webrtcstore.isMakingFalse()
         leaveSession()
       }
@@ -452,7 +466,8 @@
   }
   /////////////////////////
   // 탭 메뉴 관련
-  const funcTabs = ref(['참여멤버', '메시지', '그라운드 룰', '공유'])
+  // const funcTabs = ref(['참여멤버', '메시지', '그라운드 룰', '공유'])
+  const funcTabs = ref(['참여멤버', '메시지', '그라운드 룰', '공유', '사용자 강퇴'])
   const activeFuncTab = ref(0)
   const roomRule = ref(webrtcstore.rule)
 
@@ -465,9 +480,12 @@
     console.log(roomId)
     const isShut = confirm("방을 페쇄 하시겠습니까?")
     if(isShut){
-      alert('알겠습니다. 방을 폐쇄하도록하죠.')
+      alert('알겠습니다. 방을 폐쇄하겠습니다.')
       console.log('방 폐쇄하기로 결정')
-      shutDownRoom(roomId)
+      try{shutDownRoom(roomId)}
+      catch(error){
+        console.log('이상생김',error)
+      }
       leaveSession()
     }
     else{
@@ -477,6 +495,7 @@
   
   function shutDownRoom(roomId) {
     webrtcstore.shutDownRoom(roomId)
+    roomId.value = null             // 방 폐쇄하고 브라우저의 roomId도 null값으로 만듬
   }
 
   async function checkConnection(roomId) {
@@ -556,6 +575,7 @@
       <div v-if="activeFuncTab === 1">메시지</div>
       <div v-if="activeFuncTab === 2">그라운드 룰</div>
       <div v-if="activeFuncTab === 3">공유</div>
+      <div v-if="isHost && activeFuncTab === 4">강제퇴장</div>
     </div>
     <!-- 참여 멤버 -->
     <div v-if="activeFuncTab === 0">
@@ -574,6 +594,12 @@
     </div>
     <!-- 공유 -->
     <div v-if="activeFuncTab === 3"></div>
+    <div v-if="isHost && activeFuncTab === 4">
+      강제 퇴장
+      <div>
+
+      </div>
+    </div>
   </div>
     
 </template>
