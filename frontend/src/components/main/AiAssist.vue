@@ -18,13 +18,17 @@ async function onSubmit(values) {
     chatList.appendChild(newMessage)
     values.question = qnaQuery + values.question
 
-    const imgEle = document.createElement("img")
+    const loadingImg = document.createElement("img")
+    loadingImg.setAttribute('src', '/loading.gif')
+    loadingImg.setAttribute('id', 'loading-wheel')
+    chatList.appendChild(loadingImg)
 
     const questionBox = document.getElementById('ai-question')
     questionBox.value = ''
 
     await useOpenAiStore.qna(values)
 
+    chatList.removeChild(loadingImg)
     const aiReply = document.createElement("li")
     aiReply.innerText = 'AI: ' + useOpenAiStore.answer
     chatList.appendChild(aiReply)
@@ -54,12 +58,10 @@ async function onSubmit2(values) {
 
 <template>
   <div id="aiChatBox">
-    <img src="/loading.gif" alt="">
     Test function - AI Assist
     <ul id="aiChatList">
     </ul>
     <Form @submit="onSubmit">
-      <!-- <Field name="type" type="text" placeholder="답변 스타일" /> -->
       <Field name="type" as="select">
         <option value="" disabled selected>답변해줄 인물을 고르세요.</option>
         <option value="You are a good assistant">기본 AI</option>
@@ -93,5 +95,10 @@ async function onSubmit2(values) {
   right: 10px;
   color: white;
   max-width: 400px;
+}
+
+#loading-wheel {
+  height: 50px;
+  width: 50px;
 }
 </style>

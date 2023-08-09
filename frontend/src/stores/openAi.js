@@ -40,7 +40,7 @@ export const useAiAssist = defineStore({
     // 아래기능은 규정위반을 감지하는 기능
     // string 형태의 텍스트를 매개변수로 받으면 해당 텍스트의 폭력성, 선정성, 자해가능성
     // 등을 감지하여 각 카테고리 True/False 및 0~1 사이의 수치로도 결과를 반환함
-    // 영어 이외의 언어는 감지하지 못하여 영어로 번역 후에 텍스트를 검사함
+    // 영어 이외의 언어는 감지하지 못하여 위의 qna기능을 사용해 영어로 번역 후에 텍스트를 검사함
     async violationDetect(value) {
       console.log(
         '배포시에는 본 콘솔출력문을 삭제하시오. violation detection activated',
