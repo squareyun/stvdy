@@ -119,5 +119,22 @@ public class AnswerService {
 			.orElseThrow(() -> new IllegalArgumentException(MessageFormat.NO_ANSWER_ID));
 
 		question.selectAnswer(answer);
+
+		// 답변 채택시, 답변 작성자에게 알림 전송
+		// TODO: 질문 URL이 맞는지 확인 필요
+		String detailUrl = "/questions/" + question.getId();
+
+		Alarm alarm = Alarm.builder()
+			.title(answer.getUser().getNickname() + " 님의 댓글이 채택되었습니다.")
+			.detail(detailUrl)
+			.isRead(false)
+			.registTime(LocalDateTime.now())
+			.user(answer.getUser())
+			.build();
+
+		answerRepository.save(answer);
+		alarmRepository.save(alarm);
+
 	}
+
 }
