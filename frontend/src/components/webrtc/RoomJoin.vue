@@ -14,6 +14,8 @@
 
   //////////// 새로고침 방지!
   document.addEventListener('keydown', preventRefresh)
+  document.addEventListener('keyup', preventRefresh)
+  document.addEventListener('keypress', preventRefresh)
   function preventRefresh(event) {
     const key_f5 = 116; // 116 = F5
     const key_r = 82; // 82 = R
@@ -99,6 +101,8 @@
     // window.removeEventListener("beforeunload", leaveSession)
     window.removeEventListener("beforeunload", escapePage)
     document.removeEventListener('keydown', preventRefresh)
+    document.removeEventListener('keyup', preventRefresh)
+    document.removeEventListener('keypress', preventRefresh)
     webrtcstore.roomExit(roomId.value)  // 방나가면 방나갔음을 백엔드로 전송.
     isExitFalse()
   })
@@ -157,14 +161,6 @@
       console.log(messageData)
       messages.value.push(messageData);
     })
-
-    // 강제로 연결이 끊어지게 하기.
-    session.value.on('sessionDisconnected', (event) => {
-      if(event.reason === 'forceDisconnect') {
-        leaveSession();
-      }
-    });
-
 
     // createToken(mySessionId.value).then((token) => {
     createToken(mySessionId.value, roomId.value).then((token) => {
@@ -491,8 +487,9 @@
   /////////////////////////
   // 탭 메뉴 관련
   // const funcTabs = ref(['참여멤버', '메시지', '그라운드 룰', '공유'])
-  const funcTabs = ref(['참여멤버', '메시지', '그라운드 룰', '공유', '사용자 강퇴'])
-  const activeFuncTab = ref(0)
+  const funcTabsHost = ref(['참여멤버', '메시지', '그라운드 룰', '공유', '사용자 강퇴'])
+  const funcTabs = ref(['참여멤버', '메시지', '그라운드 룰', '공유'])
+  const activeFuncTab = ref(1)
   const roomRule = ref(webrtcstore.rule)
 
   function changeTab(index) {
@@ -591,10 +588,31 @@
   <!-- 화상회 부가기능이 보이는 곳 -->
   <div id="functionTab" style="color: white;">
     <div id="tabs">
-      <ul id="functionUl" style="display: flex;">
-        <li v-for="(tab, index) in funcTabs" :key="index" id="tab{{index}}" :class="{ 'active': activeFuncTab === index }" @click="changeTab(index)">
-          {{ tab }}
-        </li>
+      <!-- <ul id="functionUl" style="display: flex;">
+        <div v-if="isHost">
+          <li v-for="(tab, index) in funcTabsHost" :key="index" id="tab{{index}}" :class="{ 'active': activeFuncTab === index }" @click="changeTab(index)">
+            {{ tab }}
+          </li>
+        </div>
+        <div v-else>
+          <li v-for="(tab, index) in funcTabs" :key="index" id="tab{{index}}" :class="{ 'active': activeFuncTab === index }" @click="changeTab(index)">
+            {{ tab }}
+          </li>
+        </div>
+      </ul> -->
+      <ul id="functionUl" style="display: flex;" v-if="isHost" >
+        <div >
+          <li v-for="(tab, index) in funcTabsHost" :key="index" id="tab{{index}}" :class="{ 'active': activeFuncTab === index }" @click="changeTab(index)">
+            {{ tab }}
+          </li>
+        </div>
+      </ul>
+      <ul id="functionUl" style="display: flex;" v-else >
+        <div >
+          <li v-for="(tab, index) in funcTabs" :key="index" id="tab{{index}}" :class="{ 'active': activeFuncTab === index }" @click="changeTab(index)">
+            {{ tab }}
+          </li>
+        </div>
       </ul>
       <div v-if="activeFuncTab === 0">참여멤버</div>
       <div v-if="activeFuncTab === 1">메시지</div>
@@ -627,8 +645,8 @@
       </div>
     </div> -->
     <div v-if="isHost && activeFuncTab === 4">
-      <div v-for="(sub, index) in subscribersComputed" :key="index">
-        <button @click="handleForceDisconnect(sub)">{{ JSON.parse(sub.stream.connection.data).clientData }}님을 퇴장시키기</button>
+      <div v-for="(subscriber, index) in subscribersComputed" :key="index">
+        <button @click="handleForceDisconnect(subscriber)">{{ JSON.parse(subscriber.stream.connection.data).clientData }}님을 퇴장시키기</button>
       </div>
     </div>
   </div>
