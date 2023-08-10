@@ -95,16 +95,25 @@ const router = createRouter({
     },
     {
       // 화상 채팅 방 참여
-      path: '/room/:roomNo',
+      path: '/room/:roomName',
       name: 'roomJoin',
       component: () => import('@/components/webrtc/RoomJoin.vue'),
     },
+    
+    //// 메인화면입장 시
     {
-      // 화상 채팅 방 참여
-      path: '/webrtc',
-      name: 'roomJointmp',
-      component: () => import('@/views/RoomView.vue'),
+      path: '/main',
+      name: 'main',
+      component: () => import('@/components/main/HomeMain.vue'),
+      children: [],
     },
+    {
+      // path: '/'+{keyword},
+      path: '/keyword/:TagName',
+      name: 'KeywordRoom',
+      component: () => import('@/components/main/KeywordRoom.vue'),
+    },
+    
   ],
 })
 

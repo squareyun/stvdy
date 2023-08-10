@@ -2,10 +2,7 @@ package com.ssafy.ssap.domain.studyroom;
 
 import com.ssafy.ssap.domain.user.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -30,6 +27,7 @@ public class RoomLog {
     @Column(name = "enter_time", columnDefinition = "timestamp")
     private LocalDateTime enterTime;
 
+    @Setter
     @Column(name = "spend_hour")
     private LocalTime spendHour;
 

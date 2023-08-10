@@ -1,8 +1,10 @@
 <template>
   <div v-if="streamManager">
-    <OvVideo :stream-manager="streamManager"/>
+    <OvVideo :stream-manager="streamManager" />
     <!-- {{ clientData }}이게 내 현재 이름임 -->
-    <div><p>{{ clientData }}</p></div>
+    <div>
+      <p>{{ clientData }}</p>
+    </div>
   </div>
 </template>
 
