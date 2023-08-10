@@ -5,16 +5,13 @@ import { computed, onBeforeUnmount } from 'vue'
 
 const questionStore = useQuestionStore()
 const questions = computed(() => questionStore.questions)
-const totalAmount = computed(() => questionStore.totalAmount)
 
-const query = {
-  keyword: '',
-  nickname: '',
-  page: 0,
-  noAnsFilter: false,
-  noBestAnsFilter: false,
-}
-questionStore.getList(query)
+// const query = {
+//   keyword: '',
+//   nickname: '',
+//   page: 0,
+// }
+// questionStore.getList(query)
 
 const sortNew = () => {
   document.getElementById('sort-new').style.fontWeight = 700
@@ -35,11 +32,9 @@ const sortActive = () => {
   document.getElementById('sort-none').style.fontWeight = 100
 
   const query = {
-    keyword: '',
+    keyword: '새로운',
     nickname: '',
     page: 0,
-    noAnsFilter: false,
-    noBestAnsFilter: true,
   }
   questionStore.getList(query)
 }
@@ -48,16 +43,6 @@ const sortNone = () => {
   document.getElementById('sort-new').style.fontWeight = 100
   document.getElementById('sort-active').style.fontWeight = 100
   document.getElementById('sort-none').style.fontWeight = 700
-
-  const query = {
-    keyword: '',
-    nickname: '',
-    page: 0,
-    noAnsFilter: true,
-    noBestAnsFilter: false,
-  }
-  console.log(33, query)
-  questionStore.getList(query)
 }
 
 async function showDetail(id) {
@@ -71,35 +56,25 @@ onBeforeUnmount(() => {
 
 <template>
   <div>
-    <span class="question-content-title">질문 게시판</span>
+    <span class="question-content-title">내 질문</span>
     <router-link
       id="add-question"
       to="/createquestion">
       + 질문 작성
     </router-link>
-    <span id="total-amount">총 {{ totalAmount }} 질문</span>
+    <span
+      id="total-amount"
+      v-if="totalAmount">
+      총 {{ totalAmount }} 질문
+    </span>
+
+    <span
+      id="total-amount"
+      v-if="!totalAmount">
+      등록한 질문이 없습니다.
+    </span>
 
     <div class="question-list">
-      <div id="question-sort">
-        <ul>
-          <li
-            id="sort-new"
-            @click="sortNew()">
-            최신 질문
-          </li>
-          <li
-            @click="sortActive()"
-            id="sort-active">
-            해결 중
-          </li>
-          <li
-            @click="sortNone()"
-            id="sort-none">
-            답변 없음
-          </li>
-        </ul>
-      </div>
-
       <div>
         <tr
           class="question-row"

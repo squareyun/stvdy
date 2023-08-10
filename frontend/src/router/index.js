@@ -11,12 +11,18 @@ const router = createRouter({
     {
       path: '/',
       alias: ['/home'],
-      component: TestView,
+      // component: TestView,
+      component: () => import('../views/HomeView.vue'),
       children: [
+        // {
+        //   path: '',
+        //   name: 'main',
+        //   component: Test,
+        // },
         {
-          path: '',
-          name: 'main',
-          component: Test,
+          path: '/hometest',
+          name: 'hometest',
+          component: () => import('../components/HomeMain.vue'),
         },
       ],
     },
@@ -34,6 +40,11 @@ const router = createRouter({
             },
           ],
         },
+        {
+          path: '/alarms',
+          name: 'alarms',
+          component: () => import('../components/alarm/MyAlarmList.vue'),
+        },
       ],
     },
     {
@@ -45,20 +56,27 @@ const router = createRouter({
           path: '',
           name: 'listquestions',
           component: () => import('../components/qna/QuestionList.vue'),
-          children: [],
+        },
+        {
+          path: '/myquestion',
+          name: 'myquestion',
+          component: () => import('../components/qna/MyQuestionList.vue'),
         },
         {
           path: '/createquestion',
           name: 'createquestion',
           component: () => import('../components/qna/CreateQuestion.vue'),
-          children: [],
+        },
+        {
+          path: '/modifyquestion/:id',
+          name: 'modifyquestion',
+          component: () => import('../components/qna/CreateQuestion.vue'),
         },
         {
           path: '/questiondetail/:id',
           name: 'questiondetail',
           params: {},
           component: () => import('../components/qna/QuestionDetail.vue'),
-          children: [],
         },
       ],
     },

@@ -1,7 +1,7 @@
 <script setup>
 import SideBar from '@/components/SideBar.vue'
 import TopSearch from '@/components/TopSearch.vue'
-import Advertisment from '../components/home/advertisment.vue'
+import Advertisment from '../components/home/Advertisment.vue'
 import TagRank from '../components/home/TagRank.vue'
 import MeetingRoom from '../components/home/MeetingRoom.vue'
 import RecentAsk from '../components/home/RecentAsk.vue'
