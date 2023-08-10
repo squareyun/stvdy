@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.ssap.common.MessageFormat;
 import com.ssafy.ssap.dto.alarm.AlarmCreateDto;
+import com.ssafy.ssap.dto.alarm.AlarmDetailResponseDto;
 import com.ssafy.ssap.dto.alarm.AlarmListResponseDto;
 import com.ssafy.ssap.service.AlarmService;
 
@@ -95,6 +96,31 @@ public class AlarmController {
 	}
 
 	/**
+	 * alarm 상세 조회
+	 *
+	 */
+	@GetMapping("/detail/{alarmNo}")
+	public ResponseEntity<Map<String, Object>> getAlarmDetail(@PathVariable Integer alarmNo) {
+		Map<String, Object> resultMap = new HashMap<>();
+		HttpStatus status = null;
+		try {
+			long unreadCnt = 0;
+			AlarmDetailResponseDto alarmDetailResponseDto = alarmService.getAlarmDetail(alarmNo);
+
+			logger.info("{} alarm 상세 조회 성공", alarmDetailResponseDto.getId());
+			resultMap.put("message", MessageFormat.SUCCESS);
+			resultMap.put("alarmDetail", alarmDetailResponseDto);
+			status = HttpStatus.ACCEPTED;
+		} catch (Exception e) {
+			logger.error("alarm 상세 조회 실패: {}", e.getMessage());
+			resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getClass().getSimpleName());
+			status = HttpStatus.INTERNAL_SERVER_ERROR;
+		}
+
+		return new ResponseEntity<Map<String, Object>>(resultMap, status);
+	}
+
+	/**
 	 * alarm 리스트 조회 - 최신순 정렬
 	 *
 	 @GetMapping("/list") public ResponseEntity<Map<String, Object>> getAlarmList() {
@@ -113,30 +139,6 @@ public class AlarmController {
 	 status = HttpStatus.ACCEPTED;
 	 } catch (Exception e) {
 	 logger.error("alarm 목록 조회 실패: {}", e.getMessage());
-	 resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getClass().getSimpleName());
-	 status = HttpStatus.INTERNAL_SERVER_ERROR;
-	 }
-
-	 return new ResponseEntity<Map<String, Object>>(resultMap, status);
-	 }
-	 */
-
-	/**
-	 * alarm 상세 조회
-	 *
-	 @GetMapping("/detail/{alarmNo}") public ResponseEntity<Map<String, Object>> getAlarmDetail(@PathVariable Integer alarmNo) {
-	 Map<String, Object> resultMap = new HashMap<>();
-	 HttpStatus status = null;
-	 try {
-	 long unreadCnt = 0;
-	 AlarmDetailResponseDto alarmDetailResponseDto = alarmService.getAlarmDetail(alarmNo);
-
-	 logger.info("{} alarm 상세 조회 성공", alarmDetailResponseDto.getId());
-	 resultMap.put("message", MessageFormat.SUCCESS);
-	 resultMap.put("alarmDetail", alarmDetailResponseDto);
-	 status = HttpStatus.ACCEPTED;
-	 } catch (Exception e) {
-	 logger.error("alarm 상세 조회 실패: {}", e.getMessage());
 	 resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getClass().getSimpleName());
 	 status = HttpStatus.INTERNAL_SERVER_ERROR;
 	 }

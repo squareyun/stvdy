@@ -35,11 +35,19 @@ public class AlarmService {
 			.title(alarmCreateDto.getTitle())
 			.detail(alarmCreateDto.getDetail())
 			.isRead(false)
+			.linkedUrl("/alarmdetail/")
 			.registTime(LocalDateTime.now())
 			.user(user)
 			.build();
 
 		alarmRepository.save(alarm);
+
+		String urlAddress = "/alarmdetail/" + alarm.getId();
+		Alarm tempAlarm = alarmRepository.findById(alarm.getId())
+			.orElseThrow(() -> new IllegalArgumentException("알람 정보를 찾을 수 없습니다."));
+		tempAlarm.setLinkedUrl(urlAddress);
+
+		alarmRepository.save(tempAlarm);
 
 		return alarm.getId();
 	}
@@ -83,6 +91,7 @@ public class AlarmService {
 			alarm.getTitle(),
 			alarm.getDetail(),
 			alarm.getIsRead(),
+			alarm.getLinkedUrl(),
 			alarm.getRegistTime(),
 			alarm.getUser().getId()
 		);
@@ -120,6 +129,7 @@ public class AlarmService {
 			.title(alarm.getTitle())
 			.detail(alarm.getDetail())
 			.isRead(flag)
+			// .linkedUrl(alarm.getLinkedUrl())
 			.registTime(alarm.getRegistTime())
 			.userNo(user.getId())
 			.build();

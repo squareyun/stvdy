@@ -12,6 +12,7 @@ public class AlarmListResponseDto {
 	private String title;
 	private String detail;
 	private Boolean isRead;
+	private String linkedUrl;
 	private LocalDateTime registTime;
 	private Integer userNo;
 }
