@@ -136,7 +136,7 @@ public class RoomController {
         return new ResponseEntity<>(resultMap,status);
     }
 
-    @GetMapping("/list")
+    @GetMapping("/wholeList")
     public ResponseEntity<Map<String,Object>> search(){
         /*
           keyword로 where = keyword 검색 쿼리 날린 결과 돌려주기
@@ -146,9 +146,27 @@ public class RoomController {
         HttpStatus status;
         Map<String,Object> resultMap = new HashMap<>();
         try {
-            roomService.getRoomList(resultMap);
+            roomService.getEntireRoomList(resultMap);
             status = HttpStatus.OK;
         } catch(Exception e){
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+        return new ResponseEntity<>(resultMap, status);
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<?> search(@RequestParam String keyword,
+                                    @RequestParam Integer pageNo,
+                                    @RequestParam(required = false, defaultValue = "20") Integer pageSize) {
+        logger.debug("controller 진입 "+keyword+"/"+pageNo+"/"+pageSize);
+        HttpStatus status;
+        Map<String,Object> resultMap = new HashMap<>();
+        try {
+            resultMap = roomService.getRoomList(keyword, pageNo, pageSize);
+            status = HttpStatus.OK;
+        } catch(Exception e){
+            resultMap.put("message","방목록 불러오기 실패");
+            logger.error("방 검색 실패 "+e);
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
         return new ResponseEntity<>(resultMap, status);

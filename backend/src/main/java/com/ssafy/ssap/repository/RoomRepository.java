@@ -3,6 +3,7 @@ package com.ssafy.ssap.repository;
 import com.ssafy.ssap.domain.studyroom.Room;
 import com.ssafy.ssap.dto.RoomDto;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface RoomRepository extends JpaRepository<Room, Integer> {
+public interface RoomRepository extends JpaRepository<Room, Integer>, JpaSpecificationExecutor<Room> {
 
     @Modifying
     @Query("UPDATE Room r SET r.isValid = false WHERE r.id = :roomId")
