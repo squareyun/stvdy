@@ -1,5 +1,5 @@
 <script setup>
-import SideBar from '@/components/SideBar.vue'
+// import SideBar from '@/components/SideBar.vue'
 import { ref, computed, watch, onMounted, onBeforeMount } from 'vue'
 import { useRouter } from 'vue-router'
 import { usewebRtcStore, useQuestionStore } from '@/stores'

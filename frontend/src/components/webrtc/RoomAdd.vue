@@ -2,17 +2,17 @@
   import { ref, computed, onUpdated, watch, onMounted } from 'vue'
   import { useRouter } from "vue-router"
   import { usewebRtcStore } from "@/stores"
-  import { useUsersStore } from "@/stores"
+  import { useUserStore } from "@/stores"
   import axios from 'axios' 
   // import { storeToRefs } from "pinia";
 
-  const usersStore = useUsersStore()
+  const usersStore = useUserStore()
   const localUser = usersStore.user
   console.log(localUser)
 
   // const store = usewebRtcStore()
   const webrtcstore = usewebRtcStore()
-  const userstore = useUsersStore()
+  const userstore = useUserStore()
   const router = useRouter()
   
   // 방 생성에 사용할 변수들 
