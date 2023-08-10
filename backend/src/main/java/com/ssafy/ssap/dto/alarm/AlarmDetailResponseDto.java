@@ -15,6 +15,7 @@ public class AlarmDetailResponseDto {
 	private String detail;
 	// private String imagePath;
 	private Boolean isRead;
+	// private String linkedUrl;
 	private LocalDateTime registTime;
 	private Integer userNo;
 }
