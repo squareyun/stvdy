@@ -85,6 +85,10 @@ public class QuestionService {
 			noBestAnsFilter, pageable);
 	}
 
+	public Page<QuestionListResponseDto> getListWithUserNo(Integer userNo, Pageable pageable) {
+		return questionQueryRepository.findAllByUserId(userNo, pageable);
+	}
+
 	@Transactional
 	public QuestionDetailResponseDto detail(Integer questionNo) {
 		Question question = questionRepository.findById(questionNo)
