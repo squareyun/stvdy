@@ -158,7 +158,7 @@
       messages.value.push(messageData);
     })
 
-    // 강제로 연결이 끊어지게 하기.
+    // 강제로 연결이 끊어지게 되는 것을 수신처리!!!
     session.value.on('sessionDisconnected', (event) => {
       if(event.reason === 'forceDisconnect') {
         leaveSession();
@@ -320,7 +320,7 @@
       try{
         const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/add', 
         {userNo: userNo, title: mySessionId, endHour: endHour, endMinute: endMinute, quota: quota, 
-          isPrivacy: isPrivacy, password: password, iamgePath: backImgFile, rule: rule, tags: roomTags, role:'MODERATOR'}, 
+          isPrivacy: isPrivacy, password: password, iamgePath: backImgFile, rule: rule, tags: roomTags}, 
           {headers: { 'Content-Type': 'application/json', },
         })
         console.log('create할때',userNo, mySessionId, endHour, endMinute, quota, isPrivacy, password, backImgFile, rule)
@@ -329,12 +329,6 @@
         console.log('방만들때 roomId 로컬에 저장!!!!!',  response.data.room.id)
         // roomId가 변경되면 localstorage에 저장합니다.
         localStorage.setItem('roomId', response.data.room.id)  // 로컬스토리지에 roomId를 저장시켰으니 shutDown시킬때
-        // try{
-        //   webrtcstore.giveRole(roomId)
-        // }
-        // catch(error){
-        //   console.log(error)
-        // }
         return response.data.token;
       }
       catch(error){
@@ -628,7 +622,7 @@
     </div> -->
     <div v-if="isHost && activeFuncTab === 4">
       <div v-for="(sub, index) in subscribersComputed" :key="index">
-        <button @click="handleForceDisconnect(sub)">{{ JSON.parse(sub.stream.connection.data).clientData }}님을 퇴장시키기</button>
+        <button @click="handleForceDisconnect(sub)">강제 퇴장: {{ JSON.parse(sub.stream.connection.data).clientData }}</button>
       </div>
     </div>
   </div>

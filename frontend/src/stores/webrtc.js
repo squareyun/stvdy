@@ -226,6 +226,19 @@ export const usewebRtcStore = defineStore({
       }
     },
 
+    async giveRole(roomId){
+      console.log('giveRole()함수 들어옴',roomId)
+      try{
+        const response = await axios.put(this.APPLICATION_SERVER_URL+`rooms/role`,{roomNo:this.roomId, userNo:this.userNo})
+        console.log('giveRole()함수 값',response.data)
+      }
+      catch(error){
+        console.error('giveRole()함수에 문제가 생겼습니다.', error.code, error.message);
+      }
+    },
+
+    
+
     // 강제퇴장 시키기
     async checkCurrentConnection(roomId){
       console.log('현재 커넥션 확인할 방 번호',roomId)
