@@ -44,7 +44,6 @@ function sendMessage() {
       data: JSON.stringify({username: myUserName, message: inputMessage.value}), // 메시지 데이터를 문자열로 변환해서 전송
       type: 'chat', // 신호 타입을 'chat'으로 설정
     });
-    console.log('요고다',session.myUserName)
     inputMessage.value = '';
   }
 }

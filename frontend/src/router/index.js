@@ -103,7 +103,7 @@ const router = createRouter({
     //// 메인화면입장 시
     {
       path: '/main',
-      name: 'main',
+      name: 'maintmp',
       component: () => import('@/components/main/HomeMain.vue'),
       children: [],
     },

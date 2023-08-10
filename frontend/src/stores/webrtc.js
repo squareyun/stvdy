@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { useRouter } from 'vue-router'
-import { useUsersStore } from "@/stores"
+import { useUserStore } from "@/stores"
 import axios from 'axios'
 
 export const usewebRtcStore = defineStore({
@@ -9,9 +9,9 @@ export const usewebRtcStore = defineStore({
     APPLICATION_SERVER_URL : 'http://localhost:8080/',
 
 
-    userNo: useUsersStore().user.id,
+    userNo: useUserStore().user.id,
     mySessionId: '되라'+ (Math.floor(Math.random() * (200 - 1 + 1)) + 1),
-    myUserName : useUsersStore().user.username,
+    myUserName : useUserStore().user.username,
     endHour: 0,
     endMinute: 0,
     quota: 16,
@@ -31,7 +31,7 @@ export const usewebRtcStore = defineStore({
     // 방 이탈 시 사용할 것
     isExitRoom : false,
 
-    realname: useUsersStore().user.realname,
+    realname: useUserStore().user.realname,
     // realname: '홍길동'+ Math.floor(Math.random() * (200 - 1 + 1)) + 1,
     
     //////////////////////////
