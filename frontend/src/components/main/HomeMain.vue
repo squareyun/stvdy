@@ -121,9 +121,18 @@
 
   // 선택한 방에 참여하는 함수
   function joinTheRoom(room) {
+    // cconsole.log()
+    // selectedRoom.value = room
     if(selectedRoomPw.value != inputPw.value){   // 비밀번호 불일치시
+      alert('비밀번호가 불일치합니다.')
       return
-    } 
+    }
+    /////////////////////////////////////
+    // 이거 추가했음. 나중에 home에서 추가해야함.
+    if(selectedRoom.value.currentNumber >= selectedRoom.value.quota){
+      alert('정원초과로 입장할 수 없습니다.')
+      return
+    }
     console.log('되긴되나',room)
 
     webRtcStore.joinTheRoom(room)

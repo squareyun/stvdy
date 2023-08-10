@@ -67,6 +67,7 @@
   const subscribersComputed = computed(() => subscribers.value);
   // 방 이탈를 위한 변수들
   const isExitRoom = ref(webrtcstore.isExitRoom)  // leave
+  const isFull = ref(false)
 
   onBeforeMount(() => {
     // window.addEventListener("beforeunload",leaveSession)
@@ -86,16 +87,14 @@
       // 방을 나가는데 사람이 없으면 방을 폐쇄할 거임.
       console.log('나감으로 방폐쇄1')
       if(!subscribersComputed.value.length){  // 다른 참여자가 없으면 실행
-        // openNewWindow2(webrtcstore.roomId)
-        // webrtcstore.shutDownRoom(webrtcstore.roomId)
-        openNewWindow2(`제발좀 되라${subscribersComputed.value.length}`)
+        console.log(`제발좀 되라${subscribersComputed.value.length}`)
         const localRoomId = localStorage.getItem('roomId')
         webrtcstore.shutDownRoom(localRoomId)
         // roomId.value = null                //방 폐쇄하고 브라우저의 roomId도 null값으로 만듬
         console.log('나감으로 방폐쇄2')
       }
-      openNewWindow2('왜안됨')
       // leaveSession()
+      alert('방에서 나갑니다.')
       escapePage()
     }
     // window.removeEventListener("beforeunload", leaveSession)
@@ -103,10 +102,24 @@
     document.removeEventListener('keydown', preventRefresh)
     webrtcstore.roomExit(roomId.value)  // 방나가면 방나갔음을 백엔드로 전송.
     isExitFalse()
-    // localStorage.removeItem('roomId')
-    // window.removeEventListener("beforeunload", leaveSession)
-    // document.removeEventListener('keydown', preventRefresh)
   })
+  onMounted(() => {
+  })
+  function isFullRoom(){
+    console.log('!!!!!!방인원제한',quota.value)
+    console.log('!!!!!!현재방인원',subscribersComputed.value)
+    console.log('!!!!!!현재방 실제 인원수',subscribersComputed.value.length+1)
+    if(quota.value < subscribersComputed.value.length+1){
+      isFull.value = true
+      alert('정원이 가득차서 입장할 수 없습니다. 메인 페이지로 돌아갑니다.')
+      console.log('정원이 가득차서 입장할 수 없습니다. 메인 페이지로 돌아갑니다.')
+      isExitRoom.value = true
+      webrtcstore.isExitTrue()
+      leaveSession()
+      return
+    }
+  };
+
   function isExitTrue() {
     webrtcstore.isExitTrue()
     isExitRoom.value = true
@@ -135,6 +148,12 @@
     session.value.on("exception", ({ exception }) => {
       console.warn(exception);
     });
+    //// 강제로 연결이 끊어지면, leaveSession() 실행
+    session.value.on('sessionDisconnected', (event) => {
+      if (event.reason === 'forceDisconnect') {
+        leaveSession()
+      }
+    })
 
     // 채팅 이벤트 수신 처리 함. session.on이 addEventListenr 역할인듯.
     session.value.on('signal:chat', (event) => { // event.from.connectionId === session.value.connection.connectionId 이건 나와 보낸이가 같으면임
@@ -180,6 +199,9 @@
           escapePage()
         })
     })
+    console.log('이건제발되라1',subscribers.value)
+    console.log('이건제발되라2', subscribers.value.length)
+    isFullRoom()
     // window.addEventListener("beforeunload",leaveSession);
   }
   function handleLeaveSession(event){
@@ -196,6 +218,7 @@
     leaveSession()
   }
   function leaveSession(){
+    console.log('leaveSession() 함수 호출됨'); // 확인용 로그
     console.log('참여자',subscribersComputed.value)
     console.log('참여자수',subscribersComputed.value.length)
     if(session.value) session.value.disconnect()
@@ -218,9 +241,10 @@
     })
   }
   function escapePage() {
+    console.log('escapePage() 함수 호출됨')
     const localRoomId = localStorage.getItem('roomId')
     openNewWindow2(`이스케이프페이지 탐 ${subscribersComputed.value.length}`)
-    if (!subscribersComputed.value.length){ // 다른 참여자가 없으면.
+    if (!isFull && !subscribersComputed.value.length){ // 다른 참여자가 없으면서 정원이 차서 나가는게 아닐떄만
       shutDownRoom(localRoomId)
     }
     leaveSession()
@@ -249,7 +273,7 @@
     if (mainStreamManager.value === stream) return
     mainStreamManager.value = stream
   }
-  //// 방 참여에 있어 방을 생성해주고, 방에 참석할 수 있게 해주는 것.
+  //////////////////////////// 방 참여에 있어 방을 생성해주고, 방에 참석할 수 있게 해주는 것.
   async function createToken(mySessionId, roomId) {
     // 방 생성과 참가를 가르는 변수
     const isMaking = webrtcstore.isMaking // 해당 참여자의 isMaking의 값이 true인지 false인지 확인함,
@@ -470,13 +494,6 @@
   }
   /////////////////////////
   ///////////// 확인용으로 tmp  임시로 만들어둠
-  function openNewWindow() {
-    const url = `https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=${roomId.value}`;
-    const windowName = "새 창";
-    const windowFeatures = "width=800,height=600";
-    
-    window.open(url, windowName, windowFeatures);
-  }
   function openNewWindow2(roomabc) {
     const url = `https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=${roomabc}`;
     const windowName = "새 창";

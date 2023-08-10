@@ -241,7 +241,8 @@ export const usewebRtcStore = defineStore({
     async shareRoomAddress(roomId){
       console.log('방 공유 함수 들어옴')
       try{
-        const response = await axios.get(this.APPLICATION_SERVER_URL+`rooms/code/`+roomId)
+        // const response = await axios.get(this.APPLICATION_SERVER_URL+`rooms/code/`+roomId)
+        const response = await axios.get('http://localhost:8080/'+'rooms/code/'+roomId)
         console.log('방 공유 백엔드 연결완료',response.data)
       }
       catch(error){
