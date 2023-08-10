@@ -130,8 +130,12 @@ public class RoomService {
 
     public void addParticipant(Integer roomNo, String role, Integer userNo, String connectionId) {
         Room room = roomRepository.findById(roomNo).orElse(null);
-        logger.debug("add Participant find Room 결과 :"+room.getId());
-        addParticipant(room, role, userNo, connectionId);
+        try{
+            addParticipant(room, role, userNo, connectionId);
+            logger.debug("add Participant find Room 결과 :"+room.getId());
+        }catch(NullPointerException e){
+            logger.error("룸 객체를 찾지 못함 "+e);
+        }
     }
 
     public void addRoomLog(Room room, Integer userId){
@@ -403,6 +407,7 @@ public class RoomService {
         return resultMap;
     }
 
+    @Transactional
     public Map<String, String> createCode(Integer roomNo) {
         Map<String, String> resultMap = new HashMap<>();
 
@@ -410,11 +415,17 @@ public class RoomService {
         Random random = new Random();
         String code;
         Room room = roomRepository.findById(roomNo).orElse(null);
+        if(room == null) {
+            resultMap.put("meesage","코드를 생성할 대상 방 찾지 못함");
+            logger.error("room 객체 없음");
+        } else{
+            logger.trace("대상 방"+room);
+        }
 
         try {
             for (int i = 0; i < 1000; i++) {
                 code = String.format("%03d", random.nextInt(999) + 1);
-                logger.trace("roomCode의 반복문 실행");
+                logger.trace("roomCode의 반복문 실행. code:"+code);
                 if (roomRepository.findByCode(code).orElse(null) == null) {
                     //code에 해당하는 room이 없으면 해당 코드를 room에 set하고 return
                     //noinspection DataFlowIssue
