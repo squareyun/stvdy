@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.ssafy.ssap.domain.qna.Question;
+import com.ssafy.ssap.dto.QuestionListResponseDto;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Integer> {

@@ -137,6 +137,10 @@ public class QuestionController {
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);
 	}
 
+	/**
+	 * 질문 목록 조회
+	 * 전체, 키워드 검색, 닉네임 검색, 페이징 기능 지원
+	 */
 	@GetMapping("/list")
 	public ResponseEntity<Map<String, Object>> list(@RequestParam(required = false) String keyword,
 		@RequestParam(required = false) String nickname,
@@ -147,6 +151,27 @@ public class QuestionController {
 			Page<QuestionListResponseDto> questionList = questionService.getList(keyword, nickname, noAnsFilter,
 				noBestAnsFilter, pageable);
 			logger.debug("{} 개의 질문 검색 성공", questionList.stream().count());
+
+			return ResponseEntity.accepted()
+				.body(Map.of("question", questionList, "message", MessageFormat.SUCCESS));
+
+		} catch (Exception e) {
+			logger.error("질문 검색 실패", e);
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body(Map.of("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage()));
+		}
+	}
+
+	/**
+	 * 질문 목록 조회
+	 * 특정 유저의 질문만 검색
+	 */
+	@GetMapping("/list/my")
+	public ResponseEntity<Map<String, Object>> listWithUserno(@RequestParam(name = "userno") Integer userNo, Pageable pageable) {
+		try {
+			Page<QuestionListResponseDto> questionList = questionService.getListWithUserNo(userNo, pageable);
+			logger.debug("{} 개의 질문 검색 성공 userNo: {}", questionList.stream().count(), userNo);
 
 			return ResponseEntity.accepted()
 				.body(Map.of("question", questionList, "message", MessageFormat.SUCCESS));
