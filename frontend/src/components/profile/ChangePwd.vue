@@ -1,7 +1,9 @@
 <script setup>
 import * as Yup from 'yup'
 import { Form, Field } from 'vee-validate'
-import { useUserStore, useAlertStore } from '@/stores'
+import { useUserStore } from '@/stores'
+
+const userStore = useUserStore()
 
 const schema = Yup.object().shape({
   password: Yup.string()
@@ -14,9 +16,7 @@ const schema = Yup.object().shape({
 })
 
 async function onSubmit(values) {
-  const editData = values
-  delete editData.passwordConfirm
-  console.log(editData)
+  userStore.changePassword(values)
 }
 </script>
 
@@ -77,7 +77,7 @@ async function onSubmit(values) {
 
   font-family: 'ASDGothicM';
   font-size: 1rem;
-  color: var(--hl-purple);
+  color: var(--hl-pres);
   transition: color 0.4s;
 
   cursor: pointer;

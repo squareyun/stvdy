@@ -1,25 +1,19 @@
 <script setup>
 import { useAuthStore, useAlertStore, useUserStore } from '@/stores'
-import { deleteUser } from '@/api/user'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import router from '@/router'
 
 const userStore = useUserStore()
 const user = computed(() => userStore.user)
 
+const deleteConfirm = ref('')
+
 async function deactivate() {
-  const data = user.id
-  deleteUser(
-    data,
-    (res) => {
-      console.log(res)
-    },
-    (fail) => {
-      console.log('여기')
-      console.log(fail)
-      console.log('에러')
-    },
+  if (
+    deleteConfirm.value ==
+    `본인은 ${user.value.username}#${user.value.id} 계정을 삭제하겠습니다.`
   )
+    await userStore.deleteAccount()
 }
 </script>
 
@@ -34,14 +28,13 @@ async function deactivate() {
       <form autocomplete="off">
         <p class="field-name">&nbsp;&nbsp;위 문장을 따라 입력해주세요 &nbsp;</p>
         <input
-          name="username"
+          v-model="deleteConfirm"
           type="text"
           class="field" />
       </form>
-
       <p
         id="delete-btn"
-        @click="deactivate">
+        @click="deactivate()">
         삭제
       </p>
     </div>

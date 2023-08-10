@@ -1,49 +1,23 @@
 <script setup>
-import { useQuestionStore } from '@/stores'
+import { useQuestionStore, useUserStore } from '@/stores'
 import router from '@/router'
+import { useRoute } from 'vue-router'
 import { computed, onBeforeUnmount } from 'vue'
+
+const $route = useRoute()
+
+const userStore = useUserStore()
+const user = computed(() => userStore.user)
 
 const questionStore = useQuestionStore()
 const questions = computed(() => questionStore.questions)
 
-// const query = {
-//   keyword: '',
-//   nickname: '',
-//   page: 0,
-// }
-// questionStore.getList(query)
-
-const sortNew = () => {
-  document.getElementById('sort-new').style.fontWeight = 700
-  document.getElementById('sort-active').style.fontWeight = 100
-  document.getElementById('sort-none').style.fontWeight = 100
-
-  const query = {
-    keyword: '',
-    nickname: '',
-    page: 0,
-  }
-  questionStore.getList(query)
+const query = {
+  userno: user.value.id,
+  page: $route.params.page - 1,
 }
 
-const sortActive = () => {
-  document.getElementById('sort-new').style.fontWeight = 100
-  document.getElementById('sort-active').style.fontWeight = 700
-  document.getElementById('sort-none').style.fontWeight = 100
-
-  const query = {
-    keyword: '새로운',
-    nickname: '',
-    page: 0,
-  }
-  questionStore.getList(query)
-}
-
-const sortNone = () => {
-  document.getElementById('sort-new').style.fontWeight = 100
-  document.getElementById('sort-active').style.fontWeight = 100
-  document.getElementById('sort-none').style.fontWeight = 700
-}
+questionStore.getMyList(query)
 
 async function showDetail(id) {
   router.push(`/questiondetail/${id}`)
@@ -97,7 +71,6 @@ onBeforeUnmount(() => {
             <div class="question-title">
               {{ qtn.title }}
             </div>
-            <div id="question-main-div-line"></div>
             <div class="question-detail">{{ qtn.detail }}</div>
           </td>
           <td class="question-info">
@@ -130,6 +103,8 @@ onBeforeUnmount(() => {
   margin-bottom: 20px;
 
   width: calc(960px - 7rem);
+
+  border: 1px solid var(--border-color);
 }
 
 #total-amount {
@@ -160,7 +135,7 @@ onBeforeUnmount(() => {
   margin-right: calc(7rem);
 
   text-decoration: none;
-  color: var(--hl-purple);
+  color: var(--hl-pres);
 }
 
 .question-row {
@@ -172,12 +147,12 @@ onBeforeUnmount(() => {
 
 .question-div-line {
   position: absolute;
-  left: 0px;
+  left: 20px;
   bottom: 0px;
-  width: 960px;
+  width: calc(920px - 7rem);
   height: 1px;
 
-  background-color: var(--background-up);
+  background-color: var(--hl-light20);
 }
 
 .question-done {
@@ -197,9 +172,9 @@ onBeforeUnmount(() => {
   font-family: 'ASDGothicM';
   text-align: center;
 
-  border: 1px solid var(--hl-purple);
+  border: 1px solid var(--hl-pres);
   border-radius: 20px;
-  background-color: var(--hl-purple);
+  background-color: var(--hl-pres);
 }
 
 #best-not-selected {
@@ -213,25 +188,13 @@ onBeforeUnmount(() => {
   font-family: 'ASDGothicUL';
   text-align: center;
 
-  border: 1px solid var(--hl-purple);
+  border: 1px solid var(--hl-pres);
   border-radius: 20px;
 }
 
 .question-main {
   position: relative;
   width: 600px;
-}
-
-#question-main-div-line {
-  position: absolute;
-  top: 52px;
-  left: 10px;
-
-  width: 580px;
-  height: 1px;
-
-  background-color: var(--hl-light30);
-  opacity: 0.5;
 }
 
 .question-title {
@@ -248,7 +211,7 @@ onBeforeUnmount(() => {
 
 .question-detail {
   position: absolute;
-  top: 60px;
+  top: 53px;
   left: 10px;
 
   height: 60px;
@@ -296,6 +259,6 @@ onBeforeUnmount(() => {
 
 .info-status > p:first-child {
   font-family: 'ASDGothicM';
-  color: var(--hl-purple);
+  color: var(--hl-pres);
 }
 </style>

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { useAuthStore } from '@/stores'
-import { getUser } from '@/api/user'
+import { getUser, changePwd, deleteUser } from '@/api/user'
 import { ref, watch } from 'vue'
 
 export const useUserStore = defineStore('users', () => {
@@ -45,5 +45,28 @@ export const useUserStore = defineStore('users', () => {
     }
   }
 
-  return { user, users, getInfo, setInfo }
+  const changePassword = async (data) => {
+    const values = {
+      userNo: user.value.id,
+      currentPassword: data.prvpassword,
+      newPassword: data.password,
+      confirmPassword: data.passwordConfirm,
+    }
+
+    changePwd(
+      values,
+      (res) => console.log(res),
+      (fail) => console.log(fail),
+    )
+  }
+
+  const deleteAccount = async () => {
+    deleteUser(
+      user.value.id,
+      (res) => console.log(res),
+      (fail) => console.log(fail),
+    )
+  }
+
+  return { user, users, getInfo, setInfo, changePassword, deleteAccount }
 })

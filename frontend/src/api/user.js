@@ -21,8 +21,12 @@ const nameUser = async (name, success, fail) => {
   await axios.put('/api/mypage/nickname', name).then(success).catch(fail)
 }
 
+const changePwd = async (values, success, fail) => {
+  await axios.put('/api/mypage/findpwd', values).then(success).catch(fail)
+}
+
 const deleteUser = async (userId, success, fail) => {
   await axios.delete(`/api/users/${userId}`).then(success).catch(fail)
 }
 
-export { hello, getUser, joinUser, nameUser, deleteUser }
+export { hello, getUser, joinUser, nameUser, changePwd, deleteUser }

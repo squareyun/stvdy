@@ -9,6 +9,13 @@ const listQuestion = async (values, success, fail) => {
     .catch(fail)
 }
 
+const listYourQuestion = async (values, success, fail) => {
+  await axios
+    .get(`/api/questions/list/my?userno=${values.userno}&page=${values.page}`)
+    .then(success)
+    .catch(fail)
+}
+
 const writeQuestion = async (values, success, fail) => {
   await axios.post(`/api/questions/add`, values).then(success).catch(fail)
 }
@@ -18,6 +25,10 @@ const modifyQuestion = async (values, success, fail) => {
     .put(`/api/questions/${values.id}`, values)
     .then(success)
     .catch(fail)
+}
+
+const deleteQuestion = async (id, success, fail) => {
+  await axios.delete(`/api/questions/${id}`).then(success).catch(fail)
 }
 
 const getQuestion = async (id, success, fail) => {
@@ -52,8 +63,10 @@ const getAnswers = async (id, success, fail) => {
 
 export {
   listQuestion,
+  listYourQuestion,
   writeQuestion,
   modifyQuestion,
+  deleteQuestion,
   getQuestion,
   isLikeQuestion,
   likesQuestion,

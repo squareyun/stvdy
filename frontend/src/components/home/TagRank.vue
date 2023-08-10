@@ -86,13 +86,13 @@
 
   font-family: 'ASDGothicUL';
 
-  border: none;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
 }
 
 #tag-area > h3 {
   display: inline;
-  color: var(--hl-purple);
+  color: var(--hl-pres);
   font-family: 'ASDGothicM';
   font-weight: 100;
 
@@ -128,8 +128,8 @@
     padding: 0.2vw 0.4vw 0.1vw 0.4vw;
     font-size: 1vw;
 
-    margin-right: 0.7vw;
-    margin-bottom: 0.5vw;
+    margin-right: 0.5vw;
+    margin-bottom: 0.3vw;
   }
 
   #tag-area > h3 {
@@ -167,8 +167,8 @@
     padding: 0.2rem 0.4rem 0.1rem 0.4rem;
     font-size: 1rem;
 
-    margin-right: 11px;
-    margin-bottom: 8px;
+    margin-right: 7px;
+    margin-bottom: 4px;
   }
 
   #tag-area > h3 {

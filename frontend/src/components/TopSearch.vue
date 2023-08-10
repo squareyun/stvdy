@@ -81,7 +81,7 @@ const openAlarms = () => {
   border-radius: 20px;
   border: 1px solid var(--font30);
 
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.16), 0 2px 3px rgba(0, 0, 0, 0.23);
 }
 
 #search-input:focus {
@@ -120,7 +120,7 @@ const openAlarms = () => {
   background-position: center;
   cursor: pointer;
 
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.16), 0 2px 3px rgba(0, 0, 0, 0.23);
 }
 
 @media (max-width: 1190px) {
@@ -158,7 +158,7 @@ const openAlarms = () => {
   border-radius: 20px;
 
   box-sizing: border-box;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.16), 0 2px 3px rgba(0, 0, 0, 0.23);
 }
 
 .closed {

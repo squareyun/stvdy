@@ -97,7 +97,7 @@ const addTestAlarm = () => {
   margin-right: calc(7rem);
 
   text-decoration: none;
-  color: var(--hl-purple);
+  color: var(--hl-pres);
 }
 
 .alarm-row {
@@ -135,9 +135,9 @@ const addTestAlarm = () => {
   font-family: 'ASDGothicM';
   text-align: center;
 
-  border: 1px solid var(--hl-purple);
+  border: 1px solid var(--hl-pres);
   border-radius: 20px;
-  background-color: var(--hl-purple);
+  background-color: var(--hl-pres);
 }
 
 #best-not-selected {
@@ -151,7 +151,7 @@ const addTestAlarm = () => {
   font-family: 'ASDGothicUL';
   text-align: center;
 
-  border: 1px solid var(--hl-purple);
+  border: 1px solid var(--hl-pres);
   border-radius: 20px;
 }
 

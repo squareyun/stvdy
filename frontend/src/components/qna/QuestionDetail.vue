@@ -4,7 +4,12 @@ import { useQuestionStore, useUserStore } from '@/stores'
 import { computed, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import router from '@/router'
-import { isLikeQuestion, likesQuestion, answerQuestion } from '@/api/question'
+import {
+  isLikeQuestion,
+  likesQuestion,
+  answerQuestion,
+  deleteQuestion,
+} from '@/api/question'
 import { addAlarm } from '@/api/alarm'
 
 const $route = useRoute()
@@ -34,7 +39,7 @@ const islikeQtn = () => {
 
       if (likes) {
         document.getElementById('content-like-btn-path').style.fill =
-          'var(--hl-purple)'
+          'var(--hl-pres)'
         document.getElementById('content-dislike-btn-path').style.fill =
           'var(--hl-light)'
       } else if (likes === null) {
@@ -46,7 +51,7 @@ const islikeQtn = () => {
         document.getElementById('content-like-btn-path').style.fill =
           'var(--hl-light)'
         document.getElementById('content-dislike-btn-path').style.fill =
-          'var(--hl-purple)'
+          'var(--hl-pres)'
       }
     },
     (fail) => console.log(fail),
@@ -104,6 +109,17 @@ const answerQtn = () => {
 
 const modifyQtn = () => {
   router.push(`/modifyQuestion/${question.value.id}`)
+}
+
+const deleteQtn = () => {
+  deleteQuestion(
+    $route.params.id,
+    (res) => {
+      console.log(res)
+      router.push(`/question/1`)
+    },
+    (fail) => console.log(fail),
+  )
 }
 
 onBeforeUnmount(() => {
@@ -178,11 +194,11 @@ onBeforeUnmount(() => {
             id="edit-delete-box"
             v-if="question.userNo === user.id">
             <button @click="modifyQtn">수정하기</button>
-            <button @click="QtnDelete(question.id)">삭제하기</button>
+            <button @click="deleteQtn">삭제하기</button>
           </div>
         </div>
       </div>
-      <div id="answers-title">{{ answers.length }}개의 답변이 있습니다.</div>
+      <div id="answers-title">{{ answers.length }}개의 의견이 있습니다.</div>
       <div
         id="answers-box"
         v-if="answers.length > 0">
@@ -223,7 +239,7 @@ onBeforeUnmount(() => {
               placeholder="친절한 답변 문화를 희망합니다."></textarea>
           </Field>
           <div id="answer-form-menu">
-            <button id="answer-form-menu-btn">답변 등록</button>
+            <button id="answer-form-menu-btn">의견 등록</button>
           </div>
         </Form>
       </div>
@@ -272,7 +288,7 @@ onBeforeUnmount(() => {
   font-size: 1.4rem;
   font-family: 'ASDGothicM';
 
-  border-bottom: 7px solid var(--font30);
+  border-bottom: 7px solid var(--border-color);
 }
 
 #question-info {
@@ -321,7 +337,7 @@ onBeforeUnmount(() => {
   left: 30px;
   bottom: 12px;
 
-  color: var(--hl-purple);
+  color: var(--hl-pres);
   font-size: 1.4rem;
 }
 
@@ -339,7 +355,7 @@ onBeforeUnmount(() => {
 }
 
 #content-like-btn:hover > path {
-  fill: var(--hl-purple);
+  fill: var(--hl-pres);
   transition: fill 0.4s;
 }
 
@@ -357,7 +373,7 @@ onBeforeUnmount(() => {
 }
 
 #content-dislike-btn:hover > g > path {
-  fill: var(--hl-purple);
+  fill: var(--hl-pres);
   transition: fill 0.4s;
 }
 
@@ -375,7 +391,7 @@ onBeforeUnmount(() => {
   background-position: center;
   cursor: pointer;
 
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.16), 0 2px 3px rgba(0, 0, 0, 0.23);
 }
 
 #author-name {
@@ -405,6 +421,7 @@ onBeforeUnmount(() => {
   font-family: 'ASDGothicM';
   font-size: 1rem;
   color: var(--hl-light80);
+  transition: color 0.4s;
 
   border: none;
   background-color: transparent;
@@ -415,6 +432,10 @@ onBeforeUnmount(() => {
 #edit-delete-box > button:nth-child(2) {
   color: var(--hl-warn);
   opacity: 0.9;
+}
+
+#edit-delete-box > button:hover {
+  color: var(--hl-light);
 }
 
 #answer-edit-delete-box {
@@ -434,7 +455,7 @@ onBeforeUnmount(() => {
 }
 
 #answer-edit-delete-box > button:nth-child(2) {
-  color: var(--hl-purple);
+  color: var(--hl-pres);
   opacity: 0.8;
 }
 
@@ -457,7 +478,7 @@ onBeforeUnmount(() => {
   padding-top: 15px;
   padding-bottom: 50px;
 
-  border-bottom: 1px solid var(--background-window);
+  border-bottom: 1px solid var(--border-color);
 }
 
 #answers-title {
@@ -501,6 +522,8 @@ onBeforeUnmount(() => {
   /* border-top: 1px solid var(--hl-light30); */
   border-bottom: 1px solid var(--hl-light30);
   outline: none;
+
+  resize: none;
 }
 
 #answer-form-menu {
@@ -510,7 +533,7 @@ onBeforeUnmount(() => {
 #answer-form-menu-btn {
   height: 28px;
   width: 85px;
-  background-color: var(--hl-purple);
+  background-color: var(--hl-pres);
 
   margin-top: 5px;
 
@@ -526,5 +549,9 @@ onBeforeUnmount(() => {
   border-radius: 15px;
 
   cursor: pointer;
+}
+
+#answer-form-menu-btn:hover {
+  color: var(--hl-light);
 }
 </style>
