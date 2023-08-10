@@ -50,7 +50,7 @@
   onBeforeMount(async () => {
     await webRtcStore.getRtcRooms()
     questionsStore.getAll()                 // 모든 질문을 가지고 옴.
-    await webRtcStore.getEveryRoomTags()    // 230808 현재는 제대로 구현되어있지 않음
+    // await webRtcStore.getEveryRoomTags()    // 230808 현재는 제대로 구현되어있지 않음
     extractSomeRooms()
     extractSomeQuestions()
     webRtcStore.notIsHost()
@@ -234,9 +234,9 @@
     <div style="margin-top: 30px; margin-left: 100px;"> <!-- 임시로 마진값을 줘서 띄움 -->
       <p>상단</p>
       <div>상단 왼쪽 = 인기 키워드
-          <div v-for="(tag,i) in everyRoomTags" :key="i">
+          <!-- <div v-for="(tag,i) in everyRoomTags" :key="i">
             {{ tag }}
-          </div>
+          </div> -->
           <div>상단 오른쪽 = (배너)들어갈 자리 </div>
       </div>
 

@@ -154,21 +154,21 @@ export const usewebRtcStore = defineStore({
       }
     },
     
-    async getEveryRoomTags() {
-      try{
-        // const response = axios.get('http://54.180.9.43:8080/rooms/list/')
-        console.log('getEveryRoomTags 내부1')
-        // const response = await axios.get(this.APPLICATION_SERVER_URL+'rooms/tags')
-        console.log('getEveryRoomTags 내부2')
-        // this.roomList = response.data.roomList
-        console.log(this.roomList)
-        console.log('getEveryRoomTags 내부3')
-      }
-      catch(error){
-        console.log('getRtcRooms내부 오류')
-        console.error('방 리스트 받아오는 오류 발생: ', error)
-      }
-    },
+    // async getEveryRoomTags() {
+    //   try{
+    //     // const response = axios.get('http://54.180.9.43:8080/rooms/list/')
+    //     console.log('getEveryRoomTags 내부1')
+    //     // const response = await axios.get(this.APPLICATION_SERVER_URL+'rooms/tags')
+    //     console.log('getEveryRoomTags 내부2')
+    //     // this.roomList = response.data.roomList
+    //     console.log(this.roomList)
+    //     console.log('getEveryRoomTags 내부3')
+    //   }
+    //   catch(error){
+    //     console.log('getRtcRooms내부 오류')
+    //     console.error('방 리스트 받아오는 오류 발생: ', error)
+    //   }
+    // },
 
     joinTheRoom(room) {
       // this.$router.push({ name: 'MovieDetailView', params: { id: moviecard.id }});  
@@ -250,13 +250,23 @@ export const usewebRtcStore = defineStore({
         console.error('checkCurrentConnection에 문제가 생겼습니다.', error.code, error.message);
       }
     },
-
+    //이건 post 방만들때
     async shareRoomAddress(roomId){
       console.log('방 공유 함수 들어옴')
       try{
-        // const response = await axios.get(this.APPLICATION_SERVER_URL+`rooms/code/`+roomId)
-        const response = await axios.get('http://localhost:8080/'+'rooms/code/'+roomId)
+        const response = await axios.post('http://localhost:8080/'+'rooms/code/'+roomId)
         console.log('방 공유 백엔드 연결완료',response.data)
+      }
+      catch(error){
+        console.error('방 공유 함수에 문제가 생겼습니다.', error.code, error.message);
+      }
+    },
+    //이건 get 룸정보 얻는 코드임
+    async shareRoomAddress2(roomId){
+      console.log('방 공유 함수 들어옴')
+      try{
+        const response = await axios.post('http://localhost:8080/'+'rooms/code/'+roomId)
+        console.log('방 공유 백엔드 연결완료1',response.data)
       }
       catch(error){
         console.error('방 공유 함수에 문제가 생겼습니다.', error.code, error.message);
