@@ -10,6 +10,7 @@ import java.util.Set;
 import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.ssafy.ssap.domain.todo.Todo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -73,6 +74,10 @@ public class User {
 	@Builder.Default
 	@OneToMany(mappedBy = "user")
 	List<Interest> interestList = new ArrayList<>();
+
+	@Builder.Default
+	@OneToMany(mappedBy = "user")
+	List<Todo> todoList = new ArrayList<>();
 
 	@CreationTimestamp
 	@Column(name = "state_time", columnDefinition = "timestamp")

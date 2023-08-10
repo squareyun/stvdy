@@ -1,5 +1,6 @@
 package com.ssafy.ssap.domain.qna;
 
+import com.ssafy.ssap.domain.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -39,6 +41,14 @@ public class Answer {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Question question;
 
+    @Formula("(SELECT coalesce(SUM(case when l.is_good = 1 then 1 else -1 end), 0) FROM likes l WHERE l.answer_id = id)")
+    private Integer answerScore;
+
+    @NotNull
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @OneToOne(mappedBy = "answer")
     Likes likes;
 
@@ -47,6 +57,12 @@ public class Answer {
 
     public void addQuestion(Question question) {
         this.question = question;
-        question.answerList.add(this);
+//        question.answerList.add(this);
+
+    }
+
+    public Integer update(String content) {
+        this.detail = content;
+        return id;
     }
 }
