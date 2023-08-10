@@ -48,14 +48,15 @@ public class AnswerService {
 			.build();
 
 		// 사용자에게 알림 전송
-		String detailUrl = "/questiondetail/" + question.getId();
+		String linkedUrl = "/questiondetail/" + question.getId();
 
 		Alarm alarm = Alarm.builder()
 			.title(answer.getUser().getNickname() + " 님이 질문에 댓글을 달았습니다.")
-			.detail(detailUrl)
+			.detail(answersCreateDto.getContent())
 			.isRead(false)
+			.linkedUrl(linkedUrl)
 			.registTime(LocalDateTime.now())
-			.user(user)
+			.user(question.getUser())
 			.build();
 
 		answerRepository.save(answer);
