@@ -52,7 +52,7 @@ public class RoomService {
             session = openVidu.createSession();
             logger.debug("세션 생성 성공");
             //connection 생성
-            connection = createConnection(session.getSessionId());
+            connection = createConnection(session.getSessionId(), OpenViduRole.MODERATOR);
             resultMap.put("token", connection.getToken());
             logger.debug("커넥션 생성 성공");
 
@@ -84,7 +84,7 @@ public class RoomService {
         }
     }
 
-    public Connection createConnection(String sessionId) throws OpenViduJavaClientException, OpenViduHttpException {
+    public Connection createConnection(String sessionId, OpenViduRole role) throws OpenViduJavaClientException, OpenViduHttpException {
         //열려있는 세션에 참가하고 커넥션(과 커넥션 안의 토큰) 반환
 
         //입장 요청한 session 객체 획득
@@ -93,13 +93,16 @@ public class RoomService {
             logger.error("session Id not matching"+sessionId);
             return null;
         }
-        return createConnection(session);
+        return createConnection(session, role);
     }
 
-    public Connection createConnection(Session session) throws OpenViduJavaClientException, OpenViduHttpException {
+    public Connection createConnection(Session session, OpenViduRole role) throws OpenViduJavaClientException, OpenViduHttpException {
         //커넥션 생성 및 반환
         try {
-            ConnectionProperties connectionProperties = new ConnectionProperties.Builder().type(ConnectionType.WEBRTC).build();
+            ConnectionProperties connectionProperties = new ConnectionProperties.Builder()
+                    .type(ConnectionType.WEBRTC)
+                    .role(role)
+                    .build();
             logger.debug("joinRoom token 생성 완료");
             return session.createConnection(connectionProperties);
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
@@ -266,15 +269,24 @@ public class RoomService {
 
     }
 
+    @Transactional
     public void assignStaff(Integer roomNo, Integer userNo) {
         Participant assignee = participantRepository.findByRoomIdAndUserId(roomNo, userNo).orElse(null);
+        //주석코드 = 프로버전에서만 동작하는 코드(Update Connection). update connection 없이 role을 기존 참여자에게 부여하려면 connection 재생성 및 기존 connection 삭제, db업데이트 필요
+//        Room room = roomRepository.findById(roomNo).orElse(null);
 
         try{
             //noinspection DataFlowIssue
             if(assignee.getRole() == participantRoleNsRepository.findByName("참여자")){
+//                Session session = openVidu.getActiveSession(room.getSessionId());
+//                ConnectionProperties connectionProperties = new ConnectionProperties.Builder()
+//                        .type(ConnectionType.WEBRTC)
+//                        .role(OpenViduRole.MODERATOR)
+//                        .build();
+//                session.updateConnection(assignee.getConnectionId(), )
                 assignee.setRole(participantRoleNsRepository.findByName("스태프"));
             } else{
-                logger.error("스태프로 임명 가능한 role이 아님");
+                logger.error("스태프로 임명 가능한 role(참여자)이 아님");
             }
         }catch (NullPointerException e){
             logger.error("participantNo와 참여자 매칭 실패");
@@ -368,7 +380,7 @@ public class RoomService {
         if(checkValid(roomNo, password)){ //1번 단계
             //OPENVIDU > session 접속을 위한 token 생성
             sessionId = getSessionIdByRoomNo(roomNo); //2번 단계
-            connection = createConnection(sessionId); //3번 단계
+            connection = createConnection(sessionId,OpenViduRole.PUBLISHER); //3번 단계
             logger.debug("토큰처리 수행 완료 : "+connection+" / "+connection.getConnectionId());
             //DB처리
             addParticipant(roomNo,"참여자", userNo, connection.getConnectionId()); //4번
