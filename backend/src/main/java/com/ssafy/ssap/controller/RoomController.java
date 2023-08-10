@@ -117,7 +117,7 @@ public class RoomController {
         return new ResponseEntity<>(status);
     }
 
-    @GetMapping("/code/{roomNo}")
+    @PostMapping("/code/{roomNo}")
     public ResponseEntity<?> getEnterCode(@PathVariable Integer roomNo){
         /*
           무작위 세자리 code리턴.
