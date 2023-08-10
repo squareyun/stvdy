@@ -1,10 +1,11 @@
 <script setup>
 import { Form, Field } from 'vee-validate'
-import { useQuestionStore, useAlertStore, useUserStore } from '@/stores'
-import { computed, onMounted } from 'vue'
+import { useQuestionStore, useUserStore } from '@/stores'
+import { computed, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
+import router from '@/router'
 import { isLikeQuestion, likesQuestion, answerQuestion } from '@/api/question'
-import router from '../../router'
+import { addAlarm } from '@/api/alarm'
 
 const $route = useRoute()
 
@@ -16,15 +17,15 @@ const user = computed(() => userStore.user)
 const questionStore = useQuestionStore()
 const question = computed(() => questionStore.question)
 const answers = computed(() => questionStore.answers)
+
 questionStore.getQuestionById($route.params.id).then(() => {
   islikeQtn()
-  console.log(answers.value)
 })
 
 const islikeQtn = () => {
   const values = {
     userNo: user.value.id,
-    questionNo: question.value.id,
+    questionNo: $route.params.id,
   }
   isLikeQuestion(
     values,
@@ -54,16 +55,15 @@ const islikeQtn = () => {
 
 const likesQtn = (value) => {
   const values = {
-    id: question.value.id,
+    id: $route.params.id,
     userNo: user.value.id,
     isLike: value,
   }
 
   likesQuestion(
     values,
-    (res) => {
+    () => {
       questionStore.getQuestionById($route.params.id)
-      console.log(res)
     },
     (fail) => console.log(fail),
   ).then(() => {
@@ -72,27 +72,47 @@ const likesQtn = (value) => {
 }
 
 const answerQtn = () => {
-  const values = {
+  const newQuestion = {
     userNo: user.value.id,
     questionNo: question.value.id,
     content: myAnswer,
   }
 
-  console.log(values)
+  const newAlarm = {
+    title: '질문에 대한 답변이 있습니다.',
+    detail: question.value.title,
+    userNo: question.value.userNo,
+  }
 
   answerQuestion(
-    values,
-    (res) => {
-      console.log(res)
+    newQuestion,
+    () => {
       router.go(0)
+      // addAlarm(
+      //   newAlarm,
+      //   (res) => {
+      //     console.log(res)
+      //   },
+      //   (fail) => {
+      //     console.log(fail)
+      //   },
+      // )
     },
     (fail) => console.log(fail),
   )
 }
+
+const modifyQtn = () => {
+  router.push(`/modifyQuestion/${question.value.id}`)
+}
+
+onBeforeUnmount(() => {
+  questionStore.clearState()
+})
 </script>
 
 <template>
-  <div v-if="question">
+  <div>
     <span class="question-content-title">질문</span>
     <span id="question-content-id">#{{ question.id }}</span>
     <div class="question-content">
@@ -157,7 +177,7 @@ const answerQtn = () => {
           <div
             id="edit-delete-box"
             v-if="question.userNo === user.id">
-            <button @click="QtnUpdate(question.id)">수정하기</button>
+            <button @click="modifyQtn">수정하기</button>
             <button @click="QtnDelete(question.id)">삭제하기</button>
           </div>
         </div>

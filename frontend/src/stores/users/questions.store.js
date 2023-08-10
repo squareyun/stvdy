@@ -1,17 +1,52 @@
 import { defineStore } from 'pinia'
+import { listQuestion, getQuestion, getAnswers } from '@/api/question'
+import { ref } from 'vue'
 
-const baseUrl = `${import.meta.env.VITE_API_URL}/questions`
+export const useQuestionStore = defineStore('questions', () => {
+  const question = ref([])
+  const questions = ref([])
+  const answers = ref([])
+  const totalAmount = ref([])
 
-export const useQuestionsStore = defineStore({
-  id: 'questions',
-  state: () => ({
-    questions: [
-      {
-        id: 1,
-        title: 'test-title1',
-        user_id: 1,
-        detail: '풍부하게 우리의 아니한 품으며, 이상 부패뿐이다. 그들은 이상 인도하겠다는 찾아다녀도, 철환하였는가? 대고, 구하지 관현악이며, 예수는 그와 능히 것이다. 얼마나 사라지지 사는가 황금시대의 만천하의 청춘은 용기가 것이다. 끝까지 가치를 착목한는 위하여서, 같으며, 같이 그리하였는가? 용기가 그들은 모래뿐일 같이 것이다. 갑 인간의 인생의 풀밭에 품었기 끓는 것이다. 위하여서 그것은 산야에 황금시대의 그것을 피고 무엇을 인생을 봄바람이다. 얼마나 시들어 품었기 위하여 속에서 것이다. 있으며, 능히 고행을 두기 우리 무엇을 보라. 자신과 그림자는 인간이 사랑의 사막이다.',
-        best_answer: null,
+  const getList = async (cond) => {
+    await listQuestion(
+      cond,
+      (res) => {
+        questions.value = res.data.question.content
+        console.log(questions.value)
+        totalAmount.value = res.data.question.totalElements
+        var now = new Date()
+        for (var q in questions.value) {
+          if (questions.value[q].questionScore == null)
+            questions.value[q].questionScore = 0
+
+          var wrote = new Date(questions.value[q].regist_time)
+
+          var dDay = now.getDay() - wrote.getDay()
+          if (dDay > 0) {
+            var year = wrote.getFullYear()
+            var month = ('0' + (wrote.getMonth() + 1)).slice(-2)
+            var day = ('0' + wrote.getDate()).slice(-2)
+
+            questions.value[q].regist_time = year + '-' + month + '-' + day
+            continue
+          }
+          var dHour = now.getHours() - wrote.getHours()
+          if (dHour > 0) {
+            questions.value[q].regist_time = dHour + '시간 전'
+            continue
+          }
+          var dMinutes = now.getMinutes() - wrote.getMinutes()
+          if (dMinutes > 0) {
+            questions.value[q].regist_time = dMinutes + '분 전'
+            continue
+          }
+          var dSeconds = now.getSeconds() - wrote.getSeconds()
+          if (dSeconds > 0) {
+            questions.value[q].regist_time = dSeconds + '초 전'
+            continue
+          }
+        }
       },
       {
         id: 2,
@@ -20,12 +55,28 @@ export const useQuestionsStore = defineStore({
         detail: '국회나 그 위원회의 요구가 있을 때에는 국무총리·국무위원 또는 정부위원은 출석·답변하여야 하며, 국무총리 또는 국무위원이 출석요구를 받은 때에는 국무위원 또는 정부위원으로 하여금 출석·답변하게 할 수 있다. 대통령은 헌법과 법률이 정하는 바에 의하여 국군을 통수한다. 국무총리는 국무위원의 해임을 대통령에게 건의할 수 있다. 모든 국민은 신속한 재판을 받을 권리를 가진다. 형사피고인은 상당한 이유가 없는 한 지체없이 공개재판을 받을 권리를 가진다. 대통령은 국민의 보통·평등·직접·비밀선거에 의하여 선출한다. 환경권의 내용과 행사에 관하여는 법률로 정한다. 국회에 제출된 법률안 기타의 의안은 회기중에 의결되지 못한 이유로 폐기되지 아니한다. 다만, 국회의원의 임기가 만료된 때에는 그러하지 아니하다.',
         best_answer: null,
       },
-      {
-        id: 3,
-        title: 'test-title3',
-        user_id: 1,
-        detail: '속에 이상, 주는 투명하되 가장 끓는 열매를 원대하고, 것이다. 있을 굳세게 우리 이상 별과 용감하고 사랑의 인도하겠다는 눈에 이것이다. 있으며, 작고 풀밭에 생의 불어 거친 있으랴? 사라지지 하여도 우리의 고행을 듣는다. 타오르고 같지 장식하는 수 따뜻한 듣는다. 군영과 끝까지 그것을 트고, 피고 보이는 같으며, 인간의 방황하였으며, 것이다. 품고 쓸쓸한 품에 대중을 이상이 인도하겠다는 것이다. 많이 구하지 이것을 위하여 불어 것이다. 인간이 얼마나 들어 사랑의 피는 것이다. 가진 얼마나 사랑의 곳으로 커다란 위하여 보라. 피에 때에, 품으며, 별과 황금시대의 뜨거운지라, 운다.',
-        best_answer: null,
+    )
+  }
+
+  const getQuestionById = async (id) => {
+    await getQuestion(
+      id,
+      (res) => {
+        question.value = res.data.question
+        question.value.regist_time =
+          question.value.regist_time.replaceAll('T', ' ') + ' ·'
+
+        getAnswers(
+          question.value.id,
+          (res) => {
+            answers.value = res.data.answers
+            for (var a in answers.value) {
+              answers.value[a].regist_time =
+                answers.value[a].regist_time.replaceAll('T', ' ') + ' ·'
+            }
+          },
+          (fail) => console.log(fail),
+        )
       },
       {
         id: 4,
@@ -34,82 +85,58 @@ export const useQuestionsStore = defineStore({
         detail: '찬미를 무엇이 소담스러운 것은 아니다. 거친 있을 보는 얼마나 있는 이상, 인생을 더운지라 봄바람이다. 대고, 만물은 석가는 듣는다. 뜨고, 지혜는 예수는 청춘 꾸며 봄바람을 가치를 앞이 이것이다. 풀이 살 얼마나 옷을 그것을 실현에 가슴이 쓸쓸하랴? 두손을 수 살았으며, 보이는 거친 이것은 구하지 그리하였는가? 풀밭에 스며들어 힘차게 봄바람이다. 그들의 심장은 보이는 낙원을 힘있다. 스며들어 듣기만 군영과 품에 가치를 부패뿐이다. 별과 피가 아니한 뭇 듣기만 피가 풍부하게 봄바람이다.',
         best_answer: null,
       },
-      {
-        id: 5,
-        title: 'test-title5',
-        user_id: 1,
-        detail: '별 이름과 당신은 하늘에는 버리었습니다. 된 남은 노루, 시인의 가득 잠, 별이 우는 거외다. 위에 별을 까닭이요, 벌써 겨울이 헤는 무성할 된 밤이 까닭입니다. 쓸쓸함과 하나에 보고, 계십니다. 가슴속에 멀리 파란 다 시와 있습니다. 없이 묻힌 아스라히 어머니, 버리었습니다. 어머니, 어머님, 잠, 이름을 아직 이국 계십니다. 노루, 한 헤일 계십니다. 하나 멀리 사람들의 계절이 까닭입니다. 별을 언덕 소녀들의 내 청춘이 버리었습니다. 무엇인지 가득 언덕 프랑시스 까닭입니다.',
-        best_answer: null,
-      },
-      {
-        id: 6,
-        title: 'test-title6',
-        user_id: 2,
-        detail: '가을 멀리 파란 하나에 별을 말 무덤 내 봅니다. 밤이 나의 소녀들의 없이 하나에 라이너 이네들은 계십니다. 이런 별 말 하나에 듯합니다. 써 하나의 이름자 밤을 무덤 마디씩 쉬이 계십니다. 사랑과 라이너 남은 하나에 멀듯이, 이름을 있습니다. 이국 경, 아름다운 토끼, 봄이 그리워 듯합니다. 아름다운 때 하늘에는 지나가는 나의 별 있습니다. 별 밤을 별 이 자랑처럼 까닭이요, 벌써 어머님, 봅니다. 애기 까닭이요, 별들을 딴은 잔디가 피어나듯이 별 멀리 나는 거외다.',
-        best_answer: null,
-      },
-    ],
-    question: {},
-    pickedQtn: {},
-    answers: [
-      { id: 1, user_id: 1, question_id: 1, detail: 'Sample Answer1 이름과, 흙으로 언덕 봅니다. 내 별 위에도 피어나듯이 지나고 하나에 흙으로 덮어 둘 있습니다. 이름과 이름자를 이런 써 때 다 잠, 있습니다. 이국 별 까닭이요, 계십니다. 비둘기, 않은 멀리 있습니다. 이국 패, 오는 나의 이름을 봅니다. 지나가는 시와 가슴속에 없이 새겨지는 위에 북간도에 자랑처럼 때 봅니다. 그리고 아침이 파란 멀리 시와 벌써 무덤 다 이웃 까닭입니다. 어머니, 없이 나는 강아지, 봅니다. 이름과 오면 속의 부끄러운 시와 이런 까닭입니다. 하나 지나가는 멀리 너무나 이제 불러 계십니다.' },
-      { id: 2, user_id: 1, question_id: 1, detail: 'Sample Answer2 별을 남은 이웃 언덕 했던 까닭입니다. 하나에 속의 옥 하나의 흙으로 하나에 그리워 된 이름자를 계십니다. 어머님, 패, 잔디가 옥 별 까닭입니다. 위에도 헤는 무엇인지 있습니다. 그러나 내린 아직 까닭입니다. 하나에 것은 노새, 어머니 시와 나의 토끼, 위에 듯합니다. 내 시인의 가슴속에 듯합니다. 어머님, 차 이웃 까닭입니다. 하나의 이름과, 별빛이 잠, 버리었습니다. 별 하나에 하나에 봄이 별 하나에 옥 그리워 있습니다.' },
-      { id: 3, user_id: 1, question_id: 2, detail: 'Sample Answer3 재판의 전심절차로서 행정심판을 할 수 있다. 행정심판의 절차는 법률로 정하되, 사법절차가 준용되어야 한다. 국가안전보장회의는 대통령이 주재한다. 국회는 국가의 예산안을 심의·확정한다. 정부는 회계연도마다 예산안을 편성하여 회계연도 개시 90일전까지 국회에 제출하고, 국회는 회계연도 개시 30일전까지 이를 의결하여야 한다. 의원을 제명하려면 국회재적의원 3분의 2 이상의 찬성이 있어야 한다. 대통령이 제1항의 기간내에 공포나 재의의 요구를 하지 아니한 때에도 그 법률안은 법률로서 확정된다. 지방자치단체는 주민의 복리에 관한 사무를 처리하고 재산을 관리하며, 법령의 범위안에서 자치에 관한 규정을 제정할 수 있다.' },
-      { id: 4, user_id: 1, question_id: 2, detail: 'Sample Answer4 국회의원은 국회에서 직무상 행한 발언과 표결에 관하여 국회외에서 책임을 지지 아니한다. 법률이 정하는 주요방위산업체에 종사하는 근로자의 단체행동권은 법률이 정하는 바에 의하여 이를 제한하거나 인정하지 아니할 수 있다. 감사원은 원장을 포함한 5인 이상 11인 이하의 감사위원으로 구성한다. 누구든지 병역의무의 이행으로 인하여 불이익한 처우를 받지 아니한다. 대통령은 헌법과 법률이 정하는 바에 의하여 국군을 통수한다. 헌법재판소는 법률에 저촉되지 아니하는 범위안에서 심판에 관한 절차, 내부규율과 사무처리에 관한 규칙을 제정할 수 있다. 국군의 조직과 편성은 법률로 정한다. 헌법재판소의 장은 국회의 동의를 얻어 재판관중에서 대통령이 임명한다.' },
-      { id: 5, user_id: 2, question_id: 1, detail: 'Sample Answer5 대통령은 법률이 정하는 바에 의하여 사면·감형 또는 복권을 명할 수 있다. 군사재판을 관할하기 위하여 특별법원으로서 군사법원을 둘 수 있다. 외국인은 국제법과 조약이 정하는 바에 의하여 그 지위가 보장된다. 국무위원은 국정에 관하여 대통령을 보좌하며, 국무회의의 구성원으로서 국정을 심의한다. 모든 국민은 보건에 관하여 국가의 보호를 받는다. 국회의 정기회는 법률이 정하는 바에 의하여 매년 1회 집회되며, 국회의 임시회는 대통령 또는 국회재적의원 4분의 1 이상의 요구에 의하여 집회된다. 국회의원은 국회에서 직무상 행한 발언과 표결에 관하여 국회외에서 책임을 지지 아니한다. 행정권은 대통령을 수반으로 하는 정부에 속한다.' },
-      { id: 6, user_id: 2, question_id: 1, detail: 'Sample Answer6 대한민국은 통일을 지향하며, 자유민주적 기본질서에 입각한 평화적 통일 정책을 수립하고 이를 추진한다. 헌법재판소의 장은 국회의 동의를 얻어 재판관중에서 대통령이 임명한다. 대통령의 국법상 행위는 문서로써 하며, 이 문서에는 국무총리와 관계 국무위원이 부서한다. 군사에 관한 것도 또한 같다. 모든 국민은 능력에 따라 균등하게 교육을 받을 권리를 가진다. 헌법재판소는 법률에 저촉되지 아니하는 범위안에서 심판에 관한 절차, 내부규율과 사무처리에 관한 규칙을 제정할 수 있다. 대한민국은 민주공화국이다. 훈장등의 영전은 이를 받은 자에게만 효력이 있고, 어떠한 특권도 이에 따르지 아니한다.' },
-      { id: 7, user_id: 2, question_id: 2, detail: 'Sample Answer7 로렘 입숨(lorem ipsum; 줄여서 립숨, lipsum)은 출판이나 그래픽 디자인 분야에서 폰트, 타이포그래피, 레이아웃 같은 그래픽 요소나 시각적 연출을 보여줄 때 사용하는 표준 채우기 텍스트로, 최종 결과물에 들어가는 실제적인 문장 내용이 채워지기 전에 시각 디자인 프로젝트 모형의 채움 글로도 이용된다. 이런 용도로 사용할 때 로렘 입숨을 그리킹(greeking)이라고도 부르며, 때로 로렘 입숨은 공간만 차지하는 무언가를 지칭하는 용어로도 사용된다.' },
-      { id: 8, user_id: 2, question_id: 2, detail: 'Sample Answer8 미인을 그들은 가치를 물방아 사막이다. 얼마나 황금시대의 못할 이상은 것이다. 쓸쓸한 있는 그들의 보는 이상을 어디 더운지라 있다.' },
-    ],
-  }),
-  actions: {
-    async create(question) {
-      // await fetchWrapper.post(`${baseUrl}/create`, question)
-      console.log(
-        'baseUrl/question/create/{requestBody} // success/fail로 응답받음',
-      )
-    },
-    async getAll() {
-      // test codes below
-      console.log('baseUrl/question/getAll')
-    },
-    async getById(qtnId) {
-      // 테스트용 코드 below
-      for (let i = 0; i < this.questions.length; i++) {
-        if (this.questions[i].id == qtnId) {
-          this.question = this.questions[i]
-        }
-      }
-      console.log('baseUrl/question/{id}')
-    },
-    async sortMostRecent() {
-      console.log('baseUrl/question/sortMostRecent')
-    },
-    async sortNoAnswer() {
-      console.log('baseUrl/question/sortNoAnswer')
-    },
-    async sortActivated() {
-      console.log('baseUrl/question/sortActivated')
-    },
-    async getMyQtn() {
-      console.log('baseUrl/question/getMyQtn')
-    },
+    )
+  }
 
-    async update(id, params) {
-      console.log('baseUrl/question/{params}')
-    },
-    async delete(id) {
-      console.log('baseUrl/question/{id}')
-    },
-    async createAnswer(answer) {
-      console.log('baseUrl/answer/{answer}')
-    },
-    async deleteAnswer(answer) {
-      console.log('baseUrl/answer/{answer}')
-    },
-    async awardAnswer(id) {
-      // this.question.id와 매개변수로 받은 id를 같이 보내야함
-      console.log('baseUrl/question/award/{param}')
-    },
-  },
+  const clearState = () => {
+    question.value = {}
+    questions.value = {}
+    answers.value = {}
+    totalAmount.value = {}
+  }
+
+  // const getLikes = async (id) => {
+  //   question.value = {}
+  //   await getQuestion(
+  //     id,
+  //     (res) => {
+  //       question.value = res.data.question
+  //       question.value.regist_time =
+  //         question.value.regist_time.replaceAll('T', ' ') + ' ·'
+
+  //       getAnswers(
+  //         question.value.id,
+  //         (res) => {
+  //           answers.value = res.data.answers
+  //           for (var a in answers.value) {
+  //             answers.value[a].regist_time =
+  //               answers.value[a].regist_time.replaceAll('T', ' ') + ' ·'
+  //           }
+  //         },
+  //         (fail) => console.log(fail),
+  //       )
+  //     },
+  //     (fail) => {
+  //       console.log(fail)
+  //     },
+  //   )
+  // }
+
+  // const getAnswerList = async () => {
+  //   await getAnswers(
+  //     question.value.id,
+  //     (res) => console.log(res),
+  //     (fail) => console.log(fail),
+  //   )
+  // }
+
+  return {
+    questions,
+    question,
+    answers,
+    totalAmount,
+    getList,
+    getQuestionById,
+    clearState,
+  }
 })

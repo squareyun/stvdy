@@ -1,7 +1,15 @@
 <script setup>
 import { RouterLink } from 'vue-router'
-import { useQuestionStore, useAuthStore } from '@/stores'
+import { useUserStore, useAuthStore } from '@/stores'
 import router from '@/router'
+import { computed } from 'vue'
+
+const userStore = useUserStore()
+const user = computed(() => userStore.user)
+
+const login = () => {
+  router.push('/about')
+}
 
 const logout = async () => {
   const authStore = useAuthStore()
@@ -87,7 +95,7 @@ const logout = async () => {
       </svg>
       프로필
     </router-link>
-    <!-- <router-link
+    <router-link
       to="/myquestion"
       id="side-myquestion">
       <div class="selected"></div>
@@ -102,8 +110,8 @@ const logout = async () => {
           fill="white" />
       </svg>
       내 질문
-    </router-link> -->
-    <!-- <router-link
+    </router-link>
+    <router-link
       to="/alarms"
       id="side-alarms">
       <div class="selected"></div>
@@ -118,12 +126,13 @@ const logout = async () => {
           fill="white" />
       </svg>
       알림
-    </router-link> -->
+    </router-link>
 
     <div id="side-foot">
       <a
         id="logout-btn"
-        @click="logout">
+        @click="logout"
+        v-if="user">
         <svg
           width="1.2rem"
           height="1.2rem"
@@ -135,6 +144,23 @@ const logout = async () => {
             fill="white" />
         </svg>
         로그아웃
+      </a>
+      <a
+        id="login-btn"
+        @click="login"
+        v-if="!user">
+        <svg
+          width="1.2rem"
+          height="1.2rem"
+          viewBox="0 0 128 116"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M57.6 25.6L48.64 34.56L65.28 51.2H0V64H65.28L48.64 80.64L57.6 89.6L89.6 57.6L57.6 25.6ZM115.2 102.4H64V115.2H115.2C122.24 115.2 128 109.44 128 102.4V12.8C128 5.76 122.24 0 115.2 0H64V12.8H115.2V102.4Z"
+            fill="white" />
+        </svg>
+
+        로그인
       </a>
       <router-link to="/mypage">
         <svg
@@ -191,11 +217,7 @@ const logout = async () => {
   }
 }
 
-#side-lecture.router-link-active,
-#side-question.router-link-active,
-#side-mypage.router-link-active,
-#side-myquestion.router-link-active,
-#side-alarms.router-link-active {
+.router-link-exact-active {
   opacity: 1;
   transition: opacity 0.4s;
   .selected {
@@ -261,6 +283,25 @@ path {
     top: 315px;
     bottom: auto;
   }
+}
+
+#login-btn {
+  position: relative;
+  margin: 0px;
+
+  opacity: 0.7;
+  transition: opacity 0.4s;
+
+  cursor: pointer;
+}
+
+#login-btn > svg > path {
+  fill: var(--hl-light);
+}
+
+#login-btn:hover {
+  opacity: 1;
+  transition: opacity 0.4s;
 }
 
 #logout-btn {
