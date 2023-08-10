@@ -145,9 +145,43 @@
     session.value.on("streamDestroyed", ( {stream} ) => {
       const index = subscribers.value.indexOf(stream.streamManager, 0)
       if(index >= 0){
+        console.log('스트림 파괴함!!!')
         subscribers.value.splice(index, 1)
       }
     })
+
+    // session.value.on("streamDestroyed", ({ stream, reason }) => {
+    //   if (reason === "forceDisconnectByServer") {
+    //     console.log("Leaving Session (forced=true)");
+    //     leaveSession();
+    //   } else {
+    //     const index = subscribers.value.indexOf(stream.streamManager, 0)
+    //     if (index >= 0) {
+    //       subscribers.value.splice(index, 1)
+    //     }
+    //   }
+    // })
+
+    // 새로 추가한 이벤트 리스너, 강제 종료되면 leaveSession()함.
+    session.value.on("streamManagerRemoved", (event) => {
+       if(event.forced) {
+          console.log('얍! streamManagerRemoved')
+          // leaveSession();
+          router.push({
+            name:'maintmp',// 임시로 main으로 넘겨줌.
+          })
+       }
+    });
+
+    session.value.on('sessionDisconnected', event => {
+      // 이벤트 처리 코드
+      console.log("세션에서 연결 끊어짐:", event);
+      // 필요한 추가 작업을 수행합니다. 예: UI 업데이트, 사용자 알림 등
+      router.push({
+        name:'maintmp',// 임시로 main으로 넘겨줌.
+      })
+    });
+
     session.value.on("exception", ({ exception }) => {
       console.warn(exception);
     })
@@ -161,6 +195,7 @@
       console.log(messageData)
       messages.value.push(messageData);
     })
+    
 
     // createToken(mySessionId.value).then((token) => {
     createToken(mySessionId.value, roomId.value).then((token) => {
@@ -234,7 +269,7 @@
     // openNewWindow2(`이건 리브세션버튼 누른거` + '섭스크라이브'+ subscribersComputed.value.length+'방id'+localRoomId)
     // 메인페이지로 넘어감
     router.push({
-      name:'main',// 임시 이름 main으로 넘겨줌.
+      name:'maintmp',// 임시로 main으로 넘겨줌.
     })
   }
   function escapePage() {
@@ -314,6 +349,7 @@
     }
     else{
       try{
+        console.log('몇시간작동할겨?',endHour, endMinute)
         const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/add', 
         {userNo: userNo, title: mySessionId, endHour: endHour, endMinute: endMinute, quota: quota, 
           isPrivacy: isPrivacy, password: password, iamgePath: backImgFile, rule: rule, tags: roomTags, role:'MODERATOR'}, 
@@ -509,10 +545,8 @@
     console.log(subscribersComputed.value)
     console.log(subscribersComputed.value.length)
     try{
-      console.log('체크커넥션1!!')
       const response = await axios.get(`http://localhost:8080/rooms/currentConnection/${roomId}`)
       console.log(response.data)
-      console.log('체크커넥션2!!')
     }
     catch(error){
       console.error('체크커넥션 실패...',error.code, error.message)
@@ -520,7 +554,7 @@
   }
   ////// 나중에 지울거임
   function checkSubScirbers(){
-    alert(subscribersComputed.value.length+'현재명수')
+    alert(`현재명수: ${subscribersComputed.value.length+1}명`)
   }
 
   // 퇴장시키기
@@ -588,18 +622,6 @@
   <!-- 화상회 부가기능이 보이는 곳 -->
   <div id="functionTab" style="color: white;">
     <div id="tabs">
-      <!-- <ul id="functionUl" style="display: flex;">
-        <div v-if="isHost">
-          <li v-for="(tab, index) in funcTabsHost" :key="index" id="tab{{index}}" :class="{ 'active': activeFuncTab === index }" @click="changeTab(index)">
-            {{ tab }}
-          </li>
-        </div>
-        <div v-else>
-          <li v-for="(tab, index) in funcTabs" :key="index" id="tab{{index}}" :class="{ 'active': activeFuncTab === index }" @click="changeTab(index)">
-            {{ tab }}
-          </li>
-        </div>
-      </ul> -->
       <ul id="functionUl" style="display: flex;" v-if="isHost" >
         <div >
           <li v-for="(tab, index) in funcTabsHost" :key="index" id="tab{{index}}" :class="{ 'active': activeFuncTab === index }" @click="changeTab(index)">
@@ -639,11 +661,6 @@
     <div v-if="activeFuncTab === 3"></div>
 
     <!-- 강제퇴장 -->
-    <!-- <div v-if="isHost && activeFuncTab === 4">
-      <div>
-
-      </div>
-    </div> -->
     <div v-if="isHost && activeFuncTab === 4">
       <div v-for="(subscriber, index) in subscribersComputed" :key="index">
         <button @click="handleForceDisconnect(subscriber)">{{ JSON.parse(subscriber.stream.connection.data).clientData }}님을 퇴장시키기</button>

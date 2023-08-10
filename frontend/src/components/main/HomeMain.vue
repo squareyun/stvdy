@@ -3,12 +3,12 @@
   import { ref, computed, watch, onMounted, onBeforeMount } from 'vue'
   import { useRouter } from "vue-router"
   import { usewebRtcStore } from "@/stores"
-  import { useQuestionsStore } from "@/stores"
+  import { useQuestionStore } from "@/stores"
   // import { storeToRefs } from 'pinia';
   import axios from 'axios'
 
   const webRtcStore = usewebRtcStore()
-  const questionsStore = useQuestionsStore()
+  const questionsStore = useQuestionStore()
   const router = useRouter();
   
   ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -140,7 +140,7 @@
 
   /// 방 입장 전 방 정보 모달 창 켜기
   function showRoomInfo(room) {
-    console.log('해당 방의 정보',room)
+    // console.log('해당 방의 정보',room)
     isRoomInfo.value = true
     selectedRoom.value = room
     selectedRoomPw.value = room.password
