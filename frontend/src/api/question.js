@@ -3,7 +3,7 @@ import axios from 'axios'
 const listQuestion = async (values, success, fail) => {
   await axios
     .get(
-      `/api/questions/list?keyword=${values.keyword}&nickname=${values.nickname}&page=${values.page}`,
+      `/api/questions/list?keyword=${values.keyword}&nickname=${values.nickname}&page=${values.page}&noAnsFilter=${values.noAnsFilter}&noBestAnsFilter=${values.noBestAnsFilter}`,
     )
     .then(success)
     .catch(fail)
@@ -11,6 +11,13 @@ const listQuestion = async (values, success, fail) => {
 
 const writeQuestion = async (values, success, fail) => {
   await axios.post(`/api/questions/add`, values).then(success).catch(fail)
+}
+
+const modifyQuestion = async (values, success, fail) => {
+  await axios
+    .put(`/api/questions/${values.id}`, values)
+    .then(success)
+    .catch(fail)
 }
 
 const getQuestion = async (id, success, fail) => {
@@ -46,6 +53,7 @@ const getAnswers = async (id, success, fail) => {
 export {
   listQuestion,
   writeQuestion,
+  modifyQuestion,
   getQuestion,
   isLikeQuestion,
   likesQuestion,

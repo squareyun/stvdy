@@ -2,7 +2,7 @@
 import { Form, Field } from 'vee-validate'
 import * as Yup from 'yup'
 import { useQuestionStore, useAlertStore, useUserStore } from '@/stores'
-import { writeQuestion } from '@/api/question'
+import { writeQuestion, modifyQuestion } from '@/api/question'
 import { computed } from 'vue'
 import router from '@/router'
 import { useRoute } from 'vue-router'
@@ -11,8 +11,7 @@ const $route = useRoute()
 const questionStore = useQuestionStore()
 let question = {}
 
-if ($route.path == '/modifyquestion') {
-  console.log('edit')
+if ($route.name == 'modifyquestion') {
   question = computed(() => questionStore.question)
   questionStore.getQuestionById($route.params.id)
 }
@@ -40,27 +39,48 @@ async function onSubmit(values) {
     userNo: user.id,
     title: values.title,
     content: values.content,
-    category: question.category,
+    category: values.category,
   }
 
-  console.log(data)
-
-  writeQuestion(
-    data,
-    (res) => {
-      console.log(res)
-      router.push('/question')
-    },
-    (fail) => {
-      console.log(fail)
-    },
-  )
+  if ($route.name == 'createquestion') {
+    writeQuestion(
+      data,
+      (res) => {
+        console.log(res)
+        router.push('/question')
+      },
+      (fail) => {
+        console.log(fail)
+      },
+    )
+  } else if ($route.name == 'modifyquestion') {
+    data.id = $route.params.id
+    modifyQuestion(
+      data,
+      (res) => {
+        console.log(res)
+        router.push('/question')
+      },
+      (fail) => {
+        console.log(fail)
+      },
+    )
+  }
 }
 </script>
 
 <template>
   <div>
-    <span class="question-content-title">질문 작성</span>
+    <span
+      class="question-content-title"
+      v-if="$route.name == 'createquestion'">
+      질문 작성
+    </span>
+    <span
+      class="question-content-title"
+      v-if="$route.name == 'modifyquestion'">
+      질문 수정
+    </span>
     <div class="question-content">
       <Form
         id="question-form"
@@ -80,23 +100,21 @@ async function onSubmit(values) {
           다음
         </div>
         <div id="category-select">
-          <Form autocomplete="off">
-            <p class="field-name">
-              &nbsp;&nbsp;#카테고리 혹은 태그를 입력해주세요.
-              <span class="error-yup">{{ errors.username }}</span>
-              &nbsp;
-            </p>
-            <Field
-              name="category"
-              type="text"
-              class="field"
-              v-model="question.category" />
-          </Form>
+          <p class="field-name">
+            &nbsp;&nbsp;#카테고리 혹은 태그를 입력해주세요.
+            <span class="error-yup">{{ errors.username }}</span>
+            &nbsp;
+          </p>
+          <Field
+            name="category"
+            type="text"
+            class="field"
+            v-model="question.category" />
         </div>
         <div id="question-form-main">
           <Field
             v-slot="{ field }"
-            v-model="question.content"
+            v-model="question.detail"
             name="content"
             rules="required"
             :class="{ 'is-invalid': errors.content }">
@@ -116,7 +134,8 @@ async function onSubmit(values) {
           <button
             id="question-form-menu-btn"
             :disabled="isSubmitting">
-            작성
+            <span v-if="$route.name == 'createquestion'">작성</span>
+            <span v-if="$route.name == 'modifyquestion'">수정</span>
           </button>
         </div>
       </Form>
