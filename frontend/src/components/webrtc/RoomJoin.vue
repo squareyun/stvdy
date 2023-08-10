@@ -559,8 +559,10 @@
 
   // 퇴장시키기
   async function handleForceDisconnect(subscriber) {
+    const kickReason = prompt('강제 퇴장의 사유를 작성해주세요.')
     try {
       await session.value.forceDisconnect(subscriber.stream.connection);
+      // webrtcstore.kickUser(roomId. value, userId ,kickReason) // userId 를 못받아옴.
     } catch (error) {
       console.error("사용자 연결을 강제로 끊는 중 오류 발생:", error);
     }
