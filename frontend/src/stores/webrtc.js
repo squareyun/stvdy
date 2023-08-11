@@ -8,7 +8,6 @@ export const usewebRtcStore = defineStore({
   state: () => ({
     APPLICATION_SERVER_URL : 'http://localhost:8080/',
 
-
     userNo: useUserStore().user.id,
     mySessionId: 'SSAP STVDY'+ (Math.floor(Math.random() * (200 - 1 + 1)) + 1),
     // myUserName : useUserStore().user.username,

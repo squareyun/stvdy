@@ -159,10 +159,7 @@ router.beforeEach(async (to) => {
     '/about',
     '/regist',
     '/passwordReset',
-    '/room',
-    '/room/123',
-    '/webrtc',
-  ] // 손 좀 대겠습니다. 기존 ['/about', '/regist', '/passwordReset', ]
+  ]
   const authRequired = !testPages.includes(to.path)
   const loginLogics = ['/about', '/regist', '/passwordReset']
 

@@ -121,7 +121,7 @@
       leaveSession()
       return
     }
-  };
+  }
 
   function isExitTrue() {
     webrtcstore.isExitTrue()
@@ -168,7 +168,8 @@
           console.log('얍! streamManagerRemoved')
           // leaveSession();
           router.push({
-            name:'maintmp',// 임시로 main으로 넘겨줌.
+            // name:'maintmp',// 임시로 main으로 넘겨줌.
+            name:'main',
           })
        }
     });
@@ -178,7 +179,8 @@
       console.log("세션에서 연결 끊어짐:", event);
       // 필요한 추가 작업을 수행합니다. 예: UI 업데이트, 사용자 알림 등
       router.push({
-        name:'maintmp',// 임시로 main으로 넘겨줌.
+        // name:'maintmp',// 임시로 main으로 넘겨줌.
+        name:'main',
       })
     });
 
@@ -188,15 +190,15 @@
 
     // 채팅 이벤트 수신 처리 함. session.on이 addEventListenr 역할인듯.
     session.value.on('signal:chat', (event) => { // event.from.connectionId === session.value.connection.connectionId 이건 나와 보낸이가 같으면임
-      const messageData = JSON.parse(event.data);
+      const messageData = JSON.parse(event.data)
       if(event.from.connectionId === session.value.connection.connectionId){
         messageData['username'] = '나'
       }
       console.log(messageData)
-      messages.value.push(messageData);
+      console.log(messageData.userNo)
+      messages.value.push(messageData)
     })
     
-
     // createToken(mySessionId.value).then((token) => {
     createToken(mySessionId.value, roomId.value).then((token) => {
       roomId.value = webrtcstore.roomId
@@ -269,7 +271,8 @@
     // openNewWindow2(`이건 리브세션버튼 누른거` + '섭스크라이브'+ subscribersComputed.value.length+'방id'+localRoomId)
     // 메인페이지로 넘어감
     router.push({
-      name:'maintmp',// 임시로 main으로 넘겨줌.
+      // name:'maintmp',// 임시로 main으로 넘겨줌.
+      name:'main',
     })
   }
   function escapePage() {
