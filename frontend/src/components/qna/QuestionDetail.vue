@@ -4,8 +4,13 @@ import { useQuestionStore, useUserStore } from '@/stores'
 import { computed, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import router from '@/router'
-import { isLikeQuestion, likesQuestion, answerQuestion } from '@/api/question'
-import { addAlarm } from '@/api/alarm'
+import {
+  isLikeQuestion,
+  likesQuestion,
+  answerQuestion,
+  deleteQuestion,
+  bestAnswer,
+} from '@/api/question'
 
 const $route = useRoute()
 
@@ -34,7 +39,7 @@ const islikeQtn = () => {
 
       if (likes) {
         document.getElementById('content-like-btn-path').style.fill =
-          'var(--hl-purple)'
+          'var(--hl-pres)'
         document.getElementById('content-dislike-btn-path').style.fill =
           'var(--hl-light)'
       } else if (likes === null) {
@@ -46,7 +51,7 @@ const islikeQtn = () => {
         document.getElementById('content-like-btn-path').style.fill =
           'var(--hl-light)'
         document.getElementById('content-dislike-btn-path').style.fill =
-          'var(--hl-purple)'
+          'var(--hl-pres)'
       }
     },
     (fail) => console.log(fail),
@@ -106,9 +111,32 @@ const modifyQtn = () => {
   router.push(`/modifyQuestion/${question.value.id}`)
 }
 
+const deleteQtn = () => {
+  deleteQuestion(
+    $route.params.id,
+    (res) => {
+      console.log(res)
+      router.push(`/question/1`)
+    },
+    (fail) => console.log(fail),
+  )
+}
+
 onBeforeUnmount(() => {
   questionStore.clearState()
 })
+
+const bestAns = (id) => {
+  const data = {
+    questionNo: question.value.id,
+    answerNo: id,
+  }
+  bestAnswer(
+    data,
+    (res) => router.go(0),
+    (fail) => console.log(fail),
+  )
+}
 </script>
 
 <template>
@@ -178,11 +206,11 @@ onBeforeUnmount(() => {
             id="edit-delete-box"
             v-if="question.userNo === user.id">
             <button @click="modifyQtn">수정하기</button>
-            <button @click="QtnDelete(question.id)">삭제하기</button>
+            <button @click="deleteQtn">삭제하기</button>
           </div>
         </div>
       </div>
-      <div id="answers-title">{{ answers.length }}개의 답변이 있습니다.</div>
+      <div id="answers-title">{{ answers.length }}개의 의견이 있습니다.</div>
       <div
         id="answers-box"
         v-if="answers.length > 0">
@@ -192,6 +220,35 @@ onBeforeUnmount(() => {
           :key="ans.id">
           <div class="answers-detail-box">
             {{ ans.detail }}
+            <svg
+              class="best-btn"
+              v-if="!question.bestSelected && user.id != ans.userNo"
+              @click="bestAns(ans.id)"
+              width="1.4rem"
+              height="1.4rem"
+              viewBox="0 0 128 128"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M64 0C28.672 0 0 28.672 0 64C0 99.328 28.672 128 64 128C99.328 128 128 99.328 128 64C128 28.672 99.328 0 64 0ZM64 115.2C35.776 115.2 12.8 92.224 12.8 64C12.8 35.776 35.776 12.8 64 12.8C92.224 12.8 115.2 35.776 115.2 64C115.2 92.224 92.224 115.2 64 115.2ZM93.376 35.712L51.2 77.888L34.624 61.376L25.6 70.4L51.2 96L102.4 44.8L93.376 35.712Z"
+                fill="black" />
+            </svg>
+            <div
+              class="bested-btn"
+              v-if="ans.bestSelected">
+              <svg
+                width="1.4rem"
+                height="1.4rem"
+                viewBox="0 0 128 128"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M64 0C28.672 0 0 28.672 0 64C0 99.328 28.672 128 64 128C99.328 128 128 99.328 128 64C128 28.672 99.328 0 64 0ZM51.2 96L19.2 64L28.224 54.976L51.2 77.888L99.776 29.312L108.8 38.4L51.2 96Z"
+                  fill="black" />
+              </svg>
+              <span class="bested-title">채택 답변</span>
+            </div>
+
             <div id="author-image"></div>
 
             <div id="author-name">
@@ -223,7 +280,7 @@ onBeforeUnmount(() => {
               placeholder="친절한 답변 문화를 희망합니다."></textarea>
           </Field>
           <div id="answer-form-menu">
-            <button id="answer-form-menu-btn">답변 등록</button>
+            <button id="answer-form-menu-btn">의견 등록</button>
           </div>
         </Form>
       </div>
@@ -272,7 +329,7 @@ onBeforeUnmount(() => {
   font-size: 1.4rem;
   font-family: 'ASDGothicM';
 
-  border-bottom: 7px solid var(--font30);
+  border-bottom: 7px solid var(--border-color);
 }
 
 #question-info {
@@ -321,7 +378,7 @@ onBeforeUnmount(() => {
   left: 30px;
   bottom: 12px;
 
-  color: var(--hl-purple);
+  color: var(--hl-pres);
   font-size: 1.4rem;
 }
 
@@ -339,7 +396,7 @@ onBeforeUnmount(() => {
 }
 
 #content-like-btn:hover > path {
-  fill: var(--hl-purple);
+  fill: var(--hl-pres);
   transition: fill 0.4s;
 }
 
@@ -357,7 +414,7 @@ onBeforeUnmount(() => {
 }
 
 #content-dislike-btn:hover > g > path {
-  fill: var(--hl-purple);
+  fill: var(--hl-pres);
   transition: fill 0.4s;
 }
 
@@ -375,7 +432,7 @@ onBeforeUnmount(() => {
   background-position: center;
   cursor: pointer;
 
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.16), 0 2px 3px rgba(0, 0, 0, 0.23);
 }
 
 #author-name {
@@ -405,6 +462,7 @@ onBeforeUnmount(() => {
   font-family: 'ASDGothicM';
   font-size: 1rem;
   color: var(--hl-light80);
+  transition: color 0.4s;
 
   border: none;
   background-color: transparent;
@@ -415,6 +473,10 @@ onBeforeUnmount(() => {
 #edit-delete-box > button:nth-child(2) {
   color: var(--hl-warn);
   opacity: 0.9;
+}
+
+#edit-delete-box > button:hover {
+  color: var(--hl-light);
 }
 
 #answer-edit-delete-box {
@@ -434,7 +496,7 @@ onBeforeUnmount(() => {
 }
 
 #answer-edit-delete-box > button:nth-child(2) {
-  color: var(--hl-purple);
+  color: var(--hl-pres);
   opacity: 0.8;
 }
 
@@ -444,6 +506,8 @@ onBeforeUnmount(() => {
   margin-bottom: 38px;
   border-radius: 10px;
   background-color: var(--font50);
+
+  border: 1px solid var(--border-color);
 }
 
 .answers-detail-box {
@@ -457,7 +521,7 @@ onBeforeUnmount(() => {
   padding-top: 15px;
   padding-bottom: 50px;
 
-  border-bottom: 1px solid var(--background-window);
+  border-bottom: 1px solid var(--border-color);
 }
 
 #answers-title {
@@ -470,6 +534,36 @@ onBeforeUnmount(() => {
 #my-answer-title {
   color: var(--hl-light);
   font-size: 1.2rem;
+}
+
+.best-btn {
+  position: absolute;
+  left: 30px;
+  bottom: 15px;
+}
+
+.best-btn > path {
+  fill: var(--hl-light50);
+}
+
+.bested-btn {
+  position: absolute;
+  left: 30px;
+  bottom: 9px;
+}
+
+.bested-btn > svg > path {
+  fill: var(--hl-pres);
+}
+
+.bested-title {
+  display: inline-block;
+  position: inherit;
+  margin-top: 2px;
+  margin-left: 3px;
+
+  width: 4rem;
+  color: var(--hl-pres);
 }
 
 #answer-form-main {
@@ -501,6 +595,8 @@ onBeforeUnmount(() => {
   /* border-top: 1px solid var(--hl-light30); */
   border-bottom: 1px solid var(--hl-light30);
   outline: none;
+
+  resize: none;
 }
 
 #answer-form-menu {
@@ -510,7 +606,7 @@ onBeforeUnmount(() => {
 #answer-form-menu-btn {
   height: 28px;
   width: 85px;
-  background-color: var(--hl-purple);
+  background-color: var(--hl-pres);
 
   margin-top: 5px;
 
@@ -526,5 +622,9 @@ onBeforeUnmount(() => {
   border-radius: 15px;
 
   cursor: pointer;
+}
+
+#answer-form-menu-btn:hover {
+  color: var(--hl-light);
 }
 </style>

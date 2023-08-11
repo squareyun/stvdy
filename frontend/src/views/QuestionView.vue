@@ -48,5 +48,7 @@ import TopSearch from '@/components/TopSearch.vue'
   margin-bottom: 20px;
   padding-bottom: 30px;
   padding-left: 30px;
+
+  border: 1px solid var(--border-color);
 }
 </style>

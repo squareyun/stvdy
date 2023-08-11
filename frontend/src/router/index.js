@@ -11,8 +11,8 @@ const router = createRouter({
     {
       path: '/',
       alias: ['/home'],
-      // component: TestView,
-      component: () => import('../views/HomeView.vue'),
+      component: TestView,
+      // component: () => import('../views/HomeView.vue'),
       children: [
         // {
         //   path: '',
@@ -38,6 +38,10 @@ const router = createRouter({
               path: 'changepwd',
               component: () => import('../components/profile/ChangePwd.vue'),
             },
+            {
+              path: 'changecolor',
+              component: () => import('../components/profile/ChangeColor.vue'),
+            },
           ],
         },
         {
@@ -53,12 +57,12 @@ const router = createRouter({
       component: () => import('../views/QuestionView.vue'),
       children: [
         {
-          path: '',
+          path: '/question/:page',
           name: 'listquestions',
           component: () => import('../components/qna/QuestionList.vue'),
         },
         {
-          path: '/myquestion',
+          path: '/myquestion/:page',
           name: 'myquestion',
           component: () => import('../components/qna/MyQuestionList.vue'),
         },
@@ -117,7 +121,7 @@ const router = createRouter({
       name: 'roomJoin',
       component: () => import('@/components/webrtc/RoomJoin.vue'),
     },
-    
+
     //// 메인화면입장 시
     {
       path: '/main',
@@ -131,38 +135,20 @@ const router = createRouter({
       name: 'KeywordRoom',
       component: () => import('@/components/main/KeywordRoom.vue'),
     },
-    
   ],
 })
 
 router.beforeEach(async (to) => {
-  // 테스트용 색상 팔레트 저장
-  // const colorPalette = {
-  //   backgroundUp: '#f8f8f2',
-  //   topbarBasic: '#282a3620',
-  //   topbarTime: '#202020',
-  //   hlLight: '#282a36',
-  //   font100: '#f8f8f2',
-  //   font80: '#f8f8f2cc',
-  //   font50: '#f8f8f280',
-  //   font30: '#f8f8f24d',
-  //   font25: '#f8f8f240',
-  //   font20: '#f8f8f233',
-  //   font10: '#f8f8f21a',
-  // }
-
-  // localStorage.setItem('colorPalette', JSON.stringify(colorPalette))
-
   // 컬러 팔레트를 로컬 스토리지에서 찾는다.
-  const obj = localStorage.getItem('colorPalette3')
+  const obj = localStorage.getItem('colorScheme')
 
   // 컬러 팔레트에 설정 된 값만 변경하고 나머지는 그대로 둔다.
   if (obj) {
-    const colorPalette = JSON.parse(obj)
-    for (const color in colorPalette) {
+    const colorScheme = JSON.parse(obj)
+    for (const color in colorScheme) {
       document.documentElement.style.setProperty(
         '--' + color.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase(),
-        colorPalette[color],
+        colorScheme[color],
       )
     }
   }

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { fetchWrapper } from '@/helpers'
 import { useAlertStore, useUserStore } from '@/stores'
 import { loginAuth } from '@/api/auth'
+import { ref } from 'vue'
 import router from '@/router'
 
 export const useAuthStore = defineStore({
@@ -69,12 +70,14 @@ export const useAuthStore = defineStore({
     },
     logout() {
       const userStore = useUserStore()
-      userStore.user = null
+      userStore.user = {}
 
       this.setValid(false)
 
       localStorage.removeItem('access-token')
       sessionStorage.removeItem('access-token')
+      sessionStorage.removeItem('user')
+
       router.push('/about')
     },
   },

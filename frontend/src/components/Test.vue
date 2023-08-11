@@ -42,7 +42,7 @@ import { listQuestion } from '@/api/question'
   background-size: cover;
   background-position: center;
 
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.16), 0 2px 3px rgba(0, 0, 0, 0.23);
 }
 
 #user-name {
@@ -108,7 +108,7 @@ import { listQuestion } from '@/api/question'
   border: 0;
   background-color: transparent;
 
-  color: var(--hl-purple);
+  color: var(--hl-pres);
   transition: color 0.4s;
   font-size: 1rem;
 
@@ -127,7 +127,7 @@ import { listQuestion } from '@/api/question'
   display: block;
   margin-bottom: 0.3rem;
 
-  color: var(--hl-purple);
+  color: var(--hl-pres);
   transition: color 0.4s;
 
   font-size: 1rem;

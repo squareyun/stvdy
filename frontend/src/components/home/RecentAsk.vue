@@ -10,6 +10,8 @@ const query = {
   keyword: '',
   nickname: '',
   page: 0,
+  noAnsFilter: false,
+  noBestAnsFilter: false,
 }
 questionStore.getList(query)
 
