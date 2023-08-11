@@ -1,5 +1,6 @@
 package com.ssafy.ssap.controller;
 
+import com.ssafy.ssap.exception.S3Exception;
 import com.ssafy.ssap.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -35,14 +36,15 @@ public class S3Controller {
         logger.debug("");
         HttpStatus status = HttpStatus.OK;
         Map<String, Object> resultMap;
-        switch(pattern){
-            case "profile", "alarm", "room" -> resultMap = s3Service.getUrl(pattern, id);
-            case "question", "answer" -> resultMap = s3Service.getUrlList(pattern, id);
-            default -> {
-                resultMap = new HashMap<>();
-                resultMap.put("message", "Failed, "+pattern+" 스펠링 확인");
-                status = HttpStatus.INTERNAL_SERVER_ERROR;
+        try {
+            switch (pattern) {
+                case "profile", "alarm", "room" -> resultMap = s3Service.getUrl(pattern, id);
+                case "question", "answer" -> resultMap = s3Service.getUrlList(pattern, id);
+                default -> throw new S3Exception(pattern + " 스펠링 확인");
             }
+        }catch(Exception e){
+            resultMap = new HashMap<>();
+            resultMap.put("message", "getUrl 실패");
         }
         return new ResponseEntity<>(resultMap, status);
     }

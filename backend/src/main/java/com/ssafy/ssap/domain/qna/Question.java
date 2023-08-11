@@ -71,8 +71,8 @@ public class Question {
 	@OneToMany(mappedBy = "question")
 	List<Answer> answerList = new ArrayList<>();
 
-	@OneToOne(mappedBy = "question")
-	ArticleImage articleImage;
+	@OneToMany(mappedBy = "question")
+	List<ArticleImage> articleImage;
 
 	@OneToOne(mappedBy = "question")
 	Likes likes;

@@ -13,6 +13,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static jakarta.persistence.FetchType.LAZY;
 
@@ -52,8 +53,8 @@ public class Answer {
     @OneToOne(mappedBy = "answer")
     Likes likes;
 
-    @OneToOne(mappedBy = "answer")
-    ArticleImage articleImage;
+    @OneToMany(mappedBy = "answer")
+    List<ArticleImage> articleImage;
 
     public void addQuestion(Question question) {
         this.question = question;
