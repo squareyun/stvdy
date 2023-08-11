@@ -59,8 +59,7 @@ public class MyPageController {
 		Map<String, Object> resultMap = new HashMap<>();
 		HttpStatus status = null;
 		try {
-			String userNickname = userService.getMyUserWithAuthorities().getNickname();
-			userService.updateNickname(map.get("nickname"));
+			String userNickname = userService.updateNickname(map.get("nickname"));
 			logger.info("닉네임 변경 성공: userNickname = {}", userNickname);
 			resultMap.put("message", MessageFormat.SUCCESS);
 			status = HttpStatus.ACCEPTED;
