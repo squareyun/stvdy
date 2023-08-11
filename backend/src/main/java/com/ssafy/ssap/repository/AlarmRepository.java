@@ -16,7 +16,4 @@ public interface AlarmRepository extends JpaRepository<Alarm, Integer> {
 		Pageable pageable);
 
 	List<Alarm> findByUserIdInOrderByRegistTimeDesc(List<Integer> userIds);
-
-	String findImagePathById(Integer id);
-
 }

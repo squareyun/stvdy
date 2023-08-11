@@ -4,7 +4,6 @@ import static jakarta.persistence.FetchType.*;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import com.ssafy.ssap.domain.user.User;
@@ -15,10 +14,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-
-
-
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -51,9 +46,8 @@ public class Alarm {
 	@Column(columnDefinition = "text")
 	private String detail;
 
-	 @Column(name = "image_path")
-	 @Lob
-	 private String imagePath;
+ 	@Column(name = "image_path")
+	private String imagePath;
 
 	@NotNull
 	@Column(name = "is_read", columnDefinition = "bit(1)")

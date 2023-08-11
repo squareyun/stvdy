@@ -76,7 +76,6 @@ public class User {
 	@Column(name = "activated")
 	private boolean activated;
 
-	@Lob
 	@Column(name = "image_path")
 	private String imagePath;
 

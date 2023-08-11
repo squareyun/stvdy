@@ -8,6 +8,8 @@ import java.util.List;
 
 @Repository
 public interface ArticleImageRepository  extends JpaRepository<ArticleImage, Integer> {
-    List<String> findAllImagePathByQuestionId(Integer questionNo);
-    List<String> findAllImagePathByAnswerId(Integer answerNo);
+
+    List<ArticleImage> findAllByQuestionId(Integer id);
+
+    List<ArticleImage> findAllByAnswerId(Integer id);
 }

@@ -127,7 +127,7 @@ public class S3Util {
                 } else{
                     articleImage.setAnswer((Answer) entity);
                 }
-                articleImage.setPath(filePath);
+                articleImage.setImagePath(filePath);
                 articleImagesToUpdate.add(articleImage);
             } else {
                 try {
@@ -156,7 +156,7 @@ public class S3Util {
 //            case "question", "answer" -> repository = pattern.equals("question") ? questionRepository : answerRepository;
 //            default -> throw new IllegalStateException("Unexpected value: " + pattern);
 //        }
-        repository = getRepository(pattern, id);
+        repository = getRepository(pattern);
 
         entity = repository.findById(id).orElse(null);
         if(entity == null){
@@ -166,7 +166,7 @@ public class S3Util {
         return entity;
     }
 
-    private JpaRepository<?, Integer> getRepository(String pattern, Integer id) {
+    private JpaRepository<?, Integer> getRepository(String pattern) {
         return switch (pattern) {
             case "alarm" -> alarmRepository;
             case "room", "profile" -> userRepository;

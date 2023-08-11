@@ -2,6 +2,7 @@ package com.ssafy.ssap.service;
 
 import com.ssafy.ssap.controller.RoomController;
 
+import com.ssafy.ssap.domain.qna.ArticleImage;
 import com.ssafy.ssap.exception.S3Exception;
 import com.ssafy.ssap.repository.*;
 import com.ssafy.ssap.util.S3Util;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +55,7 @@ public class S3Service {
         try{
             switch(pattern){
                 case "profile", "room" -> throw new S3Exception("User 객체에서 얻기 바람");
-                case "alarm" -> url = alarmRepository.findImagePathById(id);
+                case "alarm" -> url = alarmRepository.findById(id).orElse(null).getImagePath();
                 default -> throw new NullPointerException();
             }
             resultMap.put("url",url);
@@ -67,11 +69,17 @@ public class S3Service {
 
     public Map<String, Object> getUrlList(String pattern, Integer id) {
         Map<String, Object> resultMap = new HashMap<>();
-        List<String> urlList;
+        List<String> urlList = new ArrayList<>();
         try{
             switch(pattern){
-                case "question" -> urlList = articleImageRepository.findAllImagePathByQuestionId(id);
-                case "answer" -> urlList = articleImageRepository.findAllImagePathByAnswerId(id);
+                case "question" -> {
+                    for(ArticleImage ai : articleImageRepository.findAllByQuestionId(id))
+                        urlList.add(ai.getImagePath());
+                }
+                case "answer" -> {
+                    for(ArticleImage ai : articleImageRepository.findAllByAnswerId(id))
+                        urlList.add(ai.getImagePath());
+                }
                 default -> throw new NullPointerException();
             }
             resultMap.put("urlList",urlList);

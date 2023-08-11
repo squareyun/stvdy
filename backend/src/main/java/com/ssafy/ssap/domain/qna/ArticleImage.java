@@ -20,9 +20,8 @@ public class ArticleImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column
-    @Lob
-    private String path;
+    @Column(name = "image_path")
+    private String imagePath;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "question_id")
