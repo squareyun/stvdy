@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores'
+import { useUserStore } from "@/stores"
+
 import axios from 'axios'
 
 export const usewebRtcStore = defineStore({
@@ -9,8 +10,11 @@ export const usewebRtcStore = defineStore({
     APPLICATION_SERVER_URL: 'http://localhost:8080/',
 
     userNo: useUserStore().user.id,
-    mySessionId: '되라' + (Math.floor(Math.random() * (200 - 1 + 1)) + 1),
-    myUserName: useUserStore().user.username,
+
+    mySessionId: 'SSAP STVDY'+ (Math.floor(Math.random() * (200 - 1 + 1)) + 1),
+    // myUserName : useUserStore().user.username,
+    myUserName : '테스트 유저'+ (Math.floor(Math.random() * (200 - 1 + 1)) + 1),
+
     endHour: 0,
     endMinute: 0,
     quota: 16,
@@ -136,19 +140,25 @@ export const usewebRtcStore = defineStore({
     // 메인 페이지에서 사용되는 방 리스트 목록
     // 방들 찾아옴.
     async getRtcRooms() {
-      try {
-        // const response = axios.get('http://54.180.9.43:8080/rooms/list/')
-        console.log('getRtcRooms내부1')
-        const response = await axios.get(
-          this.APPLICATION_SERVER_URL + 'rooms/list',
-        )
-        console.log('getRtcRooms내부2')
+      try{
+        // const response = await axios.get(this.APPLICATION_SERVER_URL+'rooms/list')
+        const response = await axios.get(this.APPLICATION_SERVER_URL+'rooms/wholeList')
         this.roomList = response.data.roomList
         console.log(this.roomList)
-        console.log('getRtcRooms내부3')
-      } catch (error) {
-        console.log('getRtcRooms내부 오류')
-        console.error('방 리스트 받아오는 오류 발생: ', error)
+      }
+      catch(error){
+        console.error('getRtcRooms함수 오류: ', error)
+      }
+    },
+    
+    getsearchRooms(pageNo=0, keyword='', size=20){
+      try{
+        const response = axios.get(this.APPLICATION_SERVER_URL+`rooms/list?page=${pageNo}&keyword=${keyword}&size=${size}`)
+        this.roomList = response.data.roomList
+        console.log(this.roomList)
+      }
+      catch(error){
+        console.error('getsearchRooms함수 오류: ', error)
       }
     },
 
@@ -254,52 +264,35 @@ export const usewebRtcStore = defineStore({
     },
 
     // 강제퇴장 시키기
-    async checkCurrentConnection(roomId) {
-      console.log('현재 커넥션 확인할 방 번호', roomId)
-      try {
-        const response = await axios.get(
-          this.APPLICATION_SERVER_URL + `rooms/kick`,
-          { roomNo: this.roomId, userNo: userNo, reason: reason },
-        )
-        console.log('현재 커넥션', response.data)
-      } catch (error) {
-        console.error(
-          'checkCurrentConnection에 문제가 생겼습니다.',
-          error.code,
-          error.message,
-        )
+    async kickUser(roomId, userNo, reason){
+      console.log('현재 커넥션 확인할 방 번호',roomId)
+      try{
+        const response = await axios.get(this.APPLICATION_SERVER_URL+`rooms/kick`,{roomNo: this.roomId, userNo: userNo, reason: reason})
+        console.log('현재 커넥션',response.data)
+      }
+      catch(error){
+        console.error('kickUser에 문제가 생겼습니다.', error.code, error.message);
       }
     },
     //이건 post 방만들때
     async shareRoomAddress(roomId) {
       console.log('방 공유 함수 들어옴')
-      try {
-        const response = await axios.post(
-          'http://localhost:8080/' + 'rooms/code/' + roomId,
-        )
-        console.log('방 공유 백엔드 연결완료', response.data)
-      } catch (error) {
-        console.error(
-          '방 공유 함수에 문제가 생겼습니다.',
-          error.code,
-          error.message,
-        )
+      try{
+        const response = await axios.post(this.APPLICATION_SERVER_URL+'rooms/code/'+roomId)
+        console.log('방 공유 백엔드 연결완료',response.data)
+      }
+      catch(error){
+        console.error('방 공유 함수에 문제가 생겼습니다.', error.code, error.message);
       }
     },
     //이건 get 룸정보 얻는 코드임
     async shareRoomAddress2(roomId) {
       console.log('방 공유 함수 들어옴')
       try {
-        const response = await axios.post(
-          'http://localhost:8080/' + 'rooms/code/' + roomId,
-        )
-        console.log('방 공유 백엔드 연결완료1', response.data)
+        const response = await axios.post(this.APPLICATION_SERVER_URL+'rooms/code/'+roomId)
+        console.log('방 공유 백엔드 연결완료1',response.data)
       } catch (error) {
-        console.error(
-          '방 공유 함수에 문제가 생겼습니다.',
-          error.code,
-          error.message,
-        )
+        console.error('방 공유 함수에 문제가 생겼습니다.', error.code, error.message)
       }
     },
   },

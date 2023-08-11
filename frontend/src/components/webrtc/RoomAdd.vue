@@ -44,8 +44,8 @@
   const isPrivacy = ref(webrtcstore.isPrivacy)
 
   onMounted(() => {
+    joinSession() // css 동안 임시로 해둠.
     // creatorIsHost()
-    // localStorage.removeItem('roomId')
   })
 
   //tiemSet이 flase면 종료시간 초기화.
@@ -57,9 +57,9 @@
       endMinute.value = 0;
     }
     else{
-      webrtcstore.updateEndHour(0);
+      webrtcstore.updateEndHour(0)
       endHour.value = 0;
-      webrtcstore.updateEndMinute(0);
+      webrtcstore.updateEndMinute(1);
       endMinute.value = 1;
     }
   })
@@ -149,8 +149,13 @@
 
   function joinSession() {
 
-    if(!webrtcstore.myUserName || !webrtcstore.mySessionId){
-      alert("이름과 방제목을 작성해주세요.")
+    // if(!webrtcstore.myUserName || !webrtcstore.mySessionId){
+    if(!webrtcstore.myUserName){
+      alert("이름을 작성해주세요.")
+      return
+    }
+    if(!webrtcstore.mySessionId){
+      alert("방제목을 작성해주세요.")
       return
     }
     creatorIsHost() // 방장권한 부여
@@ -234,6 +239,11 @@
     <div id="join-dialog">
       <h1>스터디룸 생성하기</h1>
       <div>
+        <!-- 방 제목 설정 -->
+        <p>
+          <label>방 제목 설정: </label>
+          <input :value="mySessionId" @input="updateMysessionId" required />
+        </p>
         <!-- 스터디룸 룰 작성 부분 -->
         <p>
           <textarea :value="rule" name="" id="" cols="35" rows="5" @input="updateRule"></textarea>
@@ -250,13 +260,6 @@
           <label>닉네임 설정: </label>
           <input :value="myUserName" @input="updateMyuserName" required />
         </p>
-        <!-- 비공개 설정 -->
-        <!-- <p>
-          <label for="">비공개 여부</label>
-          <input type="checkbox" :checked="isPassword" @change="updateIsPassword">
-          <span id="isPasswordSpan">공개</span>
-        </p> -->
-        <!-- 키워드 설정 -->
         <p>
           <form @submit="addTag"> <!-- 메서드 생성 -->
             <div>
@@ -314,11 +317,7 @@
             <option>16</option>
           </select>
         </p>
-        <!-- 방 제목 설정 -->
-        <p>
-          <label>방 제목 설정: </label>
-          <input :value="mySessionId" @input="updateMysessionId" required />
-        </p>
+        
         <p>
           <button @click="joinSession">
             방 생성하기

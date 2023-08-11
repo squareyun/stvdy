@@ -121,7 +121,7 @@
       leaveSession()
       return
     }
-  };
+  }
 
   function isExitTrue() {
     webrtcstore.isExitTrue()
@@ -145,23 +145,60 @@
     session.value.on("streamDestroyed", ( {stream} ) => {
       const index = subscribers.value.indexOf(stream.streamManager, 0)
       if(index >= 0){
+        console.log('스트림 파괴함!!!')
         subscribers.value.splice(index, 1)
       }
     })
+
+    // session.value.on("streamDestroyed", ({ stream, reason }) => {
+    //   if (reason === "forceDisconnectByServer") {
+    //     console.log("Leaving Session (forced=true)");
+    //     leaveSession();
+    //   } else {
+    //     const index = subscribers.value.indexOf(stream.streamManager, 0)
+    //     if (index >= 0) {
+    //       subscribers.value.splice(index, 1)
+    //     }
+    //   }
+    // })
+
+    // 새로 추가한 이벤트 리스너, 강제 종료되면 leaveSession()함.
+    session.value.on("streamManagerRemoved", (event) => {
+       if(event.forced) {
+          console.log('얍! streamManagerRemoved')
+          // leaveSession();
+          router.push({
+            // name:'maintmp',// 임시로 main으로 넘겨줌.
+            name:'main',
+          })
+       }
+    });
+
+    session.value.on('sessionDisconnected', event => {
+      // 이벤트 처리 코드
+      console.log("세션에서 연결 끊어짐:", event);
+      // 필요한 추가 작업을 수행합니다. 예: UI 업데이트, 사용자 알림 등
+      router.push({
+        // name:'maintmp',// 임시로 main으로 넘겨줌.
+        name:'main',
+      })
+    });
+
     session.value.on("exception", ({ exception }) => {
       console.warn(exception);
     })
 
     // 채팅 이벤트 수신 처리 함. session.on이 addEventListenr 역할인듯.
     session.value.on('signal:chat', (event) => { // event.from.connectionId === session.value.connection.connectionId 이건 나와 보낸이가 같으면임
-      const messageData = JSON.parse(event.data);
+      const messageData = JSON.parse(event.data)
       if(event.from.connectionId === session.value.connection.connectionId){
         messageData['username'] = '나'
       }
       console.log(messageData)
-      messages.value.push(messageData);
+      console.log(messageData.userNo)
+      messages.value.push(messageData)
     })
-
+    
     // createToken(mySessionId.value).then((token) => {
     createToken(mySessionId.value, roomId.value).then((token) => {
       roomId.value = webrtcstore.roomId
@@ -234,13 +271,14 @@
     // openNewWindow2(`이건 리브세션버튼 누른거` + '섭스크라이브'+ subscribersComputed.value.length+'방id'+localRoomId)
     // 메인페이지로 넘어감
     router.push({
-      name:'main',// 임시 이름 main으로 넘겨줌.
+      // name:'maintmp',// 임시로 main으로 넘겨줌.
+      name:'main',
     })
   }
   function escapePage() {
     console.log('escapePage() 함수 호출됨')
     const localRoomId = localStorage.getItem('roomId')
-    openNewWindow2(`이스케이프페이지 탐 ${subscribersComputed.value.length}`)
+    // openNewWindow2(`이스케이프페이지 탐 ${subscribersComputed.value.length}`)
     if (!isFull && !subscribersComputed.value.length){ // 다른 참여자가 없으면서 정원이 차서 나가는게 아닐떄만
       shutDownRoom(localRoomId)
     }
@@ -308,12 +346,13 @@
         console.error('만들어진 방이없어서 발생한 에러:', error);
         webrtcstore.isMakingFalse()
         // webrtcstore.roomExit(roomId.value)  // 방나가면 방나갔음을 백엔드로 전송.
-        openNewWindow2('방에 참가하다 leaveSession함 방아이디는'+localStorage.getItem('roomId'))
+        // openNewWindow2('방에 참가하다 leaveSession함 방아이디는'+localStorage.getItem('roomId'))
         leaveSession()
       }
     }
     else{
       try{
+        console.log('몇시간작동할겨?',endHour, endMinute)
         const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/add', 
         {userNo: userNo, title: mySessionId, endHour: endHour, endMinute: endMinute, quota: quota, 
           isPrivacy: isPrivacy, password: password, iamgePath: backImgFile, rule: rule, tags: roomTags, role:'MODERATOR'}, 
@@ -336,7 +375,7 @@
       catch(error){
         console.error("방 생성에도 오류 났음.",error);
         webrtcstore.isMakingFalse()
-        openNewWindow2('방을 만들다가 leaveSession함 방아이디는'+localStorage.getItem('roomId'))
+        // openNewWindow2('방을 만들다가 leaveSession함 방아이디는'+localStorage.getItem('roomId'))
         leaveSession()
       }
     }
@@ -509,10 +548,8 @@
     console.log(subscribersComputed.value)
     console.log(subscribersComputed.value.length)
     try{
-      console.log('체크커넥션1!!')
       const response = await axios.get(`http://localhost:8080/rooms/currentConnection/${roomId}`)
       console.log(response.data)
-      console.log('체크커넥션2!!')
     }
     catch(error){
       console.error('체크커넥션 실패...',error.code, error.message)
@@ -520,13 +557,15 @@
   }
   ////// 나중에 지울거임
   function checkSubScirbers(){
-    alert(subscribersComputed.value.length+'현재명수')
+    alert(`현재명수: ${subscribersComputed.value.length+1}명`)
   }
 
   // 퇴장시키기
   async function handleForceDisconnect(subscriber) {
+    const kickReason = prompt('강제 퇴장의 사유를 작성해주세요.')
     try {
       await session.value.forceDisconnect(subscriber.stream.connection);
+      // webrtcstore.kickUser(roomId. value, userId ,kickReason) // userId 를 못받아옴.
     } catch (error) {
       console.error("사용자 연결을 강제로 끊는 중 오류 발생:", error);
     }
@@ -588,18 +627,6 @@
   <!-- 화상회 부가기능이 보이는 곳 -->
   <div id="functionTab" style="color: white;">
     <div id="tabs">
-      <!-- <ul id="functionUl" style="display: flex;">
-        <div v-if="isHost">
-          <li v-for="(tab, index) in funcTabsHost" :key="index" id="tab{{index}}" :class="{ 'active': activeFuncTab === index }" @click="changeTab(index)">
-            {{ tab }}
-          </li>
-        </div>
-        <div v-else>
-          <li v-for="(tab, index) in funcTabs" :key="index" id="tab{{index}}" :class="{ 'active': activeFuncTab === index }" @click="changeTab(index)">
-            {{ tab }}
-          </li>
-        </div>
-      </ul> -->
       <ul id="functionUl" style="display: flex;" v-if="isHost" >
         <div >
           <li v-for="(tab, index) in funcTabsHost" :key="index" id="tab{{index}}" :class="{ 'active': activeFuncTab === index }" @click="changeTab(index)">
@@ -639,11 +666,6 @@
     <div v-if="activeFuncTab === 3"></div>
 
     <!-- 강제퇴장 -->
-    <!-- <div v-if="isHost && activeFuncTab === 4">
-      <div>
-
-      </div>
-    </div> -->
     <div v-if="isHost && activeFuncTab === 4">
       <div v-for="(subscriber, index) in subscribersComputed" :key="index">
         <button @click="handleForceDisconnect(subscriber)">{{ JSON.parse(subscriber.stream.connection.data).clientData }}님을 퇴장시키기</button>
