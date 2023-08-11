@@ -1,5 +1,5 @@
 <script setup>
-  import { ref, computed, onBeforeMount, watch, onMounted, onBeforeUnmount, } from 'vue'
+  import { ref, computed, onBeforeMount, watch, onUpdated, onMounted, onBeforeUnmount, } from 'vue'
   import axios from 'axios'
   import { OpenVidu } from "openvidu-browser";
   import UserVideo from "@/components/webrtc/UserVideo.vue";
@@ -7,10 +7,12 @@
   import { useRouter } from "vue-router"
   import { usewebRtcStore } from "@/stores"
   import { storeToRefs } from 'pinia';
+  import { useUserStore } from "@/stores"
 
   // const store = usewebRtcStore()
   const webrtcstore = usewebRtcStore()
   const router = useRouter()
+  const userstore = useUserStore()
 
   //////////// 새로고침 방지!
   document.addEventListener('keydown', preventRefresh)
@@ -29,7 +31,8 @@
 
   axios.defaults.headers.post["Content-Type"] = "application/json;charset=utf-8";
   // 추후 배포와 관련해서 이부분에 대해서 설정을 할 필요가 있게 될것.
-  // const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000/';
+  // const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'https://i9d205.p.ssafy.io/api/';
+  // const APPLICATION_SERVER_URL = 'https://i9d205.p.ssafy.io/api/'
   const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080/';
   // const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://54.180.9.43:8080/';
 
@@ -66,13 +69,14 @@
   const mainStreamManagerComputed = computed(() => mainStreamManager.value);
   const publisherComputed = computed(() => publisher.value);
   const subscribersComputed = computed(() => subscribers.value);
+  const participantNumber = computed(() => subscribersComputed.value.length+1) 
   // 방 이탈를 위한 변수들
   const isExitRoom = ref(webrtcstore.isExitRoom)  // leave
   const isFull = ref(false)
 
   // user Id를 받을 수 있는지 시도함
-  // const userId = ref(webrtcstore.userNo)
-  const userId = ref(webrtcstore.userId)    // 임시로 작성함.
+  const userId = ref(webrtcstore.userNo)
+  // const userId = ref(webrtcstore.userId)    // 임시로 작성함.
 
   onBeforeMount(() => {
     // window.addEventListener("beforeunload",leaveSession)
@@ -110,8 +114,16 @@
     webrtcstore.roomExit(roomId.value)  // 방나가면 방나갔음을 백엔드로 전송.
     isExitFalse()
   })
+  const userInfo = ref(userstore.user)
   onMounted(() => {
+    setTimeout(() => {
+      console.log('user정보 받아옴', userInfo.value)
+    }, 3000);
   })
+
+  onUpdated(() => {
+  })
+
   function isFullRoom(){
     console.log('!!!!!!방인원제한',quota.value)
     console.log('!!!!!!현재방인원',subscribersComputed.value)
@@ -555,13 +567,14 @@
     console.log(subscribersComputed.value)
     console.log(subscribersComputed.value.length)
     try{
-      const response = await axios.get(`http://localhost:8080/rooms/currentConnection/${roomId}`)
+      const response = await axios.get(APPLICATION_SERVER_URL+`rooms/currentConnection/${roomId}`)
       console.log(response.data)
     }
     catch(error){
       console.error('체크커넥션 실패...',error.code, error.message)
     }
   }
+
   ////// 나중에 지울거임
   function checkSubScirbers(){
     alert(`현재명수: ${subscribersComputed.value.length+1}명`)
@@ -594,7 +607,8 @@
   <div id="session" style="color: white;">
     <div>
       <div>
-        <input type="button" value="참가자 수 확인" @click="checkSubScirbers">
+        <div>참가자 수 : {{ participantNumber }}</div>
+        <!-- <input type="button" value="참가자 수 확인" @click="checkSubScirbers"> -->
       </div>
       <div id="session-header">
         <h1 id="session-title">{{ mySessionId }}</h1>

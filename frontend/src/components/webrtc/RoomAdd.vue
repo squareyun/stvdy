@@ -5,7 +5,8 @@
   import { useUserStore } from "@/stores"
   import axios from 'axios' 
   // import { storeToRefs } from "pinia";
-
+  // const APPLICATION_SERVER_URL = 'https://i9d205.p.ssafy.io/api/'
+  const APPLICATION_SERVER_URL = 'http://localhost:8080/'
   const usersStore = useUserStore()
   const localUser = usersStore.user
   console.log(localUser)
@@ -45,9 +46,17 @@
   const isPrivacy = ref(webrtcstore.isPrivacy)
 
   onMounted(() => {
-    // joinSession() // css 동안 임시로 해둠.
     // creatorIsHost()
+    joinImmediately() // css 동안 임시로 해둠.
   })
+  
+  // css 동안 임시로 해둠. 
+  function joinImmediately() {
+    setTimeout(() => {
+      joinSession()
+    }, 1000);
+  }
+
 
   //tiemSet이 flase면 종료시간 초기화.
   watch(timeSet, (newtimeSet) => {
@@ -229,8 +238,9 @@
       console.log('업로드 되나1')
       const imgformData = new FormData();
       imgformData.append("file", backImgFile.value);
+      const response = await axios.post(APPLICATION_SERVER_URL+'files/upload/room/'+userNo.value, imgformData, {
       // const response = await axios.post(`http://localhost:8080/`+'files/upload/room/'+userNo.value, imgformData, {
-      const response = await axios.post(`https://i9d205.p.ssafy.io/api/`+'files/upload/room/'+userNo.value, imgformData, {
+      // const response = await axios.post(`https://i9d205.p.ssafy.io/api/`+'files/upload/room/'+userNo.value, imgformData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },

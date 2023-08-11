@@ -7,8 +7,8 @@ import axios from 'axios'
 export const usewebRtcStore = defineStore({
   id: 'webrtc',
   state: () => ({
-    // APPLICATION_SERVER_URL: 'http://localhost:8080/',
-    APPLICATION_SERVER_URL: 'https://i9d205.p.ssafy.io/api/', // 배포된 서버
+    APPLICATION_SERVER_URL: 'http://localhost:8080/',
+    // APPLICATION_SERVER_URL: 'https://i9d205.p.ssafy.io/api/', // 배포된 서버
 
     userNo: useUserStore().user.id,
     userId: (Math.floor(Math.random() * (200 - 1 + 1)) + 1), // 테스트를 위해서 임시로...
@@ -37,6 +37,7 @@ export const usewebRtcStore = defineStore({
     isExitRoom: false,
 
     realname: useUserStore().user.realname,
+    tmp : useUserStore().user,
     // realname: '홍길동'+ Math.floor(Math.random() * (200 - 1 + 1)) + 1,
 
     //////////////////////////
@@ -149,8 +150,7 @@ export const usewebRtcStore = defineStore({
     async downloadImagefromServer(userNo) {
       // 서버에서 이미지 경로 얻기
       try {
-        // const response = await axios.get(this.APPLICATION_SERVER_URL+'files/get/room/'+userNo,{
-        const response = await axios.get(`https://i9d205.p.ssafy.io/api/`+'files/get/room/'+userNo,{
+        const response = await axios.get(this.APPLICATION_SERVER_URL+'files/get/room/'+userNo,{
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -176,9 +176,6 @@ export const usewebRtcStore = defineStore({
         console.log("이미지 경로 다운로드 에러: ", error);
       }
     },
-
-    
-
 
     ////////닉네임 받기 위한 getmySessionId
     getmySessionId(context) {

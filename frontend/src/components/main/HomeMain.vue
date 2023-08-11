@@ -83,7 +83,7 @@ watch(
       console.log(roomList.value[roomList.value.length - 1])
       // joinTheRoom(roomList.value[roomList.value.length - 1])
       tmpJoin(roomList.value[roomList.value.length - 1])
-    }, 5000);
+    }, 2000);
   }
   function tmpJoin(room) {
     console.log('되긴되나',room)
