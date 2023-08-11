@@ -50,7 +50,6 @@ const schema = Yup.object().shape({
       <div id="user-edit">
         <Form
           autocomplete="off"
-          @submit="onSubmit()"
           :validation-schema="schema"
           v-slot="{ errors, isSubmitting }">
           <p class="field-name">
@@ -93,7 +92,8 @@ const schema = Yup.object().shape({
       <div id="edit-menu">
         <a href="">대표 이미지(스터디룸) 변경</a>
         <a href="">프로필 이미지 변경</a>
-        <router-link to="mypage/changepwd">비밀번호 변경</router-link>
+        <router-link to="/mypage/changepwd">비밀번호 변경</router-link>
+        <router-link to="/mypage/changecolor">레이아웃 색상 설정</router-link>
       </div>
     </div>
     <RouterView />
@@ -187,7 +187,7 @@ const schema = Yup.object().shape({
   background-color: var(--background-window);
 }
 
-#transmit-button {
+#name-transmit-button {
   position: absolute;
   top: 20px;
   left: 326px;
@@ -195,14 +195,14 @@ const schema = Yup.object().shape({
   border: 0;
   background-color: transparent;
 
-  color: var(--hl-purple);
+  color: var(--hl-pres);
   transition: color 0.4s;
   font-size: 1rem;
 
   cursor: pointer;
 }
 
-#transmit-button:hover {
+#name-transmit-button:hover {
   color: var(--hl-light);
   transition: color 0.4s;
 }
@@ -214,7 +214,7 @@ const schema = Yup.object().shape({
   display: block;
   margin-bottom: 0.3rem;
 
-  color: var(--hl-purple);
+  color: var(--hl-pres);
   transition: color 0.4s;
 
   font-size: 1rem;

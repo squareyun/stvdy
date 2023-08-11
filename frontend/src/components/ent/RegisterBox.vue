@@ -147,7 +147,7 @@ async function onSubmit(values) {
   border: 0;
   background-color: transparent;
 
-  color: var(--hl-purple);
+  color: var(--hl-pres);
   transition: color 0.4s;
   font-size: 1rem;
 

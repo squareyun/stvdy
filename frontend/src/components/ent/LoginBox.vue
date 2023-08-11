@@ -112,7 +112,7 @@ input[type='checkbox'] {
   width: 15px;
   height: 15px;
 
-  accent-color: var(--hl-purple);
+  accent-color: var(--hl-pres);
 }
 
 #login-button {

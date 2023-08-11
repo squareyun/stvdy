@@ -24,7 +24,7 @@ onMounted(() => {
 <template>
   <div id="topbar">
     <router-link
-      to="home"
+      to="/home"
       id="to-home">
       <p id="time"></p>
     </router-link>
