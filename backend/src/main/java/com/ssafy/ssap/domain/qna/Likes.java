@@ -1,6 +1,5 @@
 package com.ssafy.ssap.domain.qna;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ssafy.ssap.domain.user.User;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
@@ -34,13 +33,13 @@ public class Likes {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne(fetch = LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "question_id", unique = false)
     @Nullable
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Question question;
 
-    @OneToOne(fetch = LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "answer_id", unique = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @Nullable
