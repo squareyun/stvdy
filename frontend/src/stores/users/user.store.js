@@ -7,14 +7,15 @@ export const useUserStore = defineStore('users', () => {
   const user = ref([])
   const users = ref([])
 
-  if (localStorage.getItem('user')) {
-    user.value = JSON.parse(localStorage.getItem('user'))
+  localStorage.removeItem('user')
+  if (sessionStorage.getItem('user')) {
+    user.value = JSON.parse(sessionStorage.getItem('user'))
   }
 
   watch(
     user,
     (userVal) => {
-      localStorage.setItem('user', JSON.stringify(userVal))
+      sessionStorage.setItem('user', JSON.stringify(userVal))
       console.log('changed')
     },
     { deep: true },
@@ -25,7 +26,7 @@ export const useUserStore = defineStore('users', () => {
 
     await getUser(
       token,
-      async (res) => {
+      async () => {
         await AuthStore.setValid(true)
       },
       async (error) => {

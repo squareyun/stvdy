@@ -16,7 +16,6 @@ export const useQuestionStore = defineStore('questions', () => {
   const getList = async (cond) => {
     await listQuestion(cond, (res) => {
       questions.value = res.data.question.content
-      console.log(questions.value)
       totalAmount.value = res.data.question.totalElements
       var now = new Date()
       for (var q in questions.value) {
@@ -56,8 +55,8 @@ export const useQuestionStore = defineStore('questions', () => {
   const getMyList = async (cond) => {
     await listYourQuestion(cond, (res) => {
       questions.value = res.data.question.content
-      console.log(questions.value)
       totalAmount.value = res.data.question.totalElements
+      console.log(questions.value)
       var now = new Date()
       for (var q in questions.value) {
         if (questions.value[q].questionScore == null)

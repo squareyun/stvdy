@@ -9,8 +9,8 @@ import {
   likesQuestion,
   answerQuestion,
   deleteQuestion,
+  bestAnswer,
 } from '@/api/question'
-import { addAlarm } from '@/api/alarm'
 
 const $route = useRoute()
 
@@ -125,6 +125,18 @@ const deleteQtn = () => {
 onBeforeUnmount(() => {
   questionStore.clearState()
 })
+
+const bestAns = (id) => {
+  const data = {
+    questionNo: question.value.id,
+    answerNo: id,
+  }
+  bestAnswer(
+    data,
+    (res) => router.go(0),
+    (fail) => console.log(fail),
+  )
+}
 </script>
 
 <template>
@@ -208,6 +220,35 @@ onBeforeUnmount(() => {
           :key="ans.id">
           <div class="answers-detail-box">
             {{ ans.detail }}
+            <svg
+              class="best-btn"
+              v-if="!question.bestSelected && user.id != ans.userNo"
+              @click="bestAns(ans.id)"
+              width="1.4rem"
+              height="1.4rem"
+              viewBox="0 0 128 128"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M64 0C28.672 0 0 28.672 0 64C0 99.328 28.672 128 64 128C99.328 128 128 99.328 128 64C128 28.672 99.328 0 64 0ZM64 115.2C35.776 115.2 12.8 92.224 12.8 64C12.8 35.776 35.776 12.8 64 12.8C92.224 12.8 115.2 35.776 115.2 64C115.2 92.224 92.224 115.2 64 115.2ZM93.376 35.712L51.2 77.888L34.624 61.376L25.6 70.4L51.2 96L102.4 44.8L93.376 35.712Z"
+                fill="black" />
+            </svg>
+            <div
+              class="bested-btn"
+              v-if="ans.bestSelected">
+              <svg
+                width="1.4rem"
+                height="1.4rem"
+                viewBox="0 0 128 128"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M64 0C28.672 0 0 28.672 0 64C0 99.328 28.672 128 64 128C99.328 128 128 99.328 128 64C128 28.672 99.328 0 64 0ZM51.2 96L19.2 64L28.224 54.976L51.2 77.888L99.776 29.312L108.8 38.4L51.2 96Z"
+                  fill="black" />
+              </svg>
+              <span class="bested-title">채택 답변</span>
+            </div>
+
             <div id="author-image"></div>
 
             <div id="author-name">
@@ -465,6 +506,8 @@ onBeforeUnmount(() => {
   margin-bottom: 38px;
   border-radius: 10px;
   background-color: var(--font50);
+
+  border: 1px solid var(--border-color);
 }
 
 .answers-detail-box {
@@ -491,6 +534,36 @@ onBeforeUnmount(() => {
 #my-answer-title {
   color: var(--hl-light);
   font-size: 1.2rem;
+}
+
+.best-btn {
+  position: absolute;
+  left: 30px;
+  bottom: 15px;
+}
+
+.best-btn > path {
+  fill: var(--hl-light50);
+}
+
+.bested-btn {
+  position: absolute;
+  left: 30px;
+  bottom: 9px;
+}
+
+.bested-btn > svg > path {
+  fill: var(--hl-pres);
+}
+
+.bested-title {
+  display: inline-block;
+  position: inherit;
+  margin-top: 2px;
+  margin-left: 3px;
+
+  width: 4rem;
+  color: var(--hl-pres);
 }
 
 #answer-form-main {

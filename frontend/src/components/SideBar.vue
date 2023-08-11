@@ -132,7 +132,7 @@ const logout = async () => {
       <a
         id="logout-btn"
         @click="logout"
-        v-if="user">
+        v-if="user.id">
         <svg
           width="1.2rem"
           height="1.2rem"
@@ -148,7 +148,7 @@ const logout = async () => {
       <a
         id="login-btn"
         @click="login"
-        v-if="!user">
+        v-if="!user.id">
         <svg
           width="1.2rem"
           height="1.2rem"

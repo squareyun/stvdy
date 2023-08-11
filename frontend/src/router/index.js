@@ -144,11 +144,11 @@ router.beforeEach(async (to) => {
 
   // 컬러 팔레트에 설정 된 값만 변경하고 나머지는 그대로 둔다.
   if (obj) {
-    const colorPalette = JSON.parse(obj)
-    for (const color in colorPalette) {
+    const colorScheme = JSON.parse(obj)
+    for (const color in colorScheme) {
       document.documentElement.style.setProperty(
         '--' + color.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase(),
-        colorPalette[color],
+        colorScheme[color],
       )
     }
   }

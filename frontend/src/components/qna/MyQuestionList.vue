@@ -11,6 +11,7 @@ const user = computed(() => userStore.user)
 
 const questionStore = useQuestionStore()
 const questions = computed(() => questionStore.questions)
+const totalAmount = computed(() => questionStore.totalAmount)
 
 const query = {
   userno: user.value.id,
@@ -32,30 +33,30 @@ onBeforeUnmount(() => {
   <div>
     <span class="question-content-title">내 질문</span>
     <router-link
-      id="add-question"
+      id="my-add-question"
       to="/createquestion">
       + 질문 작성
     </router-link>
     <span
-      id="total-amount"
+      id="my-total-amount"
       v-if="totalAmount">
       총 {{ totalAmount }} 질문
     </span>
 
     <span
-      id="total-amount"
+      id="my-total-amount"
       v-if="!totalAmount">
       등록한 질문이 없습니다.
     </span>
 
-    <div class="question-list">
+    <div class="my-question-list">
       <div>
         <tr
-          class="question-row"
-          v-for="qtn in questions"
+          class="my-question-row"
+          v-for="(qtn, index) in questions"
           :key="qtn.id"
           @click="showDetail(qtn.id)">
-          <td class="question-done">
+          <td class="my-question-done">
             <div
               id="best-selected"
               v-if="qtn.bestSelected">
@@ -73,8 +74,8 @@ onBeforeUnmount(() => {
             </div>
             <div class="question-detail">{{ qtn.detail }}</div>
           </td>
-          <td class="question-info">
-            <p class="info-etc">
+          <td class="my-question-info">
+            <p class="my-info-etc">
               <span class="author">{{ qtn.userNickname }}</span>
               <span class="wrote-from">&nbsp; {{ qtn.regist_time }}</span>
             </p>
@@ -86,7 +87,9 @@ onBeforeUnmount(() => {
           </td>
           <div></div>
 
-          <div class="question-div-line"></div>
+          <div
+            v-if="index != questions.length - 1"
+            class="my-question-div-line"></div>
         </tr>
       </div>
     </div>
@@ -94,7 +97,7 @@ onBeforeUnmount(() => {
 </template>
 
 <style>
-.question-list {
+.my-question-list {
   position: relative;
 
   background-color: var(--background-window);
@@ -102,60 +105,43 @@ onBeforeUnmount(() => {
 
   margin-bottom: 20px;
 
-  width: calc(960px - 7rem);
+  width: 960px;
 
   border: 1px solid var(--border-color);
 }
 
-#total-amount {
+#my-total-amount {
   position: absolute;
-  right: 200px;
+  right: calc(200px - 7rem);
 
   font-family: 'ASDGothicUL';
 }
 
-#question-sort {
-  position: absolute;
-  right: -6.5rem;
-
-  font-family: 'ASDGothicUL';
-  color: var(--hl-light);
-}
-
-#question-sort > ul > li {
-  cursor: pointer;
-}
-
-#sort-new {
-  font-weight: 700;
-}
-
-#add-question {
+#my-add-question {
   float: right;
-  margin-right: calc(7rem);
 
   text-decoration: none;
   color: var(--hl-pres);
 }
 
-.question-row {
+.my-question-row {
   position: relative;
   height: 140px;
 
   color: var(--hl-light);
 }
 
-.question-div-line {
+.my-question-div-line {
   position: absolute;
   left: 20px;
   bottom: 0px;
-  width: calc(920px - 7rem);
+  width: calc(920px);
   height: 1px;
 
   background-color: var(--hl-light20);
 }
 
-.question-done {
+.my-question-done {
   position: relative;
   width: 90px;
   left: 0px;
@@ -223,11 +209,11 @@ onBeforeUnmount(() => {
   font-size: 0.9rem;
 }
 
-.question-info {
-  width: calc(270px - 7rem);
+.my-question-info {
+  width: calc(270px);
 }
 
-.info-etc {
+.my-info-etc {
   position: absolute;
   right: 20px;
 }

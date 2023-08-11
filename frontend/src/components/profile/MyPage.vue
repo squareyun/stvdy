@@ -187,7 +187,7 @@ const schema = Yup.object().shape({
   background-color: var(--background-window);
 }
 
-#transmit-button {
+#name-transmit-button {
   position: absolute;
   top: 20px;
   left: 326px;
@@ -202,7 +202,7 @@ const schema = Yup.object().shape({
   cursor: pointer;
 }
 
-#transmit-button:hover {
+#name-transmit-button:hover {
   color: var(--hl-light);
   transition: color 0.4s;
 }

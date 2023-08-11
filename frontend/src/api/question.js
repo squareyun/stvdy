@@ -49,16 +49,19 @@ const likesQuestion = async (values, success, fail) => {
     .catch(fail)
 }
 
-// const likesAnswer = async (values, success, fail) => {
-//   await axios.put(`/api/answers/likes/${values.id}`).then(success).catch(fail)
-// }
-
 const answerQuestion = async (values, success, fail) => {
   await axios.post(`/api/answers/add`, values).then(success).catch(fail)
 }
 
 const getAnswers = async (id, success, fail) => {
   await axios.get(`/api/answers/list/${id}`).then(success).catch(fail)
+}
+
+const bestAnswer = async (values, success, fail) => {
+  await axios
+    .put(`/api/answers/choose/${values.questionNo}/${values.answerNo}`)
+    .then(success)
+    .catch(fail)
 }
 
 export {
@@ -73,4 +76,5 @@ export {
   // likesAnswer,
   answerQuestion,
   getAnswers,
+  bestAnswer,
 }
