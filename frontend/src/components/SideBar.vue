@@ -63,7 +63,7 @@ const logout = async () => {
       강의 정보 공유
     </router-link> -->
     <router-link
-      to="/question"
+      to="/question/1"
       id="side-question">
       <div class="selected"></div>
       <svg
@@ -96,7 +96,7 @@ const logout = async () => {
       프로필
     </router-link>
     <router-link
-      to="/myquestion"
+      to="/myquestion/1"
       id="side-myquestion">
       <div class="selected"></div>
       <svg
@@ -132,7 +132,7 @@ const logout = async () => {
       <a
         id="logout-btn"
         @click="logout"
-        v-if="user">
+        v-if="user.id">
         <svg
           width="1.2rem"
           height="1.2rem"
@@ -148,7 +148,7 @@ const logout = async () => {
       <a
         id="login-btn"
         @click="login"
-        v-if="!user">
+        v-if="!user.id">
         <svg
           width="1.2rem"
           height="1.2rem"
@@ -208,7 +208,7 @@ const logout = async () => {
   transition: opacity 0.4s;
 }
 
-#side-home.router-link-exact-active {
+#side-panel a.router-link-exact-active {
   opacity: 1;
   transition: opacity 0.4s;
   .selected {
@@ -217,14 +217,12 @@ const logout = async () => {
   }
 }
 
-.router-link-exact-active {
-  opacity: 1;
-  transition: opacity 0.4s;
+/* .router-link-exact-active {
   .selected {
     opacity: 1;
     transition: opacity 0.4s;
   }
-}
+} */
 
 #side-panel a,
 #side-foot a {

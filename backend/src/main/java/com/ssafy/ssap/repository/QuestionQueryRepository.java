@@ -165,6 +165,7 @@ public class QuestionQueryRepository {
         Long totalCount = jpaQueryFactory
             .select(question.count())
             .from(question)
+            .where(question.id.eq(userNo))
             .fetchOne();
 
         return new PageImpl<>(content, pageable, totalCount);

@@ -19,6 +19,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -59,6 +60,10 @@ public class User {
 	@NotNull
 	@Column(name = "nickname", length = 45)
 	private String nickname;
+
+	@Lob
+	@Column(name = "image_path")
+	private String imagePath;
 
 	@NotNull
 	@ManyToOne(fetch = LAZY)

@@ -17,8 +17,6 @@ export const useAlarmStore = defineStore('alarms', () => {
             ' ',
           )
         }
-
-        console.log(alarms.value)
       },
       (fail) => {
         console.log(fail)

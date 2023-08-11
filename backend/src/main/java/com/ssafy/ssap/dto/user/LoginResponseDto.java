@@ -2,6 +2,8 @@ package com.ssafy.ssap.dto.user;
 
 import com.ssafy.ssap.domain.user.User;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,6 +21,7 @@ public class LoginResponseDto {
 	private String email;
 	private String name;
 	private String nickname;
+	private String imagePath;
 
 	public static LoginResponseDto from(User user) {
 		if (user == null)
@@ -29,6 +32,7 @@ public class LoginResponseDto {
 			.email(user.getEmail())
 			.name(user.getName())
 			.nickname(user.getNickname())
+			.imagePath(user.getImagePath())
 			.build();
 	}
 }

@@ -4,8 +4,8 @@ import * as Yup from 'yup'
 import { useQuestionStore, useAlertStore, useUserStore } from '@/stores'
 import { writeQuestion, modifyQuestion } from '@/api/question'
 import { computed } from 'vue'
-import router from '@/router'
 import { useRoute } from 'vue-router'
+import router from '@/router'
 const $route = useRoute()
 
 const questionStore = useQuestionStore()
@@ -47,7 +47,7 @@ async function onSubmit(values) {
       data,
       (res) => {
         console.log(res)
-        router.push('/question')
+        router.push('/question/1')
       },
       (fail) => {
         console.log(fail)
@@ -59,7 +59,7 @@ async function onSubmit(values) {
       data,
       (res) => {
         console.log(res)
-        router.push('/question')
+        router.push('/question/1')
       },
       (fail) => {
         console.log(fail)
@@ -160,7 +160,7 @@ async function onSubmit(values) {
   font-family: 'ASDGothicM';
 
   border: none;
-  border-bottom: 7px solid var(--font30);
+  border-bottom: 7px solid var(--border-color);
   background-color: transparent;
 
   outline-color: transparent;
@@ -174,7 +174,7 @@ async function onSubmit(values) {
   font-family: 'ASDGothicM';
   font-size: 1rem;
 
-  color: var(--hl-purple);
+  color: var(--hl-pres);
   transition: color 0.4s;
 
   background-color: transparent;
@@ -264,6 +264,8 @@ async function onSubmit(values) {
   outline: none;
 
   pointer-events: none;
+
+  resize: none;
 }
 
 #question-form-menu {
@@ -284,11 +286,11 @@ async function onSubmit(values) {
 #question-form-menu-btn {
   height: 28px;
   width: 50px;
-  background-color: var(--hl-purple);
+  background-color: var(--hl-pres);
 
   float: right;
 
-  color: var(--font80);
+  color: var(--font100);
   transition: color 0.4s;
 
   font-family: 'ASDGothicM';

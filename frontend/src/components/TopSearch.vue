@@ -1,8 +1,25 @@
 <script setup>
+import { useAlarmStore } from '@/stores'
+import { computed } from 'vue'
+import router from '@/router'
+
+const alarmStore = useAlarmStore()
+const alarms = computed(() => alarmStore.alarms)
+
+alarmStore.getList()
+
 const openAlarms = () => {
   const alarmList = document.getElementById('alarms')
   if (alarmList.className == 'closed') alarmList.className = 'opened'
   else alarmList.className = 'closed'
+}
+
+async function showDetail(url) {
+  router.push(url)
+}
+
+async function moreAlarms() {
+  router.push('/alarms')
 }
 </script>
 
@@ -39,19 +56,73 @@ const openAlarms = () => {
       id="alarms"
       class="closed">
       <p>알림</p>
-      <router-link
+      <!-- <router-link
         id="mypage-btn"
         to="mypage">
         > 마이페이지
-      </router-link>
-      <ul>
-        <li>알림내용 1</li>
-        <li>알림내용 2</li>
-        <li>알림내용 3</li>
-        <li>알림내용 4</li>
-        <li>알림내용 5</li>
-        <li>알림내용 6</li>
-      </ul>
+      </router-link> -->
+      <tr
+        class="top-alarm-row"
+        v-for="alr in alarms"
+        :key="alr.id"
+        @click="showDetail(alr.linkedUrl)">
+        <td class="top-alarm-icon">
+          <div
+            v-if="alr.userNo == 1"
+            class="top-announce-icon">
+            <svg
+              width="1.1rem"
+              height="1.1rem"
+              viewBox="0 0 113 128"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M70.7765 15.0588L67.7647 0H0V128H15.0588V75.2941H57.2235L60.2353 90.3529H112.941V15.0588H70.7765Z"
+                fill="black" />
+            </svg>
+          </div>
+          <div
+            v-if="alr.userNo == 2"
+            class="top-advertise-icon">
+            <svg
+              width="1.1rem"
+              height="1.1rem"
+              viewBox="0 0 128 122"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M128 60.8582L113.804 44.6836L115.782 23.2727L94.7782 18.5018L83.7818 0L64 8.49455L44.2182 0L33.2218 18.5018L12.2182 23.2145L14.1964 44.6255L0 60.8582L14.1964 77.0327L12.2182 98.5018L33.2218 103.273L44.2182 121.775L64 113.222L83.7818 121.716L94.7782 103.215L115.782 98.4436L113.804 77.0327L128 60.8582ZM69.8182 89.9491H58.1818V78.3127H69.8182V89.9491ZM69.8182 66.6764H58.1818V31.7673H69.8182V66.6764Z"
+                fill="black" />
+            </svg>
+          </div>
+          <div
+            v-if="alr.userNo >= 3"
+            class="top-personal-icon">
+            <svg
+              width="0.8rem"
+              height="0.8rem"
+              viewBox="0 0 128 128"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M64 0C28.672 0 0 28.672 0 64C0 99.328 28.672 128 64 128H96V115.2H64C36.224 115.2 12.8 91.776 12.8 64C12.8 36.224 36.224 12.8 64 12.8C91.776 12.8 115.2 36.224 115.2 64V73.152C115.2 78.208 110.656 83.2 105.6 83.2C100.544 83.2 96 78.208 96 73.152V64C96 46.336 81.664 32 64 32C46.336 32 32 46.336 32 64C32 81.664 46.336 96 64 96C72.832 96 80.896 92.416 86.656 86.592C90.816 92.288 97.984 96 105.6 96C118.208 96 128 85.76 128 73.152V64C128 28.672 99.328 0 64 0ZM64 83.2C53.376 83.2 44.8 74.624 44.8 64C44.8 53.376 53.376 44.8 64 44.8C74.624 44.8 83.2 53.376 83.2 64C83.2 74.624 74.624 83.2 64 83.2Z"
+                fill="black" />
+            </svg>
+          </div>
+        </td>
+        <td class="alarm-main">
+          <div class="top-alarm-title">
+            {{ alr.title }} : {{ alr.detail }}
+            <span class="wrote-from">&nbsp; {{ alr.registTime }}</span>
+          </div>
+        </td>
+      </tr>
+
+      <p
+        id="alarm-more-btn"
+        @click="moreAlarms">
+        더 보기 +
+      </p>
     </div>
   </div>
   <!-- TOP BAR에 Notification dropdown(my page로 가는 경로 필), searchbar 들어가야함 -->
@@ -81,7 +152,7 @@ const openAlarms = () => {
   border-radius: 20px;
   border: 1px solid var(--font30);
 
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.16), 0 2px 3px rgba(0, 0, 0, 0.23);
 }
 
 #search-input:focus {
@@ -120,7 +191,7 @@ const openAlarms = () => {
   background-position: center;
   cursor: pointer;
 
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.16), 0 2px 3px rgba(0, 0, 0, 0.23);
 }
 
 @media (max-width: 1190px) {
@@ -158,7 +229,75 @@ const openAlarms = () => {
   border-radius: 20px;
 
   box-sizing: border-box;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.16), 0 2px 3px rgba(0, 0, 0, 0.23);
+}
+
+.top-alarm-row {
+  display: block;
+  margin-bottom: 15px;
+
+  height: auto;
+  cursor: pointer;
+}
+.top-alarm-icon {
+  position: relative;
+  width: 65px;
+  left: 0px;
+}
+
+.top-alarm-icon > div {
+  position: inherit;
+  padding: 0.2rem 0.6rem 0.3rem 0.6rem;
+
+  top: 0.7rem;
+
+  width: 30px;
+  height: 15px;
+
+  color: var(--hl-light);
+  display: inline-block;
+  font-family: 'ASDGothicM';
+  text-align: center;
+
+  border-radius: 20px;
+}
+
+.top-announce-icon {
+  background-color: var(--hl-light);
+}
+
+.top-announce-icon > svg > path {
+  fill: var(--font80);
+}
+
+.top-advertise-icon {
+  background-color: var(--hl-watch);
+}
+
+.top-advertise-icon > svg > path {
+  fill: var(--font100);
+}
+
+.top-personal-icon {
+  background-color: var(--hl-pres);
+}
+
+.top-personal-icon > svg > path {
+  fill: var(--hl-light);
+}
+
+#alarm-more-btn {
+  margin-top: 25px;
+
+  text-align: center;
+  color: var(--font80);
+  transition: color 0.4s;
+
+  cursor: pointer;
+}
+
+#alarm-more-btn:hover {
+  color: var(--font100);
 }
 
 .closed {
@@ -169,36 +308,9 @@ const openAlarms = () => {
   display: block;
 }
 
-#mypage-btn {
-  position: absolute;
-  top: 16px;
-  right: 17px;
-
-  color: var(--font50);
-  transition: color 0.4s;
-  font-size: 1rem;
-  font-weight: 700;
-  text-decoration: none;
-}
-
-#mypage-btn:hover {
+.top-alarm-title {
+  display: block;
+  font-size: 0.95rem;
   color: var(--font100);
-  transition: color 0.4s;
-}
-
-#logout-btn {
-  position: absolute;
-  bottom: 0px;
-  right: 17px;
-  color: var(--hl-warn);
-  opacity: 0.6;
-  transition: opacity 0.4s;
-
-  cursor: pointer;
-}
-
-#logout-btn:hover {
-  opacity: 1;
-  transition: opacity 0.4s;
 }
 </style>

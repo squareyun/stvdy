@@ -1,7 +1,10 @@
 <script setup>
 import { useQuestionStore } from '@/stores'
 import router from '@/router'
+import { useRoute } from 'vue-router'
 import { computed, onBeforeUnmount } from 'vue'
+
+const $route = useRoute()
 
 const questionStore = useQuestionStore()
 const questions = computed(() => questionStore.questions)
@@ -10,10 +13,11 @@ const totalAmount = computed(() => questionStore.totalAmount)
 const query = {
   keyword: '',
   nickname: '',
-  page: 0,
+  page: $route.params.page - 1,
   noAnsFilter: false,
   noBestAnsFilter: false,
 }
+console.log(query)
 questionStore.getList(query)
 
 const sortNew = () => {
@@ -25,6 +29,8 @@ const sortNew = () => {
     keyword: '',
     nickname: '',
     page: 0,
+    noAnsFilter: false,
+    noBestAnsFilter: false,
   }
   questionStore.getList(query)
 }
@@ -103,7 +109,7 @@ onBeforeUnmount(() => {
       <div>
         <tr
           class="question-row"
-          v-for="qtn in questions"
+          v-for="(qtn, index) in questions"
           :key="qtn.id"
           @click="showDetail(qtn.id)">
           <td class="question-done">
@@ -122,7 +128,6 @@ onBeforeUnmount(() => {
             <div class="question-title">
               {{ qtn.title }}
             </div>
-            <div id="question-main-div-line"></div>
             <div class="question-detail">{{ qtn.detail }}</div>
           </td>
           <td class="question-info">
@@ -138,7 +143,9 @@ onBeforeUnmount(() => {
           </td>
           <div></div>
 
-          <div class="question-div-line"></div>
+          <div
+            v-if="index != questions.length - 1"
+            class="question-div-line"></div>
         </tr>
       </div>
     </div>
@@ -155,6 +162,8 @@ onBeforeUnmount(() => {
   margin-bottom: 20px;
 
   width: calc(960px - 7rem);
+
+  border: 1px solid var(--border-color);
 }
 
 #total-amount {
@@ -185,24 +194,24 @@ onBeforeUnmount(() => {
   margin-right: calc(7rem);
 
   text-decoration: none;
-  color: var(--hl-purple);
+  color: var(--hl-pres);
 }
 
 .question-row {
   position: relative;
-  height: 140px;
+  height: 130px;
 
   color: var(--hl-light);
 }
 
 .question-div-line {
   position: absolute;
-  left: 0px;
+  left: 20px;
   bottom: 0px;
-  width: 960px;
+  width: calc(920px - 7rem);
   height: 1px;
 
-  background-color: var(--background-up);
+  background-color: var(--hl-light20);
 }
 
 .question-done {
@@ -222,9 +231,9 @@ onBeforeUnmount(() => {
   font-family: 'ASDGothicM';
   text-align: center;
 
-  border: 1px solid var(--hl-purple);
+  border: 1px solid var(--hl-pres);
   border-radius: 20px;
-  background-color: var(--hl-purple);
+  background-color: var(--hl-pres);
 }
 
 #best-not-selected {
@@ -238,25 +247,13 @@ onBeforeUnmount(() => {
   font-family: 'ASDGothicUL';
   text-align: center;
 
-  border: 1px solid var(--hl-purple);
+  border: 1px solid var(--hl-pres);
   border-radius: 20px;
 }
 
 .question-main {
   position: relative;
   width: 600px;
-}
-
-#question-main-div-line {
-  position: absolute;
-  top: 52px;
-  left: 10px;
-
-  width: 580px;
-  height: 1px;
-
-  background-color: var(--hl-light30);
-  opacity: 0.5;
 }
 
 .question-title {
@@ -273,7 +270,7 @@ onBeforeUnmount(() => {
 
 .question-detail {
   position: absolute;
-  top: 60px;
+  top: 53px;
   left: 10px;
 
   height: 60px;
@@ -321,6 +318,6 @@ onBeforeUnmount(() => {
 
 .info-status > p:first-child {
   font-family: 'ASDGothicM';
-  color: var(--hl-purple);
+  color: var(--hl-pres);
 }
 </style>
