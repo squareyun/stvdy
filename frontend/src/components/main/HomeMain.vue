@@ -149,6 +149,7 @@ function joinTheRoom(room) {
   if (selectedRoom.value.currentNumber >= selectedRoom.value.quota) {
     alert('정원초과로 입장할 수 없습니다.')
     return
+  }
 }
 
 /// 방 입장 전 방 정보 모달 창 켜기
