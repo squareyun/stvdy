@@ -121,19 +121,19 @@ public class AnswerService {
 		question.selectAnswer(answer);
 
 		// 답변 채택시, 답변 작성자에게 알림 전송
-		String detailUrl = "/questiondetail/" + question.getId();
+		String linkedUrl = "/questiondetail/" + question.getId();
 
 		Alarm alarm = Alarm.builder()
 			.title(answer.getUser().getNickname() + " 님의 댓글이 채택되었습니다.")
-			.detail(detailUrl)
+			.detail(answer.getDetail())
 			.isRead(false)
+			.linkedUrl(linkedUrl)
 			.registTime(LocalDateTime.now())
 			.user(answer.getUser())
 			.build();
 
 		answerRepository.save(answer);
 		alarmRepository.save(alarm);
-
 	}
 
 }
