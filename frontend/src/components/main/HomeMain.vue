@@ -49,7 +49,7 @@ const questionsSample = ref([])
 ////////////////////////////////////////////////////////////////////////////////////////////////
 onBeforeMount(async () => {
   await webRtcStore.getRtcRooms()
-  questionsStore.getAll() // 모든 질문을 가지고 옴.
+  // questionsStore.getAll() // 모든 질문을 가지고 옴.
   // await webRtcStore.getEveryRoomTags()    // 230808 현재는 제대로 구현되어있지 않음
   extractSomeRooms()
   extractSomeQuestions()
@@ -83,7 +83,7 @@ watch(
       console.log(roomList.value[roomList.value.length - 1])
       // joinTheRoom(roomList.value[roomList.value.length - 1])
       tmpJoin(roomList.value[roomList.value.length - 1])
-    }, 500);
+    }, 5000);
   }
   function tmpJoin(room) {
     console.log('되긴되나',room)
@@ -138,7 +138,7 @@ function extractSomeRooms() {
 // 선택한 방에 참여하는 함수
 function joinTheRoom(room) {
   // cconsole.log()
-  // selectedRoom.value = room
+  selectedRoom.value = room
   if (selectedRoomPw.value != inputPw.value) {
     // 비밀번호 불일치시
     alert('비밀번호가 불일치합니다.')
@@ -150,6 +150,7 @@ function joinTheRoom(room) {
     alert('정원초과로 입장할 수 없습니다.')
     return
   }
+  webRtcStore.joinTheRoom(room)
 }
 
 /// 방 입장 전 방 정보 모달 창 켜기

@@ -70,6 +70,10 @@
   const isExitRoom = ref(webrtcstore.isExitRoom)  // leave
   const isFull = ref(false)
 
+  // user Id를 받을 수 있는지 시도함
+  // const userId = ref(webrtcstore.userNo)
+  const userId = ref(webrtcstore.userId)    // 임시로 작성함.
+
   onBeforeMount(() => {
     // window.addEventListener("beforeunload",leaveSession)
     window.addEventListener("beforeunload",escapePage)
@@ -135,7 +139,7 @@
   function joinSession() {
     OV.value = new OpenVidu()
     session.value = OV.value.initSession()
-    console.log('이게뭐람',session.value)
+    console.log('이게 session.value',session.value)
     session.value.on("streamCreated", ( {stream} )=> {
       const subscriber = session.value.subscribe(stream)
       subscribers.value.push(subscriber)
@@ -168,8 +172,8 @@
           console.log('얍! streamManagerRemoved')
           // leaveSession();
           router.push({
-            // name:'maintmp',// 임시로 main으로 넘겨줌.
-            name:'main',
+            name:'maintmp',// 임시로 main으로 넘겨줌.
+            // name:'main',
           })
        }
     });
@@ -179,8 +183,8 @@
       console.log("세션에서 연결 끊어짐:", event);
       // 필요한 추가 작업을 수행합니다. 예: UI 업데이트, 사용자 알림 등
       router.push({
-        // name:'maintmp',// 임시로 main으로 넘겨줌.
-        name:'main',
+        name:'maintmp',// 임시로 main으로 넘겨줌.
+        // name:'main',
       })
     });
 
@@ -192,10 +196,10 @@
     session.value.on('signal:chat', (event) => { // event.from.connectionId === session.value.connection.connectionId 이건 나와 보낸이가 같으면임
       const messageData = JSON.parse(event.data)
       if(event.from.connectionId === session.value.connection.connectionId){
-        messageData['username'] = '나'
+        messageData['username'][0] = '나'     //messageData['username'][0] => userNickname
       }
-      console.log(messageData)
-      console.log(messageData.userNo)
+      console.log(messageData['username'][1]) // messageData['username'][1] => userNO 즉, user의 id
+      console.log(messageData.userNo) // 아이디를 가져오나???
       messages.value.push(messageData)
     })
     
@@ -271,8 +275,8 @@
     // openNewWindow2(`이건 리브세션버튼 누른거` + '섭스크라이브'+ subscribersComputed.value.length+'방id'+localRoomId)
     // 메인페이지로 넘어감
     router.push({
-      // name:'maintmp',// 임시로 main으로 넘겨줌.
-      name:'main',
+      name:'maintmp',// 임시로 main으로 넘겨줌.
+      // name:'main',
     })
   }
   function escapePage() {
@@ -317,7 +321,6 @@
     const userNo = webrtcstore.userNo // 임시로 랜덤 값으로 보내는 중
     const inputPassword = webrtcstore.inputPassword
     // 방 생성시에 관련한 것
-    // const userNo = webrtcstore.userNo
     const endHour = webrtcstore.endHour
     const endMinute = webrtcstore.endMinute
     const quota = webrtcstore.quota
@@ -339,6 +342,7 @@
         ////////////////////////////////
         console.log('방에 참여하나')
         console.log('방에 참여 리스폰스데이터 잘 받음',response.data)
+        console.log('방에 참여할때할때',userNo, mySessionId, endHour, endMinute, quota, isPrivacy, password, backImgFile, rule)
         webrtcstore.isMakingFalse()
         return response.data
       }
@@ -352,7 +356,7 @@
     }
     else{
       try{
-        console.log('몇시간작동할겨?',endHour, endMinute)
+        // console.log('몇시간작동할겨?',endHour, endMinute)
         const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/add', 
         {userNo: userNo, title: mySessionId, endHour: endHour, endMinute: endMinute, quota: quota, 
           isPrivacy: isPrivacy, password: password, iamgePath: backImgFile, rule: rule, tags: roomTags, role:'MODERATOR'}, 
@@ -364,6 +368,9 @@
         console.log('방만들때 roomId 로컬에 저장!!!!!',  response.data.room.id)
         // roomId가 변경되면 localstorage에 저장합니다.
         localStorage.setItem('roomId', response.data.room.id)  // 로컬스토리지에 roomId를 저장시켰으니 shutDown시킬때
+        
+        const responseImagePath = webrtcstore.downloadImagefromServer(userNo)
+        console.log(responseImagePath)
         // try{
         //   webrtcstore.giveRole(roomId)
         // }
@@ -558,6 +565,14 @@
   ////// 나중에 지울거임
   function checkSubScirbers(){
     alert(`현재명수: ${subscribersComputed.value.length+1}명`)
+    subscribersComputed.value.forEach((sub) => {
+      const Data = JSON.parse(sub.stream.connection.data)
+      const clientData = JSON.parse(sub.stream.connection.data).clientData;
+      // 고유한 키(key) 값을 지정하지 않을 경우, index를 직접 사용할 수 있습니다.
+      // 결과를 화면에 출력하거나, 다른 처리를 수행할 수 있습니다.
+      console.log(Data)
+      console.log(clientData);
+    });
   }
 
   // 퇴장시키기
@@ -657,7 +672,9 @@
       </ul>
     </div>
     <!-- 메시지 -->
-    <MessageChat :messages="messages" :session="session" :myUserName="myUserName" v-if="activeFuncTab === 1" />
+    <!-- <MessageChat :messages="messages" :session="session" :myUserName="myUserName" v-if="activeFuncTab === 1" /> -->
+    <!-- userNo를 Chat에 넘겨줌으로서 채팅마다 userId를 확인할 수가 있음.-->
+    <MessageChat :messages="messages" :session="session" :myUserName="myUserName" :chatUserNo="userId" v-if="activeFuncTab === 1" />
     <!-- 그라운드 룰 -->
     <div v-if="activeFuncTab === 2">
       {{ roomRule }}

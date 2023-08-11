@@ -7,9 +7,11 @@ import axios from 'axios'
 export const usewebRtcStore = defineStore({
   id: 'webrtc',
   state: () => ({
-    APPLICATION_SERVER_URL: 'http://localhost:8080/',
+    // APPLICATION_SERVER_URL: 'http://localhost:8080/',
+    APPLICATION_SERVER_URL: 'https://i9d205.p.ssafy.io/api/', // 배포된 서버
 
     userNo: useUserStore().user.id,
+    userId: (Math.floor(Math.random() * (200 - 1 + 1)) + 1), // 테스트를 위해서 임시로...
 
     mySessionId: 'SSAP STVDY'+ (Math.floor(Math.random() * (200 - 1 + 1)) + 1),
     // myUserName : useUserStore().user.username,
@@ -45,6 +47,10 @@ export const usewebRtcStore = defineStore({
     peopleNo: 0, // 우선 peopleNo은 0으로 둠. 방 탈퇴 및 방 정보에 사용할 예정임
 
     router: useRouter(),
+
+    /////////////////////////////////
+    imgformData: null
+
   }),
   actions: {
     isMakingTrue() {
@@ -119,6 +125,61 @@ export const usewebRtcStore = defineStore({
       this.password = newPwInput
       console.log(this.password)
     },
+    // 이미지 등록할 이미지 업데이트하는 함수
+    updateUploadImage(newimgFormData){
+      this.imgformData = newimgFormData
+    },
+
+    ////// 이미지를 등록하기 위한 함수 // 스터디룸 이미지가 유저에 종속되어있음.
+    uploadImagetoServer(userNo) {
+      // 서버에 이미지 파일 업로드하기
+      try {
+        const response = axios.post(this.APPLICATION_SERVER_URL+'files/upload/room/'+userNo, this.imgformData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        console.log("이미지 업로드 성공: ", response.data);
+      } catch (error) {
+        console.log("이미지 업로드 에러: ", error);
+      }
+    },
+
+    // 이미지 경로 얻기
+    async downloadImagefromServer(userNo) {
+      // 서버에서 이미지 경로 얻기
+      try {
+        // const response = await axios.get(this.APPLICATION_SERVER_URL+'files/get/room/'+userNo,{
+        const response = await axios.get(`https://i9d205.p.ssafy.io/api/`+'files/get/room/'+userNo,{
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        console.log("이미지 경로 다운로드 성공: ", response.data);
+      } catch (error) {
+        console.log("이미지 경로 다운로드 에러: ", error);
+      }
+    },
+
+
+    // 개인 프로필 이미지 경로 얻기
+    async downloadProfiefromServer(userNo) {
+      // 서버에서 이미지 경로 얻기
+      try {
+        const response = await axios.get(this.APPLICATION_SERVER_URL+'files/get/room/'+userNo,{
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        console.log("이미지 경로 다운로드 성공: ", response.data);
+      } catch (error) {
+        console.log("이미지 경로 다운로드 에러: ", error);
+      }
+    },
+
+    
+
+
     ////////닉네임 받기 위한 getmySessionId
     getmySessionId(context) {
       axios({

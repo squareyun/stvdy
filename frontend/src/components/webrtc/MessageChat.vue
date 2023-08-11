@@ -3,7 +3,7 @@
     <div id="chatWindow">
       <ul id="chatHistory">
         <li v-for="(message, index) in messages" :key="index">
-          <strong>{{ message.username }}:</strong> {{ message.message }}
+          <strong> 다음은 ID {{ message.username[1] }} {{ message.username[0] }}:</strong> {{ message.message }}
         </li>
       </ul>
     </div>
@@ -31,12 +31,18 @@ const props = defineProps({
   myUserName:{
     type: String,
     required: true,
+  },
+  chatUserNo:{
+    type: Number,
+    required: false,
   }
 });
 
-const { messages, session, myUserName } = props;
-const userNo = ref(usewebRtcStore.userNo)
+const { messages, session, myUserName, chatUserNo, } = props;
+// const userNo = ref(usewebRtcStore.userNo)
 const inputMessage = ref("");
+
+const imagePath = ref(null)
 
 function sendMessage() {
   if (inputMessage.value.trim()) {
@@ -45,7 +51,9 @@ function sendMessage() {
       // data: JSON.stringify({username: session.myUserName, message: inputMessage.value}), // 메시지 데이터를 문자열로 변환해서 전송
       // data: JSON.stringify({username: myUserName, message: inputMessage.value}), // 메시지 데이터를 문자열로 변환해서 전송
       // userNo는 받는 곳에서 못받음.
-      data: JSON.stringify({username: myUserName, message: inputMessage.value, userNo:userNo.value}), // 메시지 데이터를 문자열로 변환해서 전송
+      // data: JSON.stringify({username: myUserName, message: inputMessage.value, userNo:userNo.value}), // 메시지 데이터를 문자열로 변환해서 전송
+      // data: JSON.stringify({username: myUserName, message: inputMessage.value + '!!!' + chatUserNo}), // 메시지 데이터를 문자열로 변환해서 전송
+      data: JSON.stringify({username: [myUserName, chatUserNo], message: inputMessage.value}), // 메시지 데이터를 문자열로 변환해서 전송
       type: 'chat', // 신호 타입을 'chat'으로 설정
     });
     inputMessage.value = '';

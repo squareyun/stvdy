@@ -14,6 +14,7 @@
   const webrtcstore = usewebRtcStore()
   const userstore = useUserStore()
   const router = useRouter()
+  const userNo = ref(webrtcstore.userNo)
   
   // 방 생성에 사용할 변수들 
   const myUserName = ref(webrtcstore.myUserName)
@@ -44,7 +45,7 @@
   const isPrivacy = ref(webrtcstore.isPrivacy)
 
   onMounted(() => {
-    joinSession() // css 동안 임시로 해둠.
+    // joinSession() // css 동안 임시로 해둠.
     // creatorIsHost()
   })
 
@@ -209,7 +210,7 @@
 
 
   // 이미지 업로드 및 미리보기 함수
-  function readInputImage(event){
+  async function readInputImage(event){
     // console.log(event.target.files[0])
     webrtcstore.updateBackImg(event.target.files[0])
     backImgFile.value = event.target.files[0]
@@ -222,13 +223,72 @@
       console.log(imgPreviewUrl.value)
     }
     reader.readAsDataURL(backImgFile.value)
+
+    // 서버로 전송할 FormData 객체 생성
+    try{
+      console.log('업로드 되나1')
+      const imgformData = new FormData();
+      imgformData.append("file", backImgFile.value);
+      // const response = await axios.post(`http://localhost:8080/`+'files/upload/room/'+userNo.value, imgformData, {
+      const response = await axios.post(`https://i9d205.p.ssafy.io/api/`+'files/upload/room/'+userNo.value, imgformData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      console.log('리스폰스', response)
+      console.log('리스폰스', response.data)
+      // console.log(imgformData)
+      webrtcstore.updateUploadImage(imgformData)
+      // console.log(userNo.value)
+      // webrtcstore.uploadImagetoServer(userNo.value)
+      console.log('업로드 성공인가?')
+    }
+    catch(error){
+      console.log('업로드 안되나', error)
+    }
   }
+
+  // uploadImagetoServer(userNo) {
+  //     // 서버에 이미지 파일 업로드하기
+  //     try {
+  //       const response = axios.post(this.APPLICATION_SERVER_URL+'files/upload/room/'+userNo, this.imgformData, {
+  //         headers: {
+  //           "Content-Type": "multipart/form-data",
+  //         },
+  //       });
+  //       console.log("이미지 업로드 성공: ", response.data);
+  //     } catch (error) {
+  //       console.log("이미지 업로드 에러: ", error);
+  //     }
+  //   },
 
   const rule = ref(webrtcstore.rule)
   function updateRule(event){
     webrtcstore.updateRule(event.target.value)
     rule.value = event.target.value
   }
+
+  // // 이미지 파일 업로드 함수
+  // async function uploadImage() {
+  //   // 서버로 전송할 FormData 객체 생성
+  //   try{
+  //     console.log('업로드 되나1')
+  //     const imgformData = new FormData();
+  //     imgformData.append("file", backImgFile.value);
+  //     console.log(imgformData)
+  //     updateUploadImage(backImgFile.value)
+  //     console.log(userNo.value)
+  //     webrtcstore.uploadImagetoServer(userNo.value)
+  //     console.log('업로드 되나2')
+  //   }
+  //   catch(error){
+  //     console.log('없나')
+  //   }
+  //   webrtcstore.uploadImagetoServer(userNo.value)
+  // }
+
+
+
 </script>
 
 <template>
@@ -250,10 +310,12 @@
         </p>
         <!-- 이미지 파일 업로드 및 미리보기 -->
         <p>
-          <input type="file" accept="image/*" @change="readInputImage" id="backImgFile" >
-          <div v-if="backImgFile">
-            <img :src="imgPreviewUrl" alt="imgPreview" style="max-width: 300px; max-height: 300px">
-          </div>
+          <form @submit.prevent="uploadImage" enctype="multipart/form-data">
+            <input type="file" accept="image/*" @change="readInputImage" id="backImgFile" >
+          </form>
+            <div v-if="backImgFile">
+              <img :src="imgPreviewUrl" alt="imgPreview" style="max-width: 300px; max-height: 300px">
+            </div>
         </p>
         <!-- 닉네임 설정은 백 연동 완료 이후 삭제해야 함 -->
         <p>
