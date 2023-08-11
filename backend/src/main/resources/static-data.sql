@@ -14,7 +14,3 @@ INSERT INTO interest (user_id, tag) VALUES (2, '자격증'), (2, '수능');
 INSERT INTO user_authority (user_no, authority_name) VALUES (1, 'ROLE_USER');
 INSERT INTO user_authority (user_no, authority_name) VALUES (1, 'ROLE_ADMIN');
 INSERT INTO user_authority (user_no, authority_name) VALUES (2, 'ROLE_USER');
-
-ALTER TABLE LIKES DROP FOREIGN KEY FK3p9ex2qw452lgox5sboky1e98;
-ALTER TABLE LIKES DROP FOREIGN KEY FKnbhujedlj8a26j6mj51fkelve;
-ALTER TABLE LIKES DROP INDEX `UK_km61ii1hqf3jniq96ukax3839`, DROP INDEX `UK_4ro7n9gk362k031ltbevy40oi`;
