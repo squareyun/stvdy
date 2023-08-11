@@ -39,7 +39,7 @@ public class Question {
 	private Integer id;
 
 	@NotNull
-	@Column(length = 20)
+	@Column(length = 30)
 	private String title;
 
 	@NotNull

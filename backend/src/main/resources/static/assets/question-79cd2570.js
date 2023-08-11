@@ -1,0 +1,1 @@
+import{z as s}from"./index-224b7266.js";const e=async(t,a,i)=>{await s.get(`/api/questions/list?keyword=${t.keyword}&nickname=${t.nickname}&page=${t.page}`).then(a).catch(i)},o=async(t,a,i)=>{await s.post("/api/questions/add",t).then(a).catch(i)};export{e as l,o as w};

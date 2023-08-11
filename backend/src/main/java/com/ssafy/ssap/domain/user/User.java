@@ -11,6 +11,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.ssafy.ssap.domain.todo.Todo;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -66,7 +67,7 @@ public class User {
 
 	@Builder.Default
 	@OneToMany(mappedBy = "user")
-	List<Interest> todoList = new ArrayList<>();
+	List<Todo> todoList = new ArrayList<>();
 
 	@CreationTimestamp
 	@Column(name = "state_time", columnDefinition = "timestamp")

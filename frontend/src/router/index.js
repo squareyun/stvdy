@@ -1,6 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 // import RoomView from '../views/RoomView.vue'
-import { useAuthStore, useAlertStore, useUsersStore } from '@/stores'
+import { useAuthStore, useAlertStore, useUserStore } from '@/stores'
+import TestView from '../views/TestView.vue'
+import Test from '../components/Test.vue'
+import MyPageView from '../views/MyPageView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,50 +11,72 @@ const router = createRouter({
     {
       path: '/',
       alias: ['/home'],
-      name: 'home',
+      // component: TestView,
       component: () => import('../views/HomeView.vue'),
       children: [
+        // {
+        //   path: '',
+        //   name: 'main',
+        //   component: Test,
+        // },
         {
-          path: '/mypage',
-          name: 'mypage',
+          path: '/hometest',
+          name: 'hometest',
+          component: () => import('../components/HomeMain.vue'),
+        },
+      ],
+    },
+    {
+      path: '/mypage',
+      component: MyPageView,
+      children: [
+        {
+          path: '',
           component: () => import('../components/profile/MyPage.vue'),
           children: [
             {
-              path: '/deactivate',
-              name: 'deactivate',
-              component: () => import('../components/profile/Deactivate.vue'),
-            },
-            {
-              path: '/changepwd',
-              name: 'changepwd',
+              path: 'changepwd',
               component: () => import('../components/profile/ChangePwd.vue'),
-            },
-            {
-              path: '/changeusername',
-              name: 'changeusername',
-              component: () =>
-                import('../components/profile/ChangeUsername.vue'),
             },
           ],
         },
         {
-          path: '/question',
-          name: 'question',
+          path: '/alarms',
+          name: 'alarms',
+          component: () => import('../components/alarm/MyAlarmList.vue'),
+        },
+      ],
+    },
+    {
+      path: '/question',
+      name: 'question',
+      component: () => import('../views/QuestionView.vue'),
+      children: [
+        {
+          path: '',
+          name: 'listquestions',
           component: () => import('../components/qna/QuestionList.vue'),
-          children: [],
         },
         {
-          path: '/createqtn',
-          name: 'createqtn',
-          component: () => import('../components/qna/CreateQtn.vue'),
-          children: [],
+          path: '/myquestion',
+          name: 'myquestion',
+          component: () => import('../components/qna/MyQuestionList.vue'),
         },
         {
-          path: '/qtndetail',
-          name: 'qtndetail',
+          path: '/createquestion',
+          name: 'createquestion',
+          component: () => import('../components/qna/CreateQuestion.vue'),
+        },
+        {
+          path: '/modifyquestion/:id',
+          name: 'modifyquestion',
+          component: () => import('../components/qna/CreateQuestion.vue'),
+        },
+        {
+          path: '/questiondetail/:id',
+          name: 'questiondetail',
           params: {},
-          component: () => import('../components/qna/QtnDetail.vue'),
-          children: [],
+          component: () => import('../components/qna/QuestionDetail.vue'),
         },
       ],
     },
@@ -88,16 +113,25 @@ const router = createRouter({
     },
     {
       // 화상 채팅 방 참여
-      path: '/room/:roomNo',
+      path: '/room/:roomName',
       name: 'roomJoin',
       component: () => import('@/components/webrtc/RoomJoin.vue'),
     },
+    
+    //// 메인화면입장 시
     {
-      // 화상 채팅 방 참여
-      path: '/webrtc',
-      name: 'roomJointmp',
-      component: () => import('@/views/RoomView.vue'),
+      path: '/main',
+      name: 'maintmp',
+      component: () => import('@/components/main/HomeMain.vue'),
+      children: [],
     },
+    {
+      // path: '/'+{keyword},
+      path: '/keyword/:TagName',
+      name: 'KeywordRoom',
+      component: () => import('@/components/main/KeywordRoom.vue'),
+    },
+    
   ],
 })
 
@@ -143,25 +177,20 @@ router.beforeEach(async (to) => {
     '/about',
     '/regist',
     '/passwordReset',
-    '/room',
-    '/room/123',
-    '/webrtc',
-  ] // 손 좀 대겠습니다. 기존 ['/about', '/regist', '/passwordReset', ]
+  ]
   const authRequired = !testPages.includes(to.path)
   const loginLogics = ['/about', '/regist', '/passwordReset']
 
   // 로컬 스토리지의 유저 로그인 정보가 있는지 받아오는 스토어
   const authStore = useAuthStore()
-  const usersStore = useUsersStore()
+  const userStore = useUserStore()
 
   let token = localStorage.getItem('access-token')
-  console.log(1, token)
   if (typeof token == 'undefined' || token == null || token == '')
     token = sessionStorage.getItem('access-token')
 
-  console.log(2, token)
   if (!(typeof token == 'undefined' || token == null || token == ''))
-    await usersStore.getInfo(token)
+    await userStore.getInfo(token)
 
   // public 라우터이면 유저 정보를 확인하지 않아 무한 반복 방지
   // 없으면 끝도 없이 유저 정보 검사후 이동을 반복
