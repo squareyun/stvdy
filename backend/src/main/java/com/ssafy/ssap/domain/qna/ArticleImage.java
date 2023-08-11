@@ -20,17 +20,17 @@ public class ArticleImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(columnDefinition = "blob")
+    @Column
     @Lob
     private String path;
 
-    @OneToOne(fetch = LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "question_id")
     @Nullable
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Question question;
 
-    @OneToOne(fetch = LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "answer_id")
     @Nullable
     @OnDelete(action = OnDeleteAction.CASCADE)

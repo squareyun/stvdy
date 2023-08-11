@@ -2,6 +2,8 @@ package com.ssafy.ssap.controller;
 
 import com.ssafy.ssap.service.S3Service;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +18,13 @@ import java.util.Map;
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequiredArgsConstructor
 public class S3Controller {
+    private static final Logger logger = LoggerFactory.getLogger(RoomController.class);
     private final S3Service s3Service;
 
     @PostMapping("/upload/{pattern}/{id}")
     public ResponseEntity<?> uploadByPattern(@PathVariable String pattern, @PathVariable Integer id, @RequestParam List<MultipartFile> file){
+        logger.trace("upload Controller 호출. "+pattern+"/"+id+"/"+file+"/"+file.size());
+        System.out.println("upload Controller 호출. "+pattern+"/"+id+"/"+file+"/"+file.size());
         HttpStatus status;
         status = s3Service.uploadFile(pattern, file, id);
         return new ResponseEntity<>(status);
@@ -27,6 +32,7 @@ public class S3Controller {
 
     @GetMapping("/get/{pattern}/{id}")
     public ResponseEntity<?> getUrl(@PathVariable String pattern, @PathVariable Integer id){
+        logger.debug("");
         HttpStatus status = HttpStatus.OK;
         Map<String, Object> resultMap;
         switch(pattern){

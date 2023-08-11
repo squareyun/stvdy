@@ -1,14 +1,21 @@
 package com.ssafy.ssap.util;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectResult;
+import com.ssafy.ssap.controller.RoomController;
+import com.ssafy.ssap.domain.alarm.Alarm;
 import com.ssafy.ssap.domain.qna.Answer;
 import com.ssafy.ssap.domain.qna.ArticleImage;
 import com.ssafy.ssap.domain.qna.Question;
+import com.ssafy.ssap.domain.user.User;
 import com.ssafy.ssap.exception.S3Exception;
 import com.ssafy.ssap.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
@@ -20,17 +27,19 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Optional;
+
 
 @RequiredArgsConstructor
 @Service
 public class S3Util {
+    private static final Logger logger = LoggerFactory.getLogger(RoomController.class);
     private final AmazonS3Client amazonS3;
     private final ArticleImageRepository articleImageRepository;
     private final UserRepository userRepository;
     private final AnswerRepository answerRepository;
     private final AlarmRepository alarmRepository;
     private final QuestionRepository questionRepository;
+
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -45,9 +54,11 @@ public class S3Util {
         StringBuilder sb;
         String prefix;
         String currentFileName;
+        int counter = 1;
         while (li.hasNext()) {
             MultipartFile file = li.next();
             prefix = pattern.substring(0, 2); // "al" / "pr" / "ro" ...
+            logger.debug("prefix:"+prefix);
             currentFileName = file.getOriginalFilename(); // "filename.jpg"
             if (currentFileName == null) throw new NullPointerException("file Original Name 불러오기 실패");
             String fileExtension = currentFileName.substring(currentFileName.lastIndexOf('.')); //".jpg"
@@ -58,10 +69,18 @@ public class S3Util {
             sb.append(pattern);
             sb.append("/");
             switch (prefix) {
-                case "al", "pr", "ro" -> sb.append(prefix);
+                case "al", "pr", "ro" -> {
+                    sb.append(prefix);
+                    sb.append(id)
+;                }
+                case "qu", "an" -> {
+                    sb.append(prefix);
+                    sb.append(id);
+                    sb.append("_");
+                    sb.append(counter++);
+                }
                 default -> throw new S3Exception("unoccurable ERROR. Just for double check");
             }
-            sb.append(id);
             sb.append(fileExtension);
 
             resultString.add(sb.toString());
@@ -69,95 +88,104 @@ public class S3Util {
         return resultString;
     }
 
+    @Transactional
     public void uploadSingleFileToS3(MultipartFile file, String fileName) throws IOException {
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(file.getSize());
-        metadata.setContentType(file.getContentType());
-        amazonS3.putObject(bucket, fileName, file.getInputStream(), metadata);
+        try {
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(file.getSize());
+            metadata.setContentType(file.getContentType());
+            PutObjectResult pr = amazonS3.putObject(bucket, fileName, file.getInputStream(), metadata);
+            logger.debug("S3 업로드 완료" + pr.getETag() + "/" + pr.getVersionId());
+        }catch(AmazonClientException | IOException e){
+            logger.error("S3 업로드 중 문제 발생"+e);
+            throw e;
+        }
     }
 
     @Transactional
-    public void updateDatabase(String pattern, Integer id, List<String> fileNameList) {
+    public void updateDatabase(Object entity, List<String> fileNameList) {
         String basePath = "https://s3.amazonaws.com/ssapbucket/";
 
+        JpaRepository<?, Integer> repository = getRepository(entity);
         List<ArticleImage> articleImagesToUpdate = new ArrayList<>();
-        JpaRepository<?, Integer> repository;
 
-        switch (pattern) {
-            case "alarm" -> repository = alarmRepository;
-            case "room", "profile" -> repository = userRepository;
-            case "question", "answer" -> repository = pattern.equals("question") ? questionRepository : answerRepository;
-            default -> throw new IllegalStateException("Unexpected value: " + pattern);
-        }
-
+//        switch (pattern) {
+//            case "alarm" -> repository = alarmRepository;
+//            case "room", "profile" -> repository = userRepository;
+//            case "question", "answer" -> repository = pattern.equals("question") ? questionRepository : answerRepository;
+//            default -> throw new IllegalStateException("Unexpected value: " + pattern);
+//        }
+//
+//        Optional<?> entityOptional = repository.findById(id);
         for (String fileName : fileNameList) {
             String filePath = basePath + fileName;
 
-            Optional<?> entityOptional = repository.findById(id);
-            entityOptional.ifPresent(entity -> {
-                if (pattern.equals("question") || pattern.equals("answer")) {
-                    ArticleImage articleImage = new ArticleImage();
-                    if (entity instanceof Question) {
-                        articleImage.setQuestion((Question) entity);
-                    } else if (entity instanceof Answer) {
-                        articleImage.setAnswer((Answer) entity);
-                    }
-                    articleImage.setPath(filePath);
-                    articleImagesToUpdate.add(articleImage);
-                } else {
-                    try {
-                        BeanUtils.setProperty(entity, "imagePath", filePath);
-                    } catch (IllegalAccessException | InvocationTargetException e) {
-                        throw new RuntimeException(e);
-                    }
+            if (entity instanceof Question || entity instanceof Answer) {
+                ArticleImage articleImage = new ArticleImage();
+                if (entity instanceof Question) {
+                    articleImage.setQuestion((Question) entity);
+                } else{
+                    articleImage.setAnswer((Answer) entity);
                 }
-            });
+                articleImage.setPath(filePath);
+                articleImagesToUpdate.add(articleImage);
+            } else {
+                try {
+                    //question, answer이 아닌 경우(user(profile, room), alarm) 이미 객체가 있으니 객체의 imagePath 속성을 업데이트한다.
+                    BeanUtils.setProperty(entity, "imagePath", filePath);
+                    repository.flush();
+                } catch (IllegalAccessException | InvocationTargetException | NullPointerException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
 
         // Bulk update all article images if applicable
         if (!articleImagesToUpdate.isEmpty()) {
             articleImageRepository.saveAll(articleImagesToUpdate);
         }
+    }
 
-        // Bulk update entities with image paths
-        repository.flush();
+    public Object checkPresentAndGetEntity(String pattern, Integer id) {
+        JpaRepository<?, Integer> repository;
+        Object entity;
+
+//        switch (pattern) {
+//            case "alarm" -> repository = alarmRepository;
+//            case "room", "profile" -> repository = userRepository;
+//            case "question", "answer" -> repository = pattern.equals("question") ? questionRepository : answerRepository;
+//            default -> throw new IllegalStateException("Unexpected value: " + pattern);
+//        }
+        repository = getRepository(pattern, id);
+
+        entity = repository.findById(id).orElse(null);
+        if(entity == null){
+            logger.error(pattern+"에 "+id+" 존재하지 않음");
+            throw new NullPointerException(pattern+"에 "+id+" 존재하지 않음");
+        }
+        return entity;
+    }
+
+    private JpaRepository<?, Integer> getRepository(String pattern, Integer id) {
+        return switch (pattern) {
+            case "alarm" -> alarmRepository;
+            case "room", "profile" -> userRepository;
+            case "question", "answer" -> pattern.equals("question") ? questionRepository : answerRepository;
+            default -> throw new IllegalStateException("Unexpected value: " + pattern);
+        };
+    }
+
+    private JpaRepository<?, Integer> getRepository(Object entity) {
+        if (entity instanceof Alarm) {
+            return alarmRepository;
+        } else if (entity instanceof User) {
+            return userRepository;
+        } else if (entity instanceof Question) {
+            return questionRepository;
+        } else if (entity instanceof Answer) {
+            return answerRepository;
+        } else {
+            throw new IllegalStateException("Unexpected value: " + entity.getClass());
+        }
     }
 }
-
-/*
-//        for(int i=0;i<fileNameList.size();i++) {
-//            String filePath = basePath+fileNameList.get(i);
-//            switch (pattern) {
-//                case "alarm" -> {
-//                    Alarm alarm = alarmRepository.findById(id).orElse(null);
-//                    if (alarm != null) alarm.setImagePath(filePath);
-//                }
-//                case "room", "profile" -> {
-//                    User user = userRepository.findById(id).orElse(null);
-//                    if (user != null) user.setImagePath(filePath);
-//                }
-//                case "question" -> {
-//                    Question question = questionRepository.findById(id).orElse(null);
-//                    if (question != null) {
-//                        ArticleImage articleImage = ArticleImage.builder()
-//                                .question(question)
-//                                .path(filePath)
-//                                .build();
-//                        articleImageRepository.save(articleImage);
-//                    }
-//                }
-//                case "answer" -> {
-//                    Answer answer = answerRepository.findById(id).orElse(null);
-//                    if (answer != null) {
-//                        ArticleImage articleImage = ArticleImage.builder()
-//                                .answer(answer)
-//                                .path(filePath)
-//                                .build();
-//                        articleImageRepository.save(articleImage);
-//                    }
-//                }
-//                default -> throw new IllegalStateException("Unexpected value: " + pattern);
-//            }
-//        }
-//    }
- */
