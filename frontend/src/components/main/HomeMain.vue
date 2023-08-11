@@ -57,8 +57,9 @@
   })
 
 
-  onMounted(() => {
+  onMounted(async () => {
     // localStorage.removeItem('roomId')
+    await tmpGoRoom() // css 동안 임시 작동.
   })
 
   watch(() => webRtcStore.roomList, (newRoomList, oldRoomList) => {
@@ -73,6 +74,21 @@
   ////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////
   
+  /// CSS 적용을 위한 임시 함수
+  async function tmpGoRoom() {
+    setTimeout(() => {
+      console.log(roomList.value)
+      console.log(roomList.value[roomList.value.length - 1])
+      // joinTheRoom(roomList.value[roomList.value.length - 1])
+      tmpJoin(roomList.value[roomList.value.length - 1])
+    }, 500);
+  }
+  function tmpJoin(room) {
+    console.log('되긴되나',room)
+    webRtcStore.joinTheRoom(room)
+  }
+  
+
 
   // // 질문 글 몇개를 추출 하는 함수
   function extractSomeQuestions() {

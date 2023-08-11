@@ -275,7 +275,7 @@
   function escapePage() {
     console.log('escapePage() 함수 호출됨')
     const localRoomId = localStorage.getItem('roomId')
-    openNewWindow2(`이스케이프페이지 탐 ${subscribersComputed.value.length}`)
+    // openNewWindow2(`이스케이프페이지 탐 ${subscribersComputed.value.length}`)
     if (!isFull && !subscribersComputed.value.length){ // 다른 참여자가 없으면서 정원이 차서 나가는게 아닐떄만
       shutDownRoom(localRoomId)
     }
@@ -343,7 +343,7 @@
         console.error('만들어진 방이없어서 발생한 에러:', error);
         webrtcstore.isMakingFalse()
         // webrtcstore.roomExit(roomId.value)  // 방나가면 방나갔음을 백엔드로 전송.
-        openNewWindow2('방에 참가하다 leaveSession함 방아이디는'+localStorage.getItem('roomId'))
+        // openNewWindow2('방에 참가하다 leaveSession함 방아이디는'+localStorage.getItem('roomId'))
         leaveSession()
       }
     }
@@ -372,7 +372,7 @@
       catch(error){
         console.error("방 생성에도 오류 났음.",error);
         webrtcstore.isMakingFalse()
-        openNewWindow2('방을 만들다가 leaveSession함 방아이디는'+localStorage.getItem('roomId'))
+        // openNewWindow2('방을 만들다가 leaveSession함 방아이디는'+localStorage.getItem('roomId'))
         leaveSession()
       }
     }

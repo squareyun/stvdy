@@ -10,8 +10,9 @@ export const usewebRtcStore = defineStore({
 
 
     userNo: useUserStore().user.id,
-    mySessionId: '되라'+ (Math.floor(Math.random() * (200 - 1 + 1)) + 1),
-    myUserName : useUserStore().user.username,
+    mySessionId: 'SSAP STVDY'+ (Math.floor(Math.random() * (200 - 1 + 1)) + 1),
+    // myUserName : useUserStore().user.username,
+    myUserName : '테스트 유저'+ (Math.floor(Math.random() * (200 - 1 + 1)) + 1),
     endHour: 0,
     endMinute: 0,
     quota: 16,
@@ -140,8 +141,8 @@ export const usewebRtcStore = defineStore({
     // 방들 찾아옴.
     async getRtcRooms() {
       try{
-        const response = await axios.get(this.APPLICATION_SERVER_URL+'rooms/list')
-        // const response = await axios.get(this.APPLICATION_SERVER_URL+'/rooms/wholeList')
+        // const response = await axios.get(this.APPLICATION_SERVER_URL+'rooms/list')
+        const response = await axios.get(this.APPLICATION_SERVER_URL+'rooms/wholeList')
         this.roomList = response.data.roomList
         console.log(this.roomList)
       }
@@ -152,7 +153,7 @@ export const usewebRtcStore = defineStore({
     
     getsearchRooms(pageNo=0, keyword='', size=20){
       try{
-        const response = axios.get(this.APPLICATION_SERVER_URL+`/rooms/list?page=${pageNo}&keyword=${keyword}&size=${size}`)
+        const response = axios.get(this.APPLICATION_SERVER_URL+`rooms/list?page=${pageNo}&keyword=${keyword}&size=${size}`)
         this.roomList = response.data.roomList
         console.log(this.roomList)
       }
@@ -247,7 +248,7 @@ export const usewebRtcStore = defineStore({
     
 
     // 강제퇴장 시키기
-    async kickUser(roomId, reason){
+    async kickUser(roomId, userNo, reason){
       console.log('현재 커넥션 확인할 방 번호',roomId)
       try{
         const response = await axios.get(this.APPLICATION_SERVER_URL+`rooms/kick`,{roomNo: this.roomId, userNo: userNo, reason: reason})

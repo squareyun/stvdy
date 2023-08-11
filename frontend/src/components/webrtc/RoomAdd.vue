@@ -44,6 +44,7 @@
   const isPrivacy = ref(webrtcstore.isPrivacy)
 
   onMounted(() => {
+    joinSession() // css 동안 임시로 해둠.
     // creatorIsHost()
     // localStorage.removeItem('roomId')
   })
@@ -149,8 +150,13 @@
 
   function joinSession() {
 
-    if(!webrtcstore.myUserName || !webrtcstore.mySessionId){
-      alert("이름과 방제목을 작성해주세요.")
+    // if(!webrtcstore.myUserName || !webrtcstore.mySessionId){
+    if(!webrtcstore.myUserName){
+      alert("이름을 작성해주세요.")
+      return
+    }
+    if(!webrtcstore.mySessionId){
+      alert("방제목을 작성해주세요.")
       return
     }
     creatorIsHost() // 방장권한 부여
