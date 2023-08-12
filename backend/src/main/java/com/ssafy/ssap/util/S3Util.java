@@ -120,6 +120,7 @@ public class S3Util {
         for (String fileName : fileNameList) {
             String filePath = basePath + fileName;
 
+            //다중 업로드인 경우(question, answer)
             if (entity instanceof Question || entity instanceof Answer) {
                 ArticleImage articleImage = new ArticleImage();
                 if (entity instanceof Question) {
@@ -129,10 +130,13 @@ public class S3Util {
                 }
                 articleImage.setImagePath(filePath);
                 articleImagesToUpdate.add(articleImage);
-            } else {
+            } else { //단일파일 업로드인 경우(profile, room, alarm)
                 try {
+                    String name;
+                    String tmp = fileNameList.get(1);
+                    name = tmp.equals("pr") ? "profileImagePath": tmp.equals("ro") ? "roomImagePath" : "imagePath";
                     //question, answer이 아닌 경우(user(profile, room), alarm) 이미 객체가 있으니 객체의 imagePath 속성을 업데이트한다.
-                    BeanUtils.setProperty(entity, "imagePath", filePath);
+                    BeanUtils.setProperty(entity, name, filePath);
                     repository.flush();
                 } catch (IllegalAccessException | InvocationTargetException | NullPointerException e) {
                     throw new RuntimeException(e);

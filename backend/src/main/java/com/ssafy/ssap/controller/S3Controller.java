@@ -25,7 +25,6 @@ public class S3Controller {
     @PostMapping("/upload/{pattern}/{id}")
     public ResponseEntity<?> uploadByPattern(@PathVariable String pattern, @PathVariable Integer id, @RequestParam List<MultipartFile> file){
         logger.trace("upload Controller 호출. "+pattern+"/"+id+"/"+file+"/"+file.size());
-        System.out.println("upload Controller 호출. "+pattern+"/"+id+"/"+file+"/"+file.size());
         HttpStatus status;
         status = s3Service.uploadFile(pattern, file, id);
         return new ResponseEntity<>(status);
