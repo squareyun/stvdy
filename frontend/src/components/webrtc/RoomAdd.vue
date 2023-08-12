@@ -24,7 +24,7 @@
   
   // 방 이미지 관련 내용
   const backImgFile = ref(webrtcstore.backImgFile)
-  const imgPreviewUrl = ref(null)
+  const imgPreviewUrl = ref(webrtcstore.roomImagePath)  // 초기값으로 유저의 이미지를 가짐
 
   // 방 시간 관련 내용
   // const hours = ref([...Array(24).keys()].map(hour=> hour.toString()))

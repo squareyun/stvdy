@@ -110,9 +110,10 @@
     document.removeEventListener('keydown', preventRefresh)
     document.removeEventListener('keyup', preventRefresh)
     document.removeEventListener('keypress', preventRefresh)
-    webrtcstore.roomExit(roomId.value)  // 방나가면 방나갔음을 백엔드로 전송.
+    // webrtcstore.roomExit(roomId.value)  // 방나가면 방나갔음을 백엔드로 전송.
     isExitFalse()
   })
+
   const userInfo = ref(userstore.user)
   onMounted(() => {
     setTimeout(() => {
@@ -167,18 +168,6 @@
       }
     })
 
-    // session.value.on("streamDestroyed", ({ stream, reason }) => {
-    //   if (reason === "forceDisconnectByServer") {
-    //     console.log("Leaving Session (forced=true)");
-    //     leaveSession();
-    //   } else {
-    //     const index = subscribers.value.indexOf(stream.streamManager, 0)
-    //     if (index >= 0) {
-    //       subscribers.value.splice(index, 1)
-    //     }
-    //   }
-    // })
-
     // 새로 추가한 이벤트 리스너, 강제 종료되면 leaveSession()함.
     session.value.on("streamManagerRemoved", (event) => {
        if(event.forced) {
@@ -208,7 +197,7 @@
     // 채팅 이벤트 수신 처리 함. session.on이 addEventListenr 역할인듯.
     session.value.on('signal:chat', (event) => { // event.from.connectionId === session.value.connection.connectionId 이건 나와 보낸이가 같으면임
       const messageData = JSON.parse(event.data)
-      if(event.from.connectionId === session.value.connection.connectionId){
+      if(event.from.connectionId === session.value.connection.connectionId && messageData['username'][0] !== '시스템'){
         messageData['username'][0] = '나'     //messageData['username'][0] => userNickname
       }
       console.log(messageData['username'][1]) // messageData['username'][1] => userNO 즉, user의 id
@@ -290,6 +279,9 @@
     // const localRoomId = localStorage.getItem('roomId')
     // openNewWindow2(`이건 리브세션버튼 누른거` + '섭스크라이브'+ subscribersComputed.value.length+'방id'+localRoomId)
     // 메인페이지로 넘어감
+    webrtcstore.updateisJoined(false)
+    webrtcstore.updateisWelcome(false)
+    webrtcstore.roomExit(roomId.value)  // 방나가면 방나갔음을 백엔드로 전송.
     router.push({
       name:'maintmp',// 임시로 main으로 넘겨줌.
       // name:'main',
@@ -353,7 +345,7 @@
         console.log(roomNo, userNo, inputPassword)
         // const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/' + roomNo, {userNo: userNo, password: inputPassword}, {
         const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/' + roomNo, {userNo: userNo, password: inputPassword}, {
-        headers: { 'Content-Type': 'application/json', },
+        // headers: { 'Content-Type': 'application/json', },
         })
         /////////////////////////////////
         // 유저 누구누구 있는지 받아와야함.
@@ -362,12 +354,14 @@
         console.log('방에 참여 리스폰스데이터 잘 받음',response.data)
         console.log('방에 참여할때할때',userNo, mySessionId, endHour, endMinute, quota, isPrivacy, password, backImgFile, rule)
         webrtcstore.isMakingFalse()
+        webrtcstore.updateisJoined(true)
+        // webrtcstore.updateRoomId(roomNo)
         return response.data
       }
       catch(error){
         console.error('만들어진 방이없어서 발생한 에러:', error);
         webrtcstore.isMakingFalse()
-        webrtcstore.roomExit(roomId.value)  // 방나가면 방나갔음을 백엔드로 전송.
+        // webrtcstore.roomExit(roomId.value)  // 방나가면 방나갔음을 백엔드로 전송.
         // openNewWindow2('방에 참가하다 leaveSession함 방아이디는'+localStorage.getItem('roomId'))
         leaveSession()
       }
@@ -387,15 +381,13 @@
         // roomId가 변경되면 localstorage에 저장합니다.
         // localStorage.setItem('roomId', response.data.room.id)  // 로컬스토리지에 roomId를 저장시켰으니 shutDown시킬때
         sessionStorage.setItem('roomId', response.data.room.id)  // 로컬스토리지에 roomId를 저장시켰으니 shutDown시킬때
-        
-        const responseImagePath = webrtcstore.downloadImagefromServer(userNo)
-        console.log(responseImagePath)
         // try{
         //   webrtcstore.giveRole(roomId)
         // }
         // catch(error){
         //   console.log(error)
         // }
+        webrtcstore.updateisJoined(true)
         return response.data.token;
       }
       catch(error){

@@ -33,6 +33,8 @@ export const usewebRtcStore = defineStore({
     isMaking: false,
     inputPassword: null,
     roomUsers: [],
+    isJoined: false,
+    isWelcome: false,
     // 방 이탈 시 사용할 것
     isExitRoom: false,
 
@@ -50,11 +52,11 @@ export const usewebRtcStore = defineStore({
     router: useRouter(),
 
     /////////////////////////////////
-    imgformData: null,
+    imgformData: useUserStore().user.roomImagePath,  // 유저가 직접 선택한 스터디룸 이미지
 
     // 방관련 이미지. 임시이름
-    personalImage : useUserStore().user.imagePath,
-    personalRoomImage : useUserStore().user.imageRoomPath
+    profileImagePath : useUserStore().user.profileImagePath,
+    roomImagePath : useUserStore().user.roomImagePath,
 
   }),
   actions: {
@@ -80,6 +82,12 @@ export const usewebRtcStore = defineStore({
       console.log(this.myUserName)
       console.log(this.userNo)
       console.log(this.realname)
+    },
+    updateisJoined(newisJoined){
+      this.isJoined = newisJoined
+    },
+    updateisWelcome(newisWelcome){
+      this.isWelcome = newisWelcome
     },
     updateMyUserName(newUserName) {
       this.myUserName = newUserName
@@ -279,10 +287,11 @@ export const usewebRtcStore = defineStore({
     },
 
     async roomExit(roomId) {
-      console.log('함수 roomExit 들어옴', roomId)
+      console.log('함수 roomExit 들어옴', roomId, this.userNo)
       try {
         // participan~~ 는 방에 참여한 사람 번호,  userNo는 내 번호.
         // participantNo는 방에 독립적인 참여자 번호,
+        console.log('함수 roomExit try중')
         const response = await axios.post(
           this.APPLICATION_SERVER_URL + 'rooms/exit',
           { roomNo: roomId, userNo: this.userNo },

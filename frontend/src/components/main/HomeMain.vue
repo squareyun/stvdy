@@ -155,7 +155,6 @@ function joinTheRoom(room) {
 
 /// 방 입장 전 방 정보 모달 창 켜기
 function showRoomInfo(room) {
-  console.log('해당 방의 정보', room)
   isRoomInfo.value = true
   selectedRoom.value = room
   selectedRoomPw.value = room.password
@@ -196,6 +195,13 @@ function updateIsSeeInputPw(event) {
 //   }
 //   reader.readAsDataURL(backImgFile.value)
 // }
+
+//// 카드로 이미지 가져오는 방법
+function roomImage(hostId) {
+  
+}
+// {/* <img v-if="room.imgPreviewUrl" :src="room.imgPreviewUrl" alt="imgPreview" style="max-width: 100%; max-height: 100%" /> */}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -306,7 +312,7 @@ function goThisQuestion(question) {
                 height: 100%;
                 display: flex;
                 justify-content: center;
-                align-items: center;
+                align-items: center;s
               ">
               {{ room.title }}
             </div>
