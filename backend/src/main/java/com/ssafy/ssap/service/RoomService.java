@@ -41,21 +41,21 @@ public class RoomService {
     private final RoomUtil roomutil;
     private OpenVidu openVidu;
 
-    @SuppressWarnings("unused")
-    @Value("${openvidu.local.url}")
-    private String localUrl;
-
-    @SuppressWarnings("unused")
-    @Value("${openvidu.local.secret}")
-    private String localSecret;
-
-    @SuppressWarnings("unused")
-    @Value("${openvidu.server.url}")
-    private String serverUrl;
-
-    @SuppressWarnings("unused")
-    @Value("${openvidu.server.secret}")
-    private String serverSecret;
+//    @SuppressWarnings("unused")
+//    @Value("${openvidu.local.url}")
+//    private String localUrl;
+//
+//    @SuppressWarnings("unused")
+//    @Value("${openvidu.local.secret}")
+//    private String localSecret;
+//
+//    @SuppressWarnings("unused")
+//    @Value("${openvidu.server.url}")
+//    private String serverUrl;
+//
+//    @SuppressWarnings("unused")
+//    @Value("${openvidu.server.secret}")
+//    private String serverSecret;
 
 
     @PostConstruct
