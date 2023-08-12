@@ -226,10 +226,15 @@ public class RoomService {
     }
 
     public Map<String, Object> getRoom(String code) {
+        logger.debug("getRoom, code:"+code);
         Map<String, Object> resultMap = new HashMap<>();
         Room room = roomRepository.findByCode(code).orElse(null);
         if(room!=null){
-            resultMap.put("room",room);
+            RoomDto roomDto = new RoomDto(room);
+            Integer num = participantRepository.countByRoomIdAndIsOut(roomDto.getId(),false);
+            roomDto.setCurrentNumber(num);
+
+            resultMap.put("room",roomDto);
             resultMap.put("matched",true);
         }else{
             resultMap.put("matched",false);
@@ -392,6 +397,7 @@ public class RoomService {
                 .and(RoomSpecifications.isValid(true));
         Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by(Sort.Direction.DESC,"id"));
         Page<Room> roomList = roomRepository.findAll(specification, pageable);
+        @SuppressWarnings("Convert2MethodRef")
         Page<RoomDto> roomDtoList = roomList.map(room -> new RoomDto(room));
 
         resultMap.put("roomList",roomDtoList);
