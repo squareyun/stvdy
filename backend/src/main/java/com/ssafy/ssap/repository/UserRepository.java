@@ -20,4 +20,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
 	List<User> findByStateAndActivated(UserStateNs state, boolean activated);
 
+	@Deprecated
+	String findImagePathById(Integer id);
+
+
 }

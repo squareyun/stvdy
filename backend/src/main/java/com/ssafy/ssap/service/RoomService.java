@@ -14,6 +14,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,10 +41,27 @@ public class RoomService {
     private final RoomUtil roomutil;
     private OpenVidu openVidu;
 
+    @SuppressWarnings("unused")
+    @Value("${openvidu.local.url}")
+    private String localUrl;
+
+    @SuppressWarnings("unused")
+    @Value("${openvidu.local.secret}")
+    private String localSecret;
+
+    @SuppressWarnings("unused")
+    @Value("${openvidu.server.url}")
+    private String serverUrl;
+
+    @SuppressWarnings("unused")
+    @Value("${openvidu.server.secret}")
+    private String serverSecret;
+
+
     @PostConstruct
     public void roomServiceInitialize(){
-        String OPENVIDU_URL = "http://localhost:4443/";
-        String SECRET = "MY_SECRET";
+        String OPENVIDU_URL = "https://i9d205.p.ssafy.io:8442/";
+        String SECRET = "ssapssap";
         openVidu = new OpenVidu(OPENVIDU_URL,SECRET);
     }
 
