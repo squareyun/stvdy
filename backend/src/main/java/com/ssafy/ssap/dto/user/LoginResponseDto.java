@@ -21,7 +21,8 @@ public class LoginResponseDto {
 	private String email;
 	private String name;
 	private String nickname;
-	private String imagePath;
+	private String profileImagePath;
+	private String roomImagePath;
 
 	public static LoginResponseDto from(User user) {
 		if (user == null)
@@ -32,7 +33,8 @@ public class LoginResponseDto {
 			.email(user.getEmail())
 			.name(user.getName())
 			.nickname(user.getNickname())
-			.imagePath(user.getProfileImagePath())
+			.profileImagePath(user.getProfileImagePath())
+			.roomImagePath(user.getRoomImagePath())
 			.build();
 	}
 }
