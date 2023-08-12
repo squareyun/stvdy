@@ -51,7 +51,6 @@ function sendMessage() {
       // data: JSON.stringify({username: session.myUserName, message: inputMessage.value}), // 메시지 데이터를 문자열로 변환해서 전송
       // data: JSON.stringify({username: myUserName, message: inputMessage.value}), // 메시지 데이터를 문자열로 변환해서 전송
       // userNo는 받는 곳에서 못받음.
-      // data: JSON.stringify({username: myUserName, message: inputMessage.value, userNo:userNo.value}), // 메시지 데이터를 문자열로 변환해서 전송
       // data: JSON.stringify({username: myUserName, message: inputMessage.value + '!!!' + chatUserNo}), // 메시지 데이터를 문자열로 변환해서 전송
       data: JSON.stringify({username: [myUserName, chatUserNo], message: inputMessage.value}), // 메시지 데이터를 문자열로 변환해서 전송
       type: 'chat', // 신호 타입을 'chat'으로 설정

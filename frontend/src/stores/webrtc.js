@@ -7,8 +7,8 @@ import axios from 'axios'
 export const usewebRtcStore = defineStore({
   id: 'webrtc',
   state: () => ({
-    APPLICATION_SERVER_URL: 'http://localhost:8080/',
-    // APPLICATION_SERVER_URL: 'https://i9d205.p.ssafy.io/api/', // 배포된 서버
+    // APPLICATION_SERVER_URL: 'http://localhost:8080/',
+    APPLICATION_SERVER_URL: 'https://i9d205.p.ssafy.io/api/', // 배포된 서버
 
     userNo: useUserStore().user.id,
     userId: (Math.floor(Math.random() * (200 - 1 + 1)) + 1), // 테스트를 위해서 임시로...
@@ -132,25 +132,27 @@ export const usewebRtcStore = defineStore({
     },
 
     ////// 이미지를 등록하기 위한 함수 // 스터디룸 이미지가 유저에 종속되어있음.
-    uploadImagetoServer(userNo) {
+    async uploadImagetoServer(userNo) {
       // 서버에 이미지 파일 업로드하기
       try {
-        const response = axios.post(this.APPLICATION_SERVER_URL+'files/upload/room/'+userNo, this.imgformData, {
+        // const response = axios.post(this.APPLICATION_SERVER_URL+'files/upload/room/'+userNo, this.imgformData, {
+        const response = await axios.post('https://i9d205.p.ssafy.io/api/'+'files/upload/room/'+userNo, this.imgformData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
         console.log("이미지 업로드 성공: ", response.data);
       } catch (error) {
-        console.log("이미지 업로드 에러: ", error);
+        console.error("이미지 업로드 에러: ", error);
       }
     },
 
     // 이미지 경로 얻기
-    async downloadImagefromServer(userNo) {
+    downloadImagefromServer(userNo) {
       // 서버에서 이미지 경로 얻기
       try {
-        const response = await axios.get(this.APPLICATION_SERVER_URL+'files/get/room/'+userNo,{
+        // const response = await axios.get(this.APPLICATION_SERVER_URL+'files/get/room/'+userNo,{
+        const response = axios.get('https://i9d205.p.ssafy.io/api/'+'files/get/room/'+userNo,{
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -163,10 +165,11 @@ export const usewebRtcStore = defineStore({
 
 
     // 개인 프로필 이미지 경로 얻기
-    async downloadProfiefromServer(userNo) {
+    downloadProfiefromServer(userNo) {
       // 서버에서 이미지 경로 얻기
       try {
-        const response = await axios.get(this.APPLICATION_SERVER_URL+'files/get/room/'+userNo,{
+        // const response = await axios.get(this.APPLICATION_SERVER_URL+'/files/get/profile/'+userNo,{
+        const response = axios.get('https://i9d205.p.ssafy.io/api/'+'files/get/profile/'+userNo,{
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -243,6 +246,7 @@ export const usewebRtcStore = defineStore({
       this.roomId = room.id
       this.peopleNo = room.currentNumber
       console.log('조인더룸내부1', this.roomId)
+      alert(encodeURIComponent(room.title))
       this.router.push({
         name: 'roomJoin',
         params: {

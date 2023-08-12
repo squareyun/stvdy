@@ -31,11 +31,9 @@
 
   axios.defaults.headers.post["Content-Type"] = "application/json;charset=utf-8";
   // 추후 배포와 관련해서 이부분에 대해서 설정을 할 필요가 있게 될것.
-  // const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'https://i9d205.p.ssafy.io/api/';
+  const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'https://i9d205.p.ssafy.io/api/';
   // const APPLICATION_SERVER_URL = 'https://i9d205.p.ssafy.io/api/'
-  const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080/';
-  // const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://54.180.9.43:8080/';
-
+  // const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080/';
   // OpenVidu objects
   const OV = ref(undefined)
   const session = ref(undefined)
@@ -66,9 +64,9 @@
   const selectedCamera = ref("")  // 카메라 변경시 사용할 변수 
   const selectedAudio  = ref("")  // 오디오 변경시 사용할 변수
   ////다시그려내기 위해 computed 작성
-  const mainStreamManagerComputed = computed(() => mainStreamManager.value);
-  const publisherComputed = computed(() => publisher.value);
-  const subscribersComputed = computed(() => subscribers.value);
+  const mainStreamManagerComputed = computed(() => mainStreamManager.value)
+  const publisherComputed = computed(() => publisher.value)
+  const subscribersComputed = computed(() => subscribers.value)
   const participantNumber = computed(() => subscribersComputed.value.length+1) 
   // 방 이탈를 위한 변수들
   const isExitRoom = ref(webrtcstore.isExitRoom)  // leave
@@ -361,7 +359,7 @@
       catch(error){
         console.error('만들어진 방이없어서 발생한 에러:', error);
         webrtcstore.isMakingFalse()
-        // webrtcstore.roomExit(roomId.value)  // 방나가면 방나갔음을 백엔드로 전송.
+        webrtcstore.roomExit(roomId.value)  // 방나가면 방나갔음을 백엔드로 전송.
         // openNewWindow2('방에 참가하다 leaveSession함 방아이디는'+localStorage.getItem('roomId'))
         leaveSession()
       }
