@@ -32,7 +32,7 @@ public class LoginResponseDto {
 			.email(user.getEmail())
 			.name(user.getName())
 			.nickname(user.getNickname())
-			.imagePath(user.getImagePath())
+			.imagePath(user.getProfileImagePath())
 			.build();
 	}
 }
