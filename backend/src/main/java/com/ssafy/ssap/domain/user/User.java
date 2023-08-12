@@ -76,8 +76,11 @@ public class User {
 	@Column(name = "activated")
 	private boolean activated;
 
-	@Column(name = "image_path")
-	private String imagePath;
+	@Column(name = "profile_image_path")
+	private String profileImagePath;
+
+	@Column(name = "room_image_path")
+	private String roomImagePath;
 
 	@ManyToMany
 	@JoinTable(
