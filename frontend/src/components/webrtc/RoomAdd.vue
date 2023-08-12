@@ -5,8 +5,8 @@
   import { useUserStore } from "@/stores"
   import axios from 'axios' 
   // import { storeToRefs } from "pinia";
-  const APPLICATION_SERVER_URL = 'https://i9d205.p.ssafy.io/api/'
-  // const APPLICATION_SERVER_URL = 'http://localhost:8080/'
+  // const APPLICATION_SERVER_URL = 'https://i9d205.p.ssafy.io/api/'
+  const APPLICATION_SERVER_URL = 'http://localhost:8080/'
   const usersStore = useUserStore()
   const localUser = usersStore.user
   console.log(localUser)
@@ -241,9 +241,9 @@
     reader.readAsDataURL(backImgFile.value)
     uploadImagetoServer()
     setTimeout(() => {
-      // webrtcstore.downloadImagefromServer(userNo.value)
-      webrtcstore.downloadImagefromServer(1)
-      }, 1000);  
+      webrtcstore.downloadImagefromServer(userNo.value)
+      // webrtcstore.downloadImagefromServer(1)
+      }, 3000);  
   }
   
   const rule = ref(webrtcstore.rule)
@@ -264,8 +264,8 @@
       webrtcstore.updateUploadImage(imgformData)      // webstore의 imgformData 변동
       console.log('업로드 되나3')
       console.log(userNo.value)
-      // webrtcstore.uploadImagetoServer(userNo.value)   // 서버에 이미지 업로드하기
-      webrtcstore.uploadImagetoServer(1)   // 서버에 이미지 업로드하기
+      webrtcstore.uploadImagetoServer(userNo.value)   // 서버에 이미지 업로드하기
+      // webrtcstore.uploadImagetoServer(1)   // 서버에 이미지 업로드하기
       console.log('업로드 되나4')
     }
     catch(error){

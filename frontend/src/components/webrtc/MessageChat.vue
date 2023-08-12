@@ -3,7 +3,8 @@
     <div id="chatWindow">
       <ul id="chatHistory">
         <li v-for="(message, index) in messages" :key="index">
-          <strong> 다음은 ID {{ message.username[1] }} {{ message.username[0] }}:</strong> {{ message.message }}
+            <img :src="imagePath" :alt="message.username[1] + '의 프로필'">
+            <strong>{{ message.username[0] }}:</strong> {{ message.message }}
         </li>
       </ul>
     </div>

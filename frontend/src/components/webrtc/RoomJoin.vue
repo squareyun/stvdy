@@ -31,9 +31,9 @@
 
   axios.defaults.headers.post["Content-Type"] = "application/json;charset=utf-8";
   // 추후 배포와 관련해서 이부분에 대해서 설정을 할 필요가 있게 될것.
-  const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'https://i9d205.p.ssafy.io/api/';
+  // const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'https://i9d205.p.ssafy.io/api/';
   // const APPLICATION_SERVER_URL = 'https://i9d205.p.ssafy.io/api/'
-  // const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080/';
+  const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080/';
   // OpenVidu objects
   const OV = ref(undefined)
   const session = ref(undefined)
@@ -95,7 +95,8 @@
       console.log('나감으로 방폐쇄1')
       if(!subscribersComputed.value.length){  // 다른 참여자가 없으면 실행
         console.log(`제발좀 되라${subscribersComputed.value.length}`)
-        const localRoomId = localStorage.getItem('roomId')
+        // const localRoomId = localStorage.getItem('roomId')
+        const localRoomId = sessionStorage.getItem('roomId')
         webrtcstore.shutDownRoom(localRoomId)
         // roomId.value = null                //방 폐쇄하고 브라우저의 roomId도 null값으로 만듬
         console.log('나감으로 방폐쇄2')
@@ -132,7 +133,8 @@
       console.log('정원이 가득차서 입장할 수 없습니다. 메인 페이지로 돌아갑니다.')
       isExitRoom.value = true
       webrtcstore.isExitTrue()
-      leaveSession()
+      escapePage()
+      // leaveSession()
       return
     }
   }
@@ -153,6 +155,7 @@
     session.value.on("streamCreated", ( {stream} )=> {
       const subscriber = session.value.subscribe(stream)
       subscribers.value.push(subscriber)
+      console.log('와우')
     })
 
     // 모든 스트림 파괴...
@@ -218,7 +221,8 @@
       roomId.value = webrtcstore.roomId
       if(roomId.value !== undefined && roomId.value !== null){
         // roomId가 변경되면 localstorage에 저장합니다.
-        localStorage.setItem('roomId', roomId.value)  // 로컬스토리지에 roomId를 저장시켰으니 shutDown시킬때
+        // localStorage.setItem('roomId', roomId.value)  // 로컬스토리지에 roomId를 저장시켰으니 shutDown시킬때
+        sessionStorage.setItem('roomId', roomId.value)  // 로컬스토리지에 roomId를 저장시켰으니 shutDown시킬때
       }      
       session.value.connect(token, {clientData: myUserName.value})
       .then(() => {
@@ -240,7 +244,8 @@
           session.value.publish(publisher.value)
           getMedia()  // 세션이 만들어졌을때 미디어 불러옴
           console.log('방생성 완료!!!')
-          webrtcstore.shareRoomAddress(localStorage.getItem('roomId'))  // 방 공유관련 정보 받음
+          // webrtcstore.shareRoomAddress(localStorage.getItem('roomId'))  // 방 공유관련 정보 받음
+          webrtcstore.shareRoomAddress(sessionStorage.getItem('roomId'))  // 방 공유관련 정보 받음
         })
         .catch((error) => {
           console.log("session 커넥팅에 문제생김(createToken):", error.code, error.message);
@@ -259,7 +264,8 @@
     console.log('핸들 나감으로 방폐쇄1')
     if(subscribersComputed.value.length == 0){  // 다른사람이 없으면 실행
       // webrtcstore.shutDownRoom(roomId.value)
-      const localRoomId = localStorage.getItem('roomId')
+      // const localRoomId = localStorage.getItem('roomId')
+      const localRoomId = sessionStorage.getItem('roomId')
       webrtcstore.shutDownRoom(localRoomId)
       console.log('핸들 나감으로 방폐쇄2')
     }
@@ -288,10 +294,12 @@
       name:'maintmp',// 임시로 main으로 넘겨줌.
       // name:'main',
     })
+    sessionStorage.removeItem('roomId')
   }
   function escapePage() {
     console.log('escapePage() 함수 호출됨')
-    const localRoomId = localStorage.getItem('roomId')
+    // const localRoomId = localStorage.getItem('roomId')
+    const localRoomId = sessionStorage.getItem('roomId')
     // openNewWindow2(`이스케이프페이지 탐 ${subscribersComputed.value.length}`)
     if (!isFull && !subscribersComputed.value.length){ // 다른 참여자가 없으면서 정원이 차서 나가는게 아닐떄만
       shutDownRoom(localRoomId)
@@ -377,7 +385,8 @@
         webrtcstore.isMakingFalse()
         console.log('방만들때 roomId 로컬에 저장!!!!!',  response.data.room.id)
         // roomId가 변경되면 localstorage에 저장합니다.
-        localStorage.setItem('roomId', response.data.room.id)  // 로컬스토리지에 roomId를 저장시켰으니 shutDown시킬때
+        // localStorage.setItem('roomId', response.data.room.id)  // 로컬스토리지에 roomId를 저장시켰으니 shutDown시킬때
+        sessionStorage.setItem('roomId', response.data.room.id)  // 로컬스토리지에 roomId를 저장시켰으니 shutDown시킬때
         
         const responseImagePath = webrtcstore.downloadImagefromServer(userNo)
         console.log(responseImagePath)
