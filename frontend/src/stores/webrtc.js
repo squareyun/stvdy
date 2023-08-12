@@ -50,7 +50,11 @@ export const usewebRtcStore = defineStore({
     router: useRouter(),
 
     /////////////////////////////////
-    imgformData: null
+    imgformData: null,
+
+    // 방관련 이미지. 임시이름
+    personalImage : useUserStore().user.imagePath,
+    personalRoomImage : useUserStore().user.imageRoomPath
 
   }),
   actions: {
@@ -135,12 +139,14 @@ export const usewebRtcStore = defineStore({
     async uploadImagetoServer(userNo) {
       // 서버에 이미지 파일 업로드하기
       try {
+        console.log('문제있나?')
         // const response = axios.post(this.APPLICATION_SERVER_URL+'files/upload/room/'+userNo, this.imgformData, {
         const response = await axios.post('https://i9d205.p.ssafy.io/api/'+'files/upload/room/'+userNo, this.imgformData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
+        console.log('문제없음.')
         console.log("이미지 업로드 성공: ", response.data);
       } catch (error) {
         console.error("이미지 업로드 에러: ", error);
@@ -148,35 +154,35 @@ export const usewebRtcStore = defineStore({
     },
 
     // 이미지 경로 얻기
-    downloadImagefromServer(userNo) {
+    async downloadImagefromServer(userNo) {
       // 서버에서 이미지 경로 얻기
       try {
         // const response = await axios.get(this.APPLICATION_SERVER_URL+'files/get/room/'+userNo,{
-        const response = axios.get('https://i9d205.p.ssafy.io/api/'+'files/get/room/'+userNo,{
+        const response = await axios.get('https://i9d205.p.ssafy.io/api/'+'files/get/room/'+userNo,{
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
         console.log("이미지 경로 다운로드 성공: ", response.data);
       } catch (error) {
-        console.log("이미지 경로 다운로드 에러: ", error);
+        console.error("이미지 경로 다운로드 에러: ", error);
       }
     },
 
 
     // 개인 프로필 이미지 경로 얻기
-    downloadProfiefromServer(userNo) {
+    async downloadProfiefromServer(userNo) {
       // 서버에서 이미지 경로 얻기
       try {
         // const response = await axios.get(this.APPLICATION_SERVER_URL+'/files/get/profile/'+userNo,{
-        const response = axios.get('https://i9d205.p.ssafy.io/api/'+'files/get/profile/'+userNo,{
+        const response = await axios.get('https://i9d205.p.ssafy.io/api/'+'files/get/profile/'+userNo,{
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
         console.log("이미지 경로 다운로드 성공: ", response.data);
       } catch (error) {
-        console.log("이미지 경로 다운로드 에러: ", error);
+        console.error("이미지 경로 다운로드 에러: ", error);
       }
     },
 
@@ -212,9 +218,9 @@ export const usewebRtcStore = defineStore({
       }
     },
     
-    getsearchRooms(pageNo=0, keyword='', size=20){
+    async getsearchRooms(pageNo=0, keyword='', size=20){
       try{
-        const response = axios.get(this.APPLICATION_SERVER_URL+`rooms/list?page=${pageNo}&keyword=${keyword}&size=${size}`)
+        const response = await axios.get(this.APPLICATION_SERVER_URL+`rooms/list?page=${pageNo}&keyword=${keyword}&size=${size}`)
         this.roomList = response.data.roomList
         console.log(this.roomList)
       }

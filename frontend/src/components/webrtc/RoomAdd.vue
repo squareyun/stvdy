@@ -259,7 +259,7 @@
       console.log('업로드 되나1')
       const imgformData = new FormData();
       imgformData.append("file", backImgFile.value);
-      console.log('업로드 되는되나2')
+      console.log('업로드 되는되나2',imgformData.get("file"))
       console.log(imgformData)
       webrtcstore.updateUploadImage(imgformData)      // webstore의 imgformData 변동
       console.log('업로드 되나3')
