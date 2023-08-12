@@ -7,8 +7,8 @@ import axios from 'axios'
 export const usewebRtcStore = defineStore({
   id: 'webrtc',
   state: () => ({
-    // APPLICATION_SERVER_URL: 'http://localhost:8080/',
-    APPLICATION_SERVER_URL: 'https://i9d205.p.ssafy.io/api/', // 배포된 서버
+    APPLICATION_SERVER_URL: 'http://localhost:8080/',
+    // APPLICATION_SERVER_URL: 'https://i9d205.p.ssafy.io/api/', // 배포된 서버
 
     userNo: useUserStore().user.id,
     userId: (Math.floor(Math.random() * (200 - 1 + 1)) + 1), // 테스트를 위해서 임시로...
@@ -141,7 +141,7 @@ export const usewebRtcStore = defineStore({
       try {
         console.log('문제있나?')
         // const response = axios.post(this.APPLICATION_SERVER_URL+'files/upload/room/'+userNo, this.imgformData, {
-        const response = await axios.post('https://i9d205.p.ssafy.io/api/'+'files/upload/room/'+userNo, this.imgformData, {
+        const response = await axios.post('https://i9d205.p.ssafy.io/api/'+'files/upload/room/'+userNo, {file: this.imgformData}, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -252,7 +252,7 @@ export const usewebRtcStore = defineStore({
       this.roomId = room.id
       this.peopleNo = room.currentNumber
       console.log('조인더룸내부1', this.roomId)
-      alert(encodeURIComponent(room.title))
+      // alert(encodeURIComponent(room.title))
       this.router.push({
         name: 'roomJoin',
         params: {
