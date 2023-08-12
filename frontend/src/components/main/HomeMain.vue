@@ -58,7 +58,7 @@ onBeforeMount(async () => {
 
   onMounted(async () => {
     // localStorage.removeItem('roomId')
-    await tmpGoRoom() // css 동안 임시 작동.
+    // await tmpGoRoom() // css 동안 임시 작동.
   })
 
 watch(
