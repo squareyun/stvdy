@@ -65,6 +65,7 @@ public class RoomService {
         openVidu = new OpenVidu(OPENVIDU_URL,SECRET);
     }
 
+    @Transactional
     public Map<String, Object> makeSession(RoomCreateDto roomCreateDto) throws OpenViduJavaClientException, OpenViduHttpException {
         //session 생성, connection 생성, 토큰 생성
         Map<String, Object> resultMap = new HashMap<>();
@@ -141,6 +142,7 @@ public class RoomService {
         return room.getSessionId();
     }
 
+    @Transactional
     public void addParticipant(Room room, String role, Integer userNo, String connectionId){
         // 참여자 추가 (방장)
         Participant participant = Participant.builder()
@@ -154,7 +156,9 @@ public class RoomService {
         logger.debug("addParticipant 최종 메소드 종료 : "+participant.getId());
     }
 
+    @Transactional
     public void addParticipant(Integer roomNo, String role, Integer userNo, String connectionId) {
+        logger.debug("addParticipant 부 함수 진입"+roomNo+"/"+role+"/"+userNo+"/"+connectionId);
         Room room = roomRepository.findById(roomNo).orElse(null);
         try{
             addParticipant(room, role, userNo, connectionId);
@@ -413,17 +417,25 @@ public class RoomService {
     @Transactional
     public String joinRoom(Integer roomNo, String password, Integer userNo) throws OpenViduJavaClientException, OpenViduHttpException {
         String sessionId;
-        Connection connection;
-        if(checkValid(roomNo, password)){ //1번 단계
+        Connection connection=null;
+        if(checkValid(roomNo, password)){
             //OPENVIDU > session 접속을 위한 token 생성
-            sessionId = getSessionIdByRoomNo(roomNo); //2번 단계
-            connection = createConnection(sessionId,OpenViduRole.PUBLISHER); //3번 단계
-            logger.debug("토큰처리 수행 완료 : "+connection+" / "+connection.getConnectionId());
+            try {
+                sessionId = getSessionIdByRoomNo(roomNo);
+                connection = createConnection(sessionId, OpenViduRole.PUBLISHER);
+                logger.debug("토큰처리 수행 완료 : " + connection + " / " + connection.getConnectionId());
+            }catch (OpenViduException e){
+                logger.error("joinRoom 오픈비두 관련 에러"+e);
+            }
             //DB처리
-            addParticipant(roomNo,"참여자", userNo, connection.getConnectionId()); //4번
-            logger.debug("JoinRoom - addParticipant 종료");
-            addRoomLog(roomNo,userNo); //5번
-            logger.debug("JoinRoom - addRoomLog 종료");
+            try {
+                addParticipant(roomNo, "참여자", userNo, connection.getConnectionId()); //4번
+                logger.debug("JoinRoom - addParticipant 종료");
+                addRoomLog(roomNo, userNo); //5번
+                logger.debug("JoinRoom - addRoomLog 종료");
+            }catch(Exception e){
+                logger.error("DB처리 중 에러 발생"+e);
+            }
         } else{
             logger.debug("방 접근이 유효하지 않음.");
             return null;
