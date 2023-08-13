@@ -73,7 +73,7 @@ axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8'
 // const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'https://i9d205.p.ssafy.io/api/';
 // const APPLICATION_SERVER_URL = 'https://i9d205.p.ssafy.io/api/'
 const APPLICATION_SERVER_URL =
-  process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080/'
+  process.env.NODE_ENV === 'production' ? '' : '/api'
 // const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://54.180.9.43:8080/';
 
 // OpenVidu objects
@@ -751,7 +751,12 @@ async function handleForceDisconnect(subscriber) {
 
 <template>
   <div id="session-top">
-    <h1 id="session-title">{{ mySessionId }}</h1>
+    <!-- <span
+      v-if="isHost"
+      @click="handleShutDownRoom(roomId)">
+      방 폐쇄하기
+    </span> -->
+    <span id="session-title">{{ mySessionId }}</span>
   </div>
   <div
     id="session"
@@ -778,11 +783,6 @@ async function handleForceDisconnect(subscriber) {
       <!-- 캠 및 오디오 관련 -->
 
       <!-- 방 종료 버튼 -->
-      <div
-        id=""
-        v-if="isHost">
-        <button @click="handleShutDownRoom(roomId)">방 폐쇄하기</button>
-      </div>
     </div>
   </div>
   <!--  -->
@@ -793,22 +793,7 @@ async function handleForceDisconnect(subscriber) {
     <div id="function-tabs">
       <ul
         id="function-ui"
-        style="display: flex"
-        v-if="isHost">
-        <li
-          v-for="(tab, index) in funcTabsHost"
-          :key="index"
-          id="tab{{index}}"
-          class="function-tab"
-          :class="{ active: activeFuncTab === index }"
-          @click="changeTab(index)">
-          {{ tab }}
-        </li>
-      </ul>
-      <ul
-        id="function-ui"
-        style="display: flex"
-        v-else>
+        style="display: flex">
         <li
           :key="0"
           class="function-tab"
@@ -1182,7 +1167,7 @@ async function handleForceDisconnect(subscriber) {
 <style scoped>
 #session-top {
   position: fixed;
-  top: 9px;
+  top: 12px;
   right: 20px;
 
   z-index: 2;
@@ -1190,10 +1175,13 @@ async function handleForceDisconnect(subscriber) {
   color: var(--hl-light80);
   font-family: 'ASDGothicM';
   font-size: 1rem;
+
+  vertical-align: middle;
 }
 
 #session-title {
-  margin: 0px;
+  font-family: 'ASDGothicH';
+  font-size: 1.6rem;
 }
 #session {
   position: fixed;
