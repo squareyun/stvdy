@@ -4,7 +4,7 @@ import { useUserStore } from '@/stores' // 프로필이미지 등록을 위해�
 import { computed } from 'vue'
 import router from '@/router'
 
-const userstore = useUserStore() // 프로필 이미지 등록을 위해 userstore사용
+const userStore = useUserStore() // 프로필 이미지 등록을 위해 userStore사용
 
 const alarmStore = useAlarmStore()
 const alarms = computed(() => alarmStore.alarms)
@@ -16,6 +16,10 @@ const openAlarms = () => {
   if (alarmList.className == 'closed') alarmList.className = 'opened'
   else alarmList.className = 'closed'
 }
+
+const profileImagePath = computed(() => {
+  return userStore.user.profileImagePath?userStore.user.profileImagePath:'/testProfile.png'
+})
 
 async function showDetail(url) {
   router.push(url)
@@ -52,6 +56,7 @@ async function moreAlarms() {
       </button>
     </form>
     <div
+      :style="`background-image: url(${profileImagePath})`"
       @click="openAlarms"
       id="alarms-btn"></div>
 
@@ -189,8 +194,7 @@ async function moreAlarms() {
   width: 82px;
   height: 41px;
 
-  /* background-image: url(userstore.user.profileImagePath);  유저가 가진 프로필 user.profileImagePath로 받은 경로만 넣어둠. */
-  background-image: url('/testProfile.png');
+  /* background-image: url('/testProfile.png'); */
   background-size: cover;
   background-position: center;
   cursor: pointer;

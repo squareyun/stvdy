@@ -18,8 +18,17 @@
   let nameWant = ''
   nameWant = user.value.username
 
-  let studyImageUrl = '/testBackground.png' // 스터디룸 이미지.
+  let studyImageUrl = userStore.user.roomImagePath // 스터디룸 이미지.
+  let tmpStudyImagePath = '/testBackground.png'   
+  let studyImagePath = computed(()=>{
+    return studyImageUrl?studyImageUrl: tmpStudyImagePath
+  })
 
+  let profileImageUrl = userStore.user.profileImagePath
+  let tmpProfileImagePath = '/testProfile.png'           // 세션이나 로컬에 따로 저장해버리면 되지않을까?
+  const profileImagePath = computed(() => {
+    return profileImageUrl?profileImageUrl: tmpProfileImagePath
+  })
   const changeUserName = async (name) => {
     const data = {
       nickname: name,
@@ -47,37 +56,37 @@
 
   function updateStudyImage(e) {
     e.preventDefault()
-    // 동적으로 file input 요소 생성
     const input = document.createElement("input")
     input.type = "file"
     input.accept = "image/*"
 
-    // 파일 선택 시 처리할 이벤트 리스너 추가
     input.addEventListener("change", async (event) => {
       const selectedFile = event.target.files[0]
-      // 여기에 파일 처리 코드를 작성하세요
       console.log(selectedFile)
+      
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        const imgPreviewUrl = event.target.result
+        console.log('이게 미리보기 url',imgPreviewUrl)
+        tmpStudyImagePath = imgPreviewUrl; 
+      }
       
       const imgformData = new FormData()
       imgformData.append("file", selectedFile)
       imagePath.uploadStudyImagetoServer(userStore.user.id, imgformData) // 업로드된 이미지를 서버로 전송
-      studyImageUrl = await imagePath.downloadStudyImagefromServer(userStore.user.id)
+      // studyImageUrl = await imagePath.downloadStudyImagefromServer(userStore.user.id)
     });
-    // 파일 선택 창 열기
     input.click();
   }
   
   function updateProfileImage(e) {
     e.preventDefault()
-    // 동적으로 file input 요소 생성
     const input = document.createElement("input")
     input.type = "file"
     input.accept = "image/*"
 
-    // 파일 선택 시 처리할 이벤트 리스너 추가
     input.addEventListener("change", async (event) => {
       const selectedFile = event.target.files[0]
-      // 여기에 파일 처리 코드를 작성하세요
       console.log(selectedFile)
       
       const imgformData = new FormData()
@@ -85,7 +94,6 @@
       imagePath.uploadProfileImagetoServer(userStore.user.id, imgformData) // 업로드된 이미지를 서버로 전송
       // studyImageUrl = await downloadProfileImagefromServer(userStore.user.id)
     });
-    // 파일 선택 창 열기
     input.click();
   }
 
@@ -95,8 +103,10 @@
   <div>
     <span class="mypage-content-title">프로필</span>
     <div class="mypage-content">
-      <div id="user-background-img"></div>
-      <div id="user-profile-img"></div>
+      <div id="user-background-img"
+        :style="`background-image: url(${studyImagePath})`"></div>
+      <div id="user-profile-img" 
+        :style="`background-image: url(${profileImagePath})`"></div>
       <h1 id="user-name">{{ user.username }}#{{ user.id }}</h1>
       <div id="user-edit">
         <Form
@@ -176,7 +186,7 @@
   border-radius: 50px;
 
   /* background-image: url(userstore.user.profileImagePath); 유저 프로필 이미지를 사용 */
-  background-image: url('/testProfile.png');
+  /* background-image: url('/testProfile.png'); */
   background-size: cover;
   background-position: center;
 
