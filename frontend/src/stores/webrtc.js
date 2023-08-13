@@ -1,16 +1,22 @@
 import { defineStore } from 'pinia'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores'
+import { useUserStore } from "@/stores"
+
 import axios from 'axios'
 
 export const usewebRtcStore = defineStore({
   id: 'webrtc',
   state: () => ({
     APPLICATION_SERVER_URL: 'http://localhost:8080/',
+    // APPLICATION_SERVER_URL: 'https://i9d205.p.ssafy.io/api/', // 배포된 서버
 
     userNo: useUserStore().user.id,
-    mySessionId: '되라' + (Math.floor(Math.random() * (200 - 1 + 1)) + 1),
-    myUserName: useUserStore().user.username,
+    userId: (Math.floor(Math.random() * (200 - 1 + 1)) + 1), // 테스트를 위해서 임시로...
+
+    mySessionId: 'SSAP STVDY'+ (Math.floor(Math.random() * (200 - 1 + 1)) + 1),
+    // myUserName : useUserStore().user.username,
+    myUserName : '테스트 유저'+ (Math.floor(Math.random() * (200 - 1 + 1)) + 1),
+
     endHour: 0,
     endMinute: 0,
     quota: 16,
@@ -31,6 +37,7 @@ export const usewebRtcStore = defineStore({
     isExitRoom: false,
 
     realname: useUserStore().user.realname,
+    tmp : useUserStore().user,
     // realname: '홍길동'+ Math.floor(Math.random() * (200 - 1 + 1)) + 1,
 
     //////////////////////////
@@ -41,6 +48,10 @@ export const usewebRtcStore = defineStore({
     peopleNo: 0, // 우선 peopleNo은 0으로 둠. 방 탈퇴 및 방 정보에 사용할 예정임
 
     router: useRouter(),
+
+    /////////////////////////////////
+    imgformData: null
+
   }),
   actions: {
     isMakingTrue() {
@@ -115,6 +126,57 @@ export const usewebRtcStore = defineStore({
       this.password = newPwInput
       console.log(this.password)
     },
+    // 이미지 등록할 이미지 업데이트하는 함수
+    updateUploadImage(newimgFormData){
+      this.imgformData = newimgFormData
+    },
+
+    ////// 이미지를 등록하기 위한 함수 // 스터디룸 이미지가 유저에 종속되어있음.
+    uploadImagetoServer(userNo) {
+      // 서버에 이미지 파일 업로드하기
+      try {
+        const response = axios.post(this.APPLICATION_SERVER_URL+'files/upload/room/'+userNo, this.imgformData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        console.log("이미지 업로드 성공: ", response.data);
+      } catch (error) {
+        console.log("이미지 업로드 에러: ", error);
+      }
+    },
+
+    // 이미지 경로 얻기
+    async downloadImagefromServer(userNo) {
+      // 서버에서 이미지 경로 얻기
+      try {
+        const response = await axios.get(this.APPLICATION_SERVER_URL+'files/get/room/'+userNo,{
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        console.log("이미지 경로 다운로드 성공: ", response.data);
+      } catch (error) {
+        console.log("이미지 경로 다운로드 에러: ", error);
+      }
+    },
+
+
+    // 개인 프로필 이미지 경로 얻기
+    async downloadProfiefromServer(userNo) {
+      // 서버에서 이미지 경로 얻기
+      try {
+        const response = await axios.get(this.APPLICATION_SERVER_URL+'files/get/room/'+userNo,{
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        console.log("이미지 경로 다운로드 성공: ", response.data);
+      } catch (error) {
+        console.log("이미지 경로 다운로드 에러: ", error);
+      }
+    },
+
     ////////닉네임 받기 위한 getmySessionId
     getmySessionId(context) {
       axios({
@@ -136,19 +198,25 @@ export const usewebRtcStore = defineStore({
     // 메인 페이지에서 사용되는 방 리스트 목록
     // 방들 찾아옴.
     async getRtcRooms() {
-      try {
-        // const response = axios.get('http://54.180.9.43:8080/rooms/list/')
-        console.log('getRtcRooms내부1')
-        const response = await axios.get(
-          this.APPLICATION_SERVER_URL + 'rooms/list',
-        )
-        console.log('getRtcRooms내부2')
+      try{
+        // const response = await axios.get(this.APPLICATION_SERVER_URL+'rooms/list')
+        const response = await axios.get(this.APPLICATION_SERVER_URL+'rooms/wholeList')
         this.roomList = response.data.roomList
         console.log(this.roomList)
-        console.log('getRtcRooms내부3')
-      } catch (error) {
-        console.log('getRtcRooms내부 오류')
-        console.error('방 리스트 받아오는 오류 발생: ', error)
+      }
+      catch(error){
+        console.error('getRtcRooms함수 오류: ', error)
+      }
+    },
+    
+    getsearchRooms(pageNo=0, keyword='', size=20){
+      try{
+        const response = axios.get(this.APPLICATION_SERVER_URL+`rooms/list?page=${pageNo}&keyword=${keyword}&size=${size}`)
+        this.roomList = response.data.roomList
+        console.log(this.roomList)
+      }
+      catch(error){
+        console.error('getsearchRooms함수 오류: ', error)
       }
     },
 
@@ -254,52 +322,35 @@ export const usewebRtcStore = defineStore({
     },
 
     // 강제퇴장 시키기
-    async checkCurrentConnection(roomId) {
-      console.log('현재 커넥션 확인할 방 번호', roomId)
-      try {
-        const response = await axios.get(
-          this.APPLICATION_SERVER_URL + `rooms/kick`,
-          { roomNo: this.roomId, userNo: userNo, reason: reason },
-        )
-        console.log('현재 커넥션', response.data)
-      } catch (error) {
-        console.error(
-          'checkCurrentConnection에 문제가 생겼습니다.',
-          error.code,
-          error.message,
-        )
+    async kickUser(roomId, userNo, reason){
+      console.log('현재 커넥션 확인할 방 번호',roomId)
+      try{
+        const response = await axios.get(this.APPLICATION_SERVER_URL+`rooms/kick`,{roomNo: this.roomId, userNo: userNo, reason: reason})
+        console.log('현재 커넥션',response.data)
+      }
+      catch(error){
+        console.error('kickUser에 문제가 생겼습니다.', error.code, error.message);
       }
     },
     //이건 post 방만들때
     async shareRoomAddress(roomId) {
       console.log('방 공유 함수 들어옴')
-      try {
-        const response = await axios.post(
-          'http://localhost:8080/' + 'rooms/code/' + roomId,
-        )
-        console.log('방 공유 백엔드 연결완료', response.data)
-      } catch (error) {
-        console.error(
-          '방 공유 함수에 문제가 생겼습니다.',
-          error.code,
-          error.message,
-        )
+      try{
+        const response = await axios.post(this.APPLICATION_SERVER_URL+'rooms/code/'+roomId)
+        console.log('방 공유 백엔드 연결완료',response.data)
+      }
+      catch(error){
+        console.error('방 공유 함수에 문제가 생겼습니다.', error.code, error.message);
       }
     },
     //이건 get 룸정보 얻는 코드임
     async shareRoomAddress2(roomId) {
       console.log('방 공유 함수 들어옴')
       try {
-        const response = await axios.post(
-          'http://localhost:8080/' + 'rooms/code/' + roomId,
-        )
-        console.log('방 공유 백엔드 연결완료1', response.data)
+        const response = await axios.post(this.APPLICATION_SERVER_URL+'rooms/code/'+roomId)
+        console.log('방 공유 백엔드 연결완료1',response.data)
       } catch (error) {
-        console.error(
-          '방 공유 함수에 문제가 생겼습니다.',
-          error.code,
-          error.message,
-        )
+        console.error('방 공유 함수에 문제가 생겼습니다.', error.code, error.message)
       }
     },
   },

@@ -21,7 +21,7 @@ public class RoomLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "room_title", length = 45)
+    @Column(name = "room_title", length = 30)
     private String roomTitle;
 
     @Column(name = "enter_time", columnDefinition = "timestamp")

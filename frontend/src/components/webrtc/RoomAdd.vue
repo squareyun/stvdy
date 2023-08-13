@@ -5,7 +5,8 @@
   import { useUserStore } from "@/stores"
   import axios from 'axios' 
   // import { storeToRefs } from "pinia";
-
+  // const APPLICATION_SERVER_URL = 'https://i9d205.p.ssafy.io/api/'
+  const APPLICATION_SERVER_URL = 'http://localhost:8080/'
   const usersStore = useUserStore()
   const localUser = usersStore.user
   console.log(localUser)
@@ -14,6 +15,7 @@
   const webrtcstore = usewebRtcStore()
   const userstore = useUserStore()
   const router = useRouter()
+  const userNo = ref(webrtcstore.userNo)
   
   // 방 생성에 사용할 변수들 
   const myUserName = ref(webrtcstore.myUserName)
@@ -45,8 +47,16 @@
 
   onMounted(() => {
     // creatorIsHost()
-    // localStorage.removeItem('roomId')
+    joinImmediately() // css 동안 임시로 해둠.
   })
+  
+  // css 동안 임시로 해둠. 
+  function joinImmediately() {
+    setTimeout(() => {
+      joinSession()
+    }, 1000);
+  }
+
 
   //tiemSet이 flase면 종료시간 초기화.
   watch(timeSet, (newtimeSet) => {
@@ -57,9 +67,9 @@
       endMinute.value = 0;
     }
     else{
-      webrtcstore.updateEndHour(0);
+      webrtcstore.updateEndHour(0)
       endHour.value = 0;
-      webrtcstore.updateEndMinute(0);
+      webrtcstore.updateEndMinute(1);
       endMinute.value = 1;
     }
   })
@@ -149,8 +159,13 @@
 
   function joinSession() {
 
-    if(!webrtcstore.myUserName || !webrtcstore.mySessionId){
-      alert("이름과 방제목을 작성해주세요.")
+    // if(!webrtcstore.myUserName || !webrtcstore.mySessionId){
+    if(!webrtcstore.myUserName){
+      alert("이름을 작성해주세요.")
+      return
+    }
+    if(!webrtcstore.mySessionId){
+      alert("방제목을 작성해주세요.")
       return
     }
     creatorIsHost() // 방장권한 부여
@@ -204,7 +219,7 @@
 
 
   // 이미지 업로드 및 미리보기 함수
-  function readInputImage(event){
+  async function readInputImage(event){
     // console.log(event.target.files[0])
     webrtcstore.updateBackImg(event.target.files[0])
     backImgFile.value = event.target.files[0]
@@ -217,13 +232,73 @@
       console.log(imgPreviewUrl.value)
     }
     reader.readAsDataURL(backImgFile.value)
+
+    // 서버로 전송할 FormData 객체 생성
+    try{
+      console.log('업로드 되나1')
+      const imgformData = new FormData();
+      imgformData.append("file", backImgFile.value);
+      const response = await axios.post(APPLICATION_SERVER_URL+'files/upload/room/'+userNo.value, imgformData, {
+      // const response = await axios.post(`http://localhost:8080/`+'files/upload/room/'+userNo.value, imgformData, {
+      // const response = await axios.post(`https://i9d205.p.ssafy.io/api/`+'files/upload/room/'+userNo.value, imgformData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      console.log('리스폰스', response)
+      console.log('리스폰스', response.data)
+      // console.log(imgformData)
+      webrtcstore.updateUploadImage(imgformData)
+      // console.log(userNo.value)
+      // webrtcstore.uploadImagetoServer(userNo.value)
+      console.log('업로드 성공인가?')
+    }
+    catch(error){
+      console.log('업로드 안되나', error)
+    }
   }
+
+  // uploadImagetoServer(userNo) {
+  //     // 서버에 이미지 파일 업로드하기
+  //     try {
+  //       const response = axios.post(this.APPLICATION_SERVER_URL+'files/upload/room/'+userNo, this.imgformData, {
+  //         headers: {
+  //           "Content-Type": "multipart/form-data",
+  //         },
+  //       });
+  //       console.log("이미지 업로드 성공: ", response.data);
+  //     } catch (error) {
+  //       console.log("이미지 업로드 에러: ", error);
+  //     }
+  //   },
 
   const rule = ref(webrtcstore.rule)
   function updateRule(event){
     webrtcstore.updateRule(event.target.value)
     rule.value = event.target.value
   }
+
+  // // 이미지 파일 업로드 함수
+  // async function uploadImage() {
+  //   // 서버로 전송할 FormData 객체 생성
+  //   try{
+  //     console.log('업로드 되나1')
+  //     const imgformData = new FormData();
+  //     imgformData.append("file", backImgFile.value);
+  //     console.log(imgformData)
+  //     updateUploadImage(backImgFile.value)
+  //     console.log(userNo.value)
+  //     webrtcstore.uploadImagetoServer(userNo.value)
+  //     console.log('업로드 되나2')
+  //   }
+  //   catch(error){
+  //     console.log('없나')
+  //   }
+  //   webrtcstore.uploadImagetoServer(userNo.value)
+  // }
+
+
+
 </script>
 
 <template>
@@ -234,29 +309,29 @@
     <div id="join-dialog">
       <h1>스터디룸 생성하기</h1>
       <div>
+        <!-- 방 제목 설정 -->
+        <p>
+          <label>방 제목 설정: </label>
+          <input :value="mySessionId" @input="updateMysessionId" required />
+        </p>
         <!-- 스터디룸 룰 작성 부분 -->
         <p>
           <textarea :value="rule" name="" id="" cols="35" rows="5" @input="updateRule"></textarea>
         </p>
         <!-- 이미지 파일 업로드 및 미리보기 -->
         <p>
-          <input type="file" accept="image/*" @change="readInputImage" id="backImgFile" >
-          <div v-if="backImgFile">
-            <img :src="imgPreviewUrl" alt="imgPreview" style="max-width: 300px; max-height: 300px">
-          </div>
+          <form @submit.prevent="uploadImage" enctype="multipart/form-data">
+            <input type="file" accept="image/*" @change="readInputImage" id="backImgFile" >
+          </form>
+            <div v-if="backImgFile">
+              <img :src="imgPreviewUrl" alt="imgPreview" style="max-width: 300px; max-height: 300px">
+            </div>
         </p>
         <!-- 닉네임 설정은 백 연동 완료 이후 삭제해야 함 -->
         <p>
           <label>닉네임 설정: </label>
           <input :value="myUserName" @input="updateMyuserName" required />
         </p>
-        <!-- 비공개 설정 -->
-        <!-- <p>
-          <label for="">비공개 여부</label>
-          <input type="checkbox" :checked="isPassword" @change="updateIsPassword">
-          <span id="isPasswordSpan">공개</span>
-        </p> -->
-        <!-- 키워드 설정 -->
         <p>
           <form @submit="addTag"> <!-- 메서드 생성 -->
             <div>
@@ -314,11 +389,7 @@
             <option>16</option>
           </select>
         </p>
-        <!-- 방 제목 설정 -->
-        <p>
-          <label>방 제목 설정: </label>
-          <input :value="mySessionId" @input="updateMysessionId" required />
-        </p>
+        
         <p>
           <button @click="joinSession">
             방 생성하기

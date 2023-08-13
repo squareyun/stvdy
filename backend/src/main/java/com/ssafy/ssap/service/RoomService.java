@@ -14,6 +14,11 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -278,6 +283,7 @@ public class RoomService {
         try{
             //noinspection DataFlowIssue
             if(assignee.getRole() == participantRoleNsRepository.findByName("참여자")){
+                //Pro에디션에서만 작동
 //                Session session = openVidu.getActiveSession(room.getSessionId());
 //                ConnectionProperties connectionProperties = new ConnectionProperties.Builder()
 //                        .type(ConnectionType.WEBRTC)
@@ -347,14 +353,27 @@ public class RoomService {
         return status;
     }
 
-    public void getRoomList(Map<String,Object> resultMap) {
-//        resultMap.put("roomList", roomRepository.findAllRooms()); //키워드와 페이지 검색 수정필요
+    public void getEntireRoomList(Map<String,Object> resultMap) {
         List<RoomDto> roomList = roomRepository.findAllValidRooms();
         for(RoomDto roomDto : roomList){
             Integer num = participantRepository.countByRoomIdAndIsOut(roomDto.getId(),false);
             roomDto.setCurrentNumber(num);
         }
         resultMap.put("roomList",roomList);
+    }
+
+    public Map<String, Object> getRoomList(String keyword, Integer pageNo, int pageSize) {
+        Map<String,Object> resultMap = new HashMap<>();
+
+        Specification<Room> specification = Specification.<Room>where(null)
+                .and(RoomSpecifications.hasTitle(keyword))
+                .and(RoomSpecifications.isValid(true));
+        Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by(Sort.Direction.DESC,"id"));
+        Page<Room> roomList = roomRepository.findAll(specification, pageable);
+        Page<RoomDto> roomDtoList = roomList.map(room -> new RoomDto(room));
+
+        resultMap.put("roomList",roomDtoList);
+        return resultMap;
     }
 
     @Transactional

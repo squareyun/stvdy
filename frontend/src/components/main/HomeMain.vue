@@ -1,16 +1,16 @@
 <script setup>
-import SideBar from '@/components/SideBar.vue'
-import { ref, computed, watch, onMounted, onBeforeMount } from 'vue'
-import { useRouter } from 'vue-router'
-import { usewebRtcStore } from '@/stores'
-import { useQuestionStore } from '@/stores'
-// import { storeToRefs } from 'pinia';
-import axios from 'axios'
+  import SideBar from '@/components/SideBar.vue'
+  import { ref, computed, watch, onMounted, onBeforeMount } from 'vue'
+  import { useRouter } from "vue-router"
+  import { usewebRtcStore } from "@/stores"
+  import { useQuestionStore } from "@/stores"
+  // import { storeToRefs } from 'pinia';
+  import axios from 'axios'
 
-const webRtcStore = usewebRtcStore()
-const questionsStore = useQuestionStore()
-const router = useRouter()
-
+  const webRtcStore = usewebRtcStore()
+  const questionsStore = useQuestionStore()
+  const router = useRouter();
+  
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -49,16 +49,17 @@ const questionsSample = ref([])
 ////////////////////////////////////////////////////////////////////////////////////////////////
 onBeforeMount(async () => {
   await webRtcStore.getRtcRooms()
-  questionsStore.getAll() // 모든 질문을 가지고 옴.
+  // questionsStore.getAll() // 모든 질문을 가지고 옴.
   // await webRtcStore.getEveryRoomTags()    // 230808 현재는 제대로 구현되어있지 않음
   extractSomeRooms()
   extractSomeQuestions()
   webRtcStore.notIsHost()
 })
 
-onMounted(() => {
-  // localStorage.removeItem('roomId')
-})
+  onMounted(async () => {
+    // localStorage.removeItem('roomId')
+    await tmpGoRoom() // css 동안 임시 작동.
+  })
 
 watch(
   () => webRtcStore.roomList,
@@ -74,9 +75,20 @@ watch(
     }
   },
 )
-////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////
+
+  /// CSS 적용을 위한 임시 함수
+  async function tmpGoRoom() {
+    setTimeout(() => {
+      console.log(roomList.value)
+      console.log(roomList.value[roomList.value.length - 1])
+      // joinTheRoom(roomList.value[roomList.value.length - 1])
+      tmpJoin(roomList.value[roomList.value.length - 1])
+    }, 2000);
+  }
+  function tmpJoin(room) {
+    console.log('되긴되나',room)
+    webRtcStore.joinTheRoom(room)
+  }
 
 // // 질문 글 몇개를 추출 하는 함수
 function extractSomeQuestions() {
@@ -126,7 +138,7 @@ function extractSomeRooms() {
 // 선택한 방에 참여하는 함수
 function joinTheRoom(room) {
   // cconsole.log()
-  // selectedRoom.value = room
+  selectedRoom.value = room
   if (selectedRoomPw.value != inputPw.value) {
     // 비밀번호 불일치시
     alert('비밀번호가 불일치합니다.')
@@ -138,8 +150,6 @@ function joinTheRoom(room) {
     alert('정원초과로 입장할 수 없습니다.')
     return
   }
-  console.log('되긴되나', room)
-
   webRtcStore.joinTheRoom(room)
 }
 
@@ -211,51 +221,7 @@ function goThisQuestion(question) {
 
 <template>
   <main style="color: white">
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
+
     <!-- <TheWelcome /> -->
     <!-- <SideBar /> -->
     <!-- 방 세부 정보 확인 모달 창 -->
@@ -287,40 +253,7 @@ function goThisQuestion(question) {
       <button @click="joinTheRoom(selectedRoom)">방 입장</button>
       <button @click="hideRoomInfo">창 닫기</button>
     </div>
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
-    <!--  -->
+
 
     <!-- 주 화면 -->
     <div style="margin-top: 30px; margin-left: 100px">
@@ -334,40 +267,7 @@ function goThisQuestion(question) {
         <div>상단 오른쪽 = (배너)들어갈 자리</div>
       </div>
 
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
+   
       <p>중단= 공개 스터디 룸</p>
       <div style="display: flex">
         <!-- <div v-for="room in roomList" :key="room.id" class="card" style="margin: 10px;"> -->
@@ -418,40 +318,7 @@ function goThisQuestion(question) {
           <div></div>
         </div>
       </div>
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
-      <!--  -->
+ 
       <div style="margin: 50px"></div>
       <!-- 임시로 마진값을 줘서 띄움 -->
 
