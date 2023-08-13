@@ -78,16 +78,11 @@ public class RoomController {
     }
 
     @PutMapping("/role")
-    public ResponseEntity<?> assignStaff(@RequestBody Integer roomNo, Integer userNo){
-        /*
-          assignInfo.get("roomNo"), assignInfo.get("participantsNo")
-          participants테이블의 room_id = roomNo and user_id = participantsNo 조건에 해당하는 유저의 role을 `스태프`으로 바꾼다.
-          + 권한부여
-         */
+    public ResponseEntity<?> assignStaff(@RequestBody Map<String, Integer> assignInfo){
         HttpStatus status;
-        logger.trace("staff 임명 controller 호출 with "+userNo);
+        logger.trace("staff 임명 controller 호출 with ");
         try{
-            roomService.assignStaff(roomNo, userNo);
+            roomService.assignStaff(assignInfo.get("roomNo"), assignInfo.get("userNo"));
             status = HttpStatus.OK;
         } catch (Exception e){
             status = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -183,16 +178,8 @@ public class RoomController {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    @Transactional
     @PostMapping("/{roomNo}")
     public ResponseEntity<?> join(@PathVariable Integer roomNo, @RequestBody Map<String,Object> map) {
-        /*
-          1. 해당하는 룸넘버가 입장가능한지 조회 (비밀번호, 정원(+강퇴당했었는지?))
-          2. 룸넘버로 세션아이디 쿼리조회
-          3. 세션아이디로 커넥션 생성 및 입장토큰 획득 ->프론트로 리턴
-          4. participants 테이블 insert
-          5. room_log 테이블 insert
-         */
         HttpStatus status;
         String token;
 
@@ -204,6 +191,7 @@ public class RoomController {
             );
             status = HttpStatus.OK;
         } catch(Exception e){
+            logger.error("something's wrong"+e);
             token = null;
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }

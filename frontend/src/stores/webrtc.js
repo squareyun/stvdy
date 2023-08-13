@@ -33,6 +33,8 @@ export const usewebRtcStore = defineStore({
     isMaking: false,
     inputPassword: null,
     roomUsers: [],
+    isJoined: false,
+    isWelcome: false,
     // 방 이탈 시 사용할 것
     isExitRoom: false,
 
@@ -50,7 +52,11 @@ export const usewebRtcStore = defineStore({
     router: useRouter(),
 
     /////////////////////////////////
-    imgformData: null
+    imgformData: useUserStore().user.roomImagePath,  // 유저가 직접 선택한 스터디룸 이미지
+
+    // 방관련 이미지. 임시이름
+    profileImagePath : useUserStore().user.profileImagePath,
+    roomImagePath : useUserStore().user.roomImagePath,
 
   }),
   actions: {
@@ -76,6 +82,12 @@ export const usewebRtcStore = defineStore({
       console.log(this.myUserName)
       console.log(this.userNo)
       console.log(this.realname)
+    },
+    updateisJoined(newisJoined){
+      this.isJoined = newisJoined
+    },
+    updateisWelcome(newisWelcome){
+      this.isWelcome = newisWelcome
     },
     updateMyUserName(newUserName) {
       this.myUserName = newUserName
@@ -132,17 +144,20 @@ export const usewebRtcStore = defineStore({
     },
 
     ////// 이미지를 등록하기 위한 함수 // 스터디룸 이미지가 유저에 종속되어있음.
-    uploadImagetoServer(userNo) {
+    async uploadImagetoServer(userNo) {
       // 서버에 이미지 파일 업로드하기
       try {
-        const response = axios.post(this.APPLICATION_SERVER_URL+'files/upload/room/'+userNo, this.imgformData, {
+        console.log('문제있나?')
+        // const response = axios.post(this.APPLICATION_SERVER_URL+'files/upload/room/'+userNo, this.imgformData, {
+        const response = await axios.post('https://i9d205.p.ssafy.io/api/'+'files/upload/room/'+userNo, {file: this.imgformData}, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
+        console.log('문제없음.')
         console.log("이미지 업로드 성공: ", response.data);
       } catch (error) {
-        console.log("이미지 업로드 에러: ", error);
+        console.error("이미지 업로드 에러: ", error);
       }
     },
 
@@ -150,14 +165,15 @@ export const usewebRtcStore = defineStore({
     async downloadImagefromServer(userNo) {
       // 서버에서 이미지 경로 얻기
       try {
-        const response = await axios.get(this.APPLICATION_SERVER_URL+'files/get/room/'+userNo,{
+        // const response = await axios.get(this.APPLICATION_SERVER_URL+'files/get/room/'+userNo,{
+        const response = await axios.get('https://i9d205.p.ssafy.io/api/'+'files/get/room/'+userNo,{
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
         console.log("이미지 경로 다운로드 성공: ", response.data);
       } catch (error) {
-        console.log("이미지 경로 다운로드 에러: ", error);
+        console.error("이미지 경로 다운로드 에러: ", error);
       }
     },
 
@@ -166,14 +182,15 @@ export const usewebRtcStore = defineStore({
     async downloadProfiefromServer(userNo) {
       // 서버에서 이미지 경로 얻기
       try {
-        const response = await axios.get(this.APPLICATION_SERVER_URL+'files/get/room/'+userNo,{
+        // const response = await axios.get(this.APPLICATION_SERVER_URL+'/files/get/profile/'+userNo,{
+        const response = await axios.get('https://i9d205.p.ssafy.io/api/'+'files/get/profile/'+userNo,{
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
         console.log("이미지 경로 다운로드 성공: ", response.data);
       } catch (error) {
-        console.log("이미지 경로 다운로드 에러: ", error);
+        console.error("이미지 경로 다운로드 에러: ", error);
       }
     },
 
@@ -209,9 +226,9 @@ export const usewebRtcStore = defineStore({
       }
     },
     
-    getsearchRooms(pageNo=0, keyword='', size=20){
+    async getsearchRooms(pageNo=0, keyword='', size=20){
       try{
-        const response = axios.get(this.APPLICATION_SERVER_URL+`rooms/list?page=${pageNo}&keyword=${keyword}&size=${size}`)
+        const response = await axios.get(this.APPLICATION_SERVER_URL+`rooms/list?page=${pageNo}&keyword=${keyword}&size=${size}`)
         this.roomList = response.data.roomList
         console.log(this.roomList)
       }
@@ -243,6 +260,7 @@ export const usewebRtcStore = defineStore({
       this.roomId = room.id
       this.peopleNo = room.currentNumber
       console.log('조인더룸내부1', this.roomId)
+      // alert(encodeURIComponent(room.title))
       this.router.push({
         name: 'roomJoin',
         params: {
@@ -269,10 +287,11 @@ export const usewebRtcStore = defineStore({
     },
 
     async roomExit(roomId) {
-      console.log('함수 roomExit 들어옴', roomId)
+      console.log('함수 roomExit 들어옴', roomId, this.userNo)
       try {
         // participan~~ 는 방에 참여한 사람 번호,  userNo는 내 번호.
         // participantNo는 방에 독립적인 참여자 번호,
+        console.log('함수 roomExit try중')
         const response = await axios.post(
           this.APPLICATION_SERVER_URL + 'rooms/exit',
           { roomNo: roomId, userNo: this.userNo },

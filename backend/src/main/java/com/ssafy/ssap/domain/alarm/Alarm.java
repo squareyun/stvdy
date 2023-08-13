@@ -27,8 +27,8 @@ import lombok.Setter;
 @Table(name = "alarm")
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
+@Builder
 @AllArgsConstructor
 public class Alarm {
 
@@ -45,9 +45,8 @@ public class Alarm {
 	@Column(columnDefinition = "text")
 	private String detail;
 
-	// @Column(name = "image_path", columnDefinition = "blob")
-	// @Lob
-	// private String imagePath;
+ 	@Column(name = "image_path")
+	private String imagePath;
 
 	@NotNull
 	@Column(name = "is_read", columnDefinition = "bit(1)")
