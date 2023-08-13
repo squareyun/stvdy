@@ -4,7 +4,7 @@
   import { nameUser } from '@/api/user'
   import Deactivate from '@/components/profile/Deactivate.vue'
   import { RouterLink, RouterView } from 'vue-router'
-  import { computed } from 'vue'
+  import { ref, computed } from 'vue'
   import { Form, Field } from 'vee-validate'
   import * as Yup from 'yup'
   import router from '@/router'
@@ -18,16 +18,21 @@
   let nameWant = ''
   nameWant = user.value.username
 
+  let tmpProfileUrl = `/randomImages/randomImage${Math.floor(Math.random() * 34)}.png`
+
+
   let studyImageUrl = userStore.user.roomImagePath // 스터디룸 이미지.
-  let tmpStudyImagePath = '/testBackground.png'   
+  // let tmpStudyImagePath = ref('/testBackground.png')   
+  let tmpStudyImagePath = ref('/testBackground.png')   
   let studyImagePath = computed(()=>{
-    return studyImageUrl?studyImageUrl: tmpStudyImagePath
+    return studyImageUrl?studyImageUrl: tmpStudyImagePath.value
   })
 
   let profileImageUrl = userStore.user.profileImagePath
-  let tmpProfileImagePath = '/testProfile.png'           // 세션이나 로컬에 따로 저장해버리면 되지않을까?
+  // let tmpProfileImagePath = ref('/testProfile.png')           // 세션이나 로컬에 따로 저장해버리면 되지않을까?
+  let tmpProfileImagePath = ref(tmpProfileUrl)    // 우선 등록해둔게 없으면 무작위 프로필을 보여줌
   const profileImagePath = computed(() => {
-    return profileImageUrl?profileImageUrl: tmpProfileImagePath
+    return profileImageUrl?profileImageUrl: tmpProfileImagePath.value
   })
   const changeUserName = async (name) => {
     const data = {
@@ -60,21 +65,31 @@
     input.type = "file"
     input.accept = "image/*"
 
-    input.addEventListener("change", async (event) => {
+    input.addEventListener("change", (event) => {
       const selectedFile = event.target.files[0]
       console.log(selectedFile)
       
       const reader = new FileReader()
       reader.onload = (event) => {
         const imgPreviewUrl = event.target.result
-        console.log('이게 미리보기 url',imgPreviewUrl)
-        tmpStudyImagePath = imgPreviewUrl; 
+        // console.log('이게 미리보기 url',imgPreviewUrl)
+        tmpStudyImagePath.value = imgPreviewUrl; 
       }
+      reader.readAsDataURL(selectedFile)
       
       const imgformData = new FormData()
       imgformData.append("file", selectedFile)
-      imagePath.uploadStudyImagetoServer(userStore.user.id, imgformData) // 업로드된 이미지를 서버로 전송
-      // studyImageUrl = await imagePath.downloadStudyImagefromServer(userStore.user.id)
+      // imagePath.uploadStudyImagetoServer(userStore.user.id, imgformData) // 업로드된 이미지를 서버로 전송
+      imagePath.uploadStudyImagetoServer(userStore.user.id, imgformData) // 업로드된 이미지를 서버로 전송하고 그 path를 받을거임.
+        .then(() => {
+          const StudyResoponse = imagePath.downloadStudyImagefromServer(userStore.user.id)
+          if(StudyResoponse.message !== 'getUrl 실패'){
+            studyImageUrl = StudyResoponse.url  // .url로 표현하는게 맞는지 모르겠음.
+          }
+        })
+        .catch((error) => {
+          console.error('이미지 업로드 및 다운로드 중 오류가 발생했습니다:', error);
+        });
     });
     input.click();
   }
@@ -88,6 +103,14 @@
     input.addEventListener("change", async (event) => {
       const selectedFile = event.target.files[0]
       console.log(selectedFile)
+      
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        const imgPreviewUrl = event.target.result
+        // console.log('이게 미리보기 url',imgPreviewUrl)
+        tmpProfileImagePath.value = imgPreviewUrl; 
+      }
+      reader.readAsDataURL(selectedFile)
       
       const imgformData = new FormData()
       imgformData.append("file", selectedFile)
@@ -170,7 +193,7 @@
   border-radius: 10px 10px 0px 0px;
 
   margin-left: -30px;
-  background-image: url('/testBackground.png');
+  /* background-image: url('/testBackground.png'); */
   background-size: cover;
   background-position: center;
 }
@@ -185,7 +208,6 @@
 
   border-radius: 50px;
 
-  /* background-image: url(userstore.user.profileImagePath); 유저 프로필 이미지를 사용 */
   /* background-image: url('/testProfile.png'); */
   background-size: cover;
   background-position: center;

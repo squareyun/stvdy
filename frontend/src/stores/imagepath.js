@@ -9,9 +9,15 @@ export const useImagePath = defineStore({
   state: () => ({
     // applicationServerUrl : "https://i9d205.p.ssafy.io/api/"
     applicationServerUrl : "/api/",
-
+    questionerProfilePath : '/authorImage.png',  // 선택한 질문자의 프로필 이미지
   }),
   actions: {
+    updateQuestionerProfilePath(newPath){
+      this.questionerProfilePath = newPath
+      sessionStorage.setItem('questionerImage', newPath)
+      console.log(this.questionerProfilePath)
+    },
+
     async uploadStudyImagetoServer(userNo, newimgformData){
       try {
         console.log('스터디룸 이미지 업로드중1')
@@ -22,6 +28,7 @@ export const useImagePath = defineStore({
         });
         console.log('스터디룸 이미지 업로드중2')
         console.log("스터디룸 이미지 업로드 성공: ", response.data);
+        // return this.downloadStudyImagefromServer(userNo)
       } catch (error) {
         console.error("스터디룸 이미지 업로드 에러: ", error);
       }
@@ -33,7 +40,7 @@ export const useImagePath = defineStore({
             "Content-Type": "multipart/form-data",
           },
         });
-        console.log("스터디룸 이미지 경로 다운로드 성공: ", response.data)
+        console.log("스터디룸 이미지 경로 다운로드 성공: ", response.data.message)
         return response.data
       } catch (error) {
         console.error("스터디룸 이미지 경로 다운로드 에러: ", error)
