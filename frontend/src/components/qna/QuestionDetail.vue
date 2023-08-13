@@ -427,6 +427,7 @@ const bestAns = (id) => {
   width: 60px;
   height: 30px;
 
+  background-image: url(userstore.user.profileImagePath); /*질문자 아이콘 사진*/
   background-image: url('/authorImage.png');
   background-size: cover;
   background-position: center;

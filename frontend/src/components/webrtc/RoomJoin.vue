@@ -32,8 +32,8 @@
   axios.defaults.headers.post["Content-Type"] = "application/json;charset=utf-8";
   // 추후 배포와 관련해서 이부분에 대해서 설정을 할 필요가 있게 될것.
   // const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'https://i9d205.p.ssafy.io/api/';
-  // const APPLICATION_SERVER_URL = 'https://i9d205.p.ssafy.io/api/'
-  const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080/';
+  const APPLICATION_SERVER_URL = '/api/' //https://i9d205.p.ssafy.io/api/ 
+  // const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080/';
   // OpenVidu objects
   const OV = ref(undefined)
   const session = ref(undefined)

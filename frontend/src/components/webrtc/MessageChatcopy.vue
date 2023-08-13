@@ -4,7 +4,8 @@
       <ul id="chatHistory">
         <li v-for="(message, index) in messages" :key="index">
             <img :src="imagePath" :alt="message.username[1] + '의 프로필'">
-            <strong>{{ message.username[0] }}:</strong> {{ message.message }}
+            <!-- <strong>{{ message.username[0] }}:</strong> {{ message.message }} -->
+            <strong>{{ message.type === 'forced_exit' ? message.username[0] : '시스템' }}:</strong> {{ message.message }}
         </li>
       </ul>
     </div>
@@ -60,10 +61,11 @@
       inputMessage.value = '';
     }
   }
-  function sendMessageToChat(message) {
+  // function sendMessageToChat(message) {
+  function sendMessageToChat(message,type='chat') { // type을 추가해줬음.
     session.signal({
       // data: JSON.stringify({ username: [myUserName, chatUserNo], message }), // 메시지 데이터를 문자열로 변환해서 전송
-      data: JSON.stringify({ username: ['시스템', chatUserNo], message }), // 메시지 데이터를 문자열로 변환해서 전송
+      data: JSON.stringify({ username: ['시스템', chatUserNo], message, type }), // 메시지 데이터를 문자열로 변환해서 전송
       type: 'chat', // 신호 타입을 'chat'으로 설정
     });
   }
@@ -75,7 +77,7 @@
         // const joinMessage = `${myUserName} 님이 참여했습니다.\n방 규칙을 잘 지켜주세요.\n${webrtcstore.rule}`;
         const joinMessage = `${myUserName} 님이 참여했습니다. 방 규칙을 잘 지켜주세요.`;
         sendMessageToChat(joinMessage)
-        webrtcstore.updateisWelcome(true)              // 참여 메세지를 보냈음을 보여줌
+        updateisWelcome(true)              // 참여 메세지를 보냈음을 보여줌
       }  
     }, 400)
   })

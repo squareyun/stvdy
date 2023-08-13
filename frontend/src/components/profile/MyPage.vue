@@ -1,43 +1,94 @@
 <script setup>
-import { useUserStore } from '@/stores'
-import { nameUser } from '@/api/user'
-import Deactivate from '@/components/profile/Deactivate.vue'
-import { RouterLink, RouterView } from 'vue-router'
-import { computed } from 'vue'
-import { Form, Field } from 'vee-validate'
-import * as Yup from 'yup'
-import router from '@/router'
+  import { useUserStore } from '@/stores' 
+  import { useImagePath } from '@/stores' //useImagePath를 추가함
+  import { nameUser } from '@/api/user'
+  import Deactivate from '@/components/profile/Deactivate.vue'
+  import { RouterLink, RouterView } from 'vue-router'
+  import { computed } from 'vue'
+  import { Form, Field } from 'vee-validate'
+  import * as Yup from 'yup'
+  import router from '@/router'
+  import { WebRtcPeer } from 'openvidu-browser/lib/OpenViduInternal/WebRtcPeer/WebRtcPeer'
+  import axios from 'axios' // 파일업로드에 이용하기 위해 사용
 
-const userStore = useUserStore()
-const user = computed(() => userStore.user)
+  const userStore = useUserStore()
+  const user = computed(() => userStore.user)
+  const imagePath = useImagePath()
 
-let nameWant = ''
-nameWant = user.value.username
+  let nameWant = ''
+  nameWant = user.value.username
 
-const changeUserName = async (name) => {
-  const data = {
-    nickname: name,
+  let studyImageUrl = '/testBackground.png' // 스터디룸 이미지.
+
+  const changeUserName = async (name) => {
+    const data = {
+      nickname: name,
+    }
+
+    await nameUser(
+      data,
+      (res) => {
+        console.log(res)
+        user.value.username = name
+      },
+      (fail) => {
+        console.log(fail)
+      },
+    )
+    router.go('mypage')
   }
 
-  await nameUser(
-    data,
-    (res) => {
-      console.log(res)
-      user.value.username = name
-    },
-    (fail) => {
-      console.log(fail)
-    },
-  )
-  router.go('mypage')
-}
+  const schema = Yup.object().shape({
+    username: Yup.string()
+      .required('닉네임을 작성해주세요.')
+      .max(45, '길이를 줄여주세요.')
+      .min(4, '더 긴 닉네임을 사용해야합니다.'),
+  })
 
-const schema = Yup.object().shape({
-  username: Yup.string()
-    .required('닉네임을 작성해주세요.')
-    .max(45, '길이를 줄여주세요.')
-    .min(4, '더 긴 닉네임을 사용해야합니다.'),
-})
+  function updateStudyImage(e) {
+    e.preventDefault()
+    // 동적으로 file input 요소 생성
+    const input = document.createElement("input")
+    input.type = "file"
+    input.accept = "image/*"
+
+    // 파일 선택 시 처리할 이벤트 리스너 추가
+    input.addEventListener("change", async (event) => {
+      const selectedFile = event.target.files[0]
+      // 여기에 파일 처리 코드를 작성하세요
+      console.log(selectedFile)
+      
+      const imgformData = new FormData()
+      imgformData.append("file", selectedFile)
+      imagePath.uploadStudyImagetoServer(userStore.user.id, imgformData) // 업로드된 이미지를 서버로 전송
+      studyImageUrl = await imagePath.downloadStudyImagefromServer(userStore.user.id)
+    });
+    // 파일 선택 창 열기
+    input.click();
+  }
+  
+  function updateProfileImage(e) {
+    e.preventDefault()
+    // 동적으로 file input 요소 생성
+    const input = document.createElement("input")
+    input.type = "file"
+    input.accept = "image/*"
+
+    // 파일 선택 시 처리할 이벤트 리스너 추가
+    input.addEventListener("change", async (event) => {
+      const selectedFile = event.target.files[0]
+      // 여기에 파일 처리 코드를 작성하세요
+      console.log(selectedFile)
+      
+      const imgformData = new FormData()
+      imgformData.append("file", selectedFile)
+      imagePath.uploadProfileImagetoServer(userStore.user.id, imgformData) // 업로드된 이미지를 서버로 전송
+      // studyImageUrl = await downloadProfileImagefromServer(userStore.user.id)
+    });
+    // 파일 선택 창 열기
+    input.click();
+  }
+
 </script>
 
 <template>
@@ -90,8 +141,8 @@ const schema = Yup.object().shape({
       </div>
 
       <div id="edit-menu">
-        <a href="">대표 이미지(스터디룸) 변경</a>
-        <a href="">프로필 이미지 변경</a>
+        <a href="" @click="updateStudyImage">대표 이미지(스터디룸) 변경</a><!--클릭시 스터디 이미지 update할수 있게 폴더 열림-->
+        <a href="" @click="updateProfileImage">프로필 이미지 변경</a><!--클릭시 프로필 update할수 있게 폴더 열림-->
         <router-link to="/mypage/changepwd">비밀번호 변경</router-link>
         <router-link to="/mypage/changecolor">레이아웃 색상 설정</router-link>
       </div>
@@ -109,7 +160,6 @@ const schema = Yup.object().shape({
   border-radius: 10px 10px 0px 0px;
 
   margin-left: -30px;
-
   background-image: url('/testBackground.png');
   background-size: cover;
   background-position: center;
@@ -125,6 +175,7 @@ const schema = Yup.object().shape({
 
   border-radius: 50px;
 
+  /* background-image: url(userstore.user.profileImagePath); 유저 프로필 이미지를 사용 */
   background-image: url('/testProfile.png');
   background-size: cover;
   background-position: center;

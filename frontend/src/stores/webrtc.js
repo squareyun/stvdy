@@ -7,8 +7,9 @@ import axios from 'axios'
 export const usewebRtcStore = defineStore({
   id: 'webrtc',
   state: () => ({
-    APPLICATION_SERVER_URL: 'http://localhost:8080/',
+    // APPLICATION_SERVER_URL: 'http://localhost:8080/',
     // APPLICATION_SERVER_URL: 'https://i9d205.p.ssafy.io/api/', // 배포된 서버
+    APPLICATION_SERVER_URL: '/api/', // 배포된 서버
 
     userNo: useUserStore().user.id,
     userId: (Math.floor(Math.random() * (200 - 1 + 1)) + 1), // 테스트를 위해서 임시로...
@@ -148,8 +149,8 @@ export const usewebRtcStore = defineStore({
       // 서버에 이미지 파일 업로드하기
       try {
         console.log('문제있나?')
-        // const response = axios.post(this.APPLICATION_SERVER_URL+'files/upload/room/'+userNo, this.imgformData, {
-        const response = await axios.post('https://i9d205.p.ssafy.io/api/'+'files/upload/room/'+userNo, {file: this.imgformData}, {
+        const response = axios.post(this.APPLICATION_SERVER_URL+'files/upload/room/'+userNo, this.imgformData, {
+        // const response = await axios.post('https://i9d205.p.ssafy.io/api/'+'files/upload/room/'+userNo, this.imgformData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -165,13 +166,14 @@ export const usewebRtcStore = defineStore({
     async downloadImagefromServer(userNo) {
       // 서버에서 이미지 경로 얻기
       try {
-        // const response = await axios.get(this.APPLICATION_SERVER_URL+'files/get/room/'+userNo,{
-        const response = await axios.get('https://i9d205.p.ssafy.io/api/'+'files/get/room/'+userNo,{
+        const response = await axios.get(this.APPLICATION_SERVER_URL+'files/get/room/'+userNo,{
+        // const response = await axios.get('https://i9d205.p.ssafy.io/api/'+'files/get/room/'+userNo,{
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
         console.log("이미지 경로 다운로드 성공: ", response.data);
+        return response.data //데이터 넘겨줌
       } catch (error) {
         console.error("이미지 경로 다운로드 에러: ", error);
       }
@@ -182,8 +184,8 @@ export const usewebRtcStore = defineStore({
     async downloadProfiefromServer(userNo) {
       // 서버에서 이미지 경로 얻기
       try {
-        // const response = await axios.get(this.APPLICATION_SERVER_URL+'/files/get/profile/'+userNo,{
-        const response = await axios.get('https://i9d205.p.ssafy.io/api/'+'files/get/profile/'+userNo,{
+        const response = await axios.get(this.APPLICATION_SERVER_URL+'/files/get/profile/'+userNo,{
+        // const response = await axios.get('https://i9d205.p.ssafy.io/api/'+'files/get/profile/'+userNo,{
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -216,7 +218,6 @@ export const usewebRtcStore = defineStore({
     // 방들 찾아옴.
     async getRtcRooms() {
       try{
-        // const response = await axios.get(this.APPLICATION_SERVER_URL+'rooms/list')
         const response = await axios.get(this.APPLICATION_SERVER_URL+'rooms/wholeList')
         this.roomList = response.data.roomList
         console.log(this.roomList)
