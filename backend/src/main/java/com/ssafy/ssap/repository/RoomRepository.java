@@ -21,7 +21,7 @@ public interface RoomRepository extends JpaRepository<Room, Integer>, JpaSpecifi
 
 //@Entity(name = )
     @Modifying
-    @Query("SELECT new com.ssafy.ssap.dto.RoomDto(r.id, r.title, r.quota, r.isPrivacy, r.isValid, r.sessionId, r.password, r.endTime, r.imagePath, r.rule) FROM Room r WHERE r.isValid = true")
+    @Query("SELECT new com.ssafy.ssap.dto.RoomDto(r.id, r.title, r.quota, r.isPrivacy, r.isValid, r.sessionId, r.password, r.endTime, r.rule) FROM Room r WHERE r.isValid = true")
     List<RoomDto> findAllValidRooms();
 
     Optional<Room> findByCode(String code);

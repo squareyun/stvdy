@@ -133,9 +133,10 @@ public class S3Util {
             } else { //단일파일 업로드인 경우(profile, room, alarm)
                 try {
                     String name;
-                    String tmp = fileNameList.get(1);
-                    name = tmp.equals("pr") ? "profileImagePath": tmp.equals("ro") ? "roomImagePath" : "imagePath";
+                    String tmp = fileNameList.get(0);
+                    name = tmp.contains("pr") ? "profileImagePath": tmp.contains("ro") ? "roomImagePath" : "imagePath";
                     //question, answer이 아닌 경우(user(profile, room), alarm) 이미 객체가 있으니 객체의 imagePath 속성을 업데이트한다.
+                    logger.debug("S3업로드 디버깅중"+tmp+"/"+entity+"/"+name+"/"+filePath);
                     BeanUtils.setProperty(entity, name, filePath);
                     repository.flush();
                 } catch (IllegalAccessException | InvocationTargetException | NullPointerException e) {
