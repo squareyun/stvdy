@@ -3,10 +3,7 @@
   import { useRouter } from "vue-router"
   import { usewebRtcStore } from "@/stores"
   import { useUserStore } from "@/stores"
-  import axios from 'axios' 
-  // import { storeToRefs } from "pinia";
-  const APPLICATION_SERVER_URL = '/api/' //https://i9d205.p.ssafy.io/api/
-  // const APPLICATION_SERVER_URL = 'http://localhost:8080/'
+  
   const usersStore = useUserStore()
   const localUser = usersStore.user
   console.log(localUser)
