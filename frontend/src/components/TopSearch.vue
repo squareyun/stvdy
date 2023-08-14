@@ -1,7 +1,7 @@
 <script setup>
 import { useAlarmStore } from '@/stores'
 import { useUserStore } from '@/stores' // 프로필이미지 등록을 위해서 import
-import { computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import router from '@/router'
 
 const userStore = useUserStore() // 프로필 이미지 등록을 위해 userStore사용
@@ -17,14 +17,13 @@ const openAlarms = () => {
   else alarmList.className = 'closed'
 }
 
-
 let tmpProfileUrl = `/randomImages/randomImage${Math.floor(Math.random() * 34)}.png`
-// let profileImg = userStore.user.profileImg
-let profileImg = userStore.user.profileImg.replace(/&quot;/g, '"');
+
+let profileValue = ref(sessionStorage.getItem("profileImg")?sessionStorage.getItem("profileImg"):userStore.user.profileImg)
+let profileImageUrl = ref(profileValue.value ? profileValue.value : null);
 
 const profileImagePath = computed(() => { // user가 등록한 프로필 이미지가 없으면, 임의 프로필을 보여줌
-  // return userStore.user.profileImagePath?userStore.user.profileImagePath:tmpProfileUrl   //'/testProfile.png'
-  return profileImg?profileImg:tmpProfileUrl   //'/testProfile.png'
+  return profileImageUrl.value?profileImageUrl.value:tmpProfileUrl   //'/testProfile.png'
 })
 
 async function showDetail(url) {
