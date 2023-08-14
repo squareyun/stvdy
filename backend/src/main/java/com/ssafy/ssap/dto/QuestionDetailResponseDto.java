@@ -1,11 +1,10 @@
 package com.ssafy.ssap.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-@AllArgsConstructor
 @Getter
 public class QuestionDetailResponseDto {
 
@@ -19,9 +18,21 @@ public class QuestionDetailResponseDto {
     private String userNickname;
     private Integer questionScore;
     private Integer userNo;
+    private String profileImage;
+    private List<String> detailImages;
 
-    public int getQuestionScore() {
-        return questionScore == null ? 0 : questionScore;
+    public QuestionDetailResponseDto(Integer id, String title, String detail, Integer hit, LocalDateTime regist_time, Boolean bestSelected, String category, String userNickname, Integer questionScore, Integer userNo, String profileImage, List<String> detailImages) {
+        this.id = id;
+        this.title = title;
+        this.detail = detail;
+        this.hit = hit;
+        this.regist_time = regist_time;
+        this.bestSelected = bestSelected;
+        this.category = category;
+        this.userNickname = userNickname;
+        this.questionScore = (questionScore != null) ? questionScore : 0;
+        this.userNo = userNo;
+        this.profileImage = profileImage;
+        this.detailImages = detailImages;
     }
-
 }
