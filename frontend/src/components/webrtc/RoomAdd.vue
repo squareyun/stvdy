@@ -54,7 +54,7 @@ onMounted(() => {
 })
 
 // css 동안 임시로 해둠.
-function joinImmediately() {
+const joinImmediately = () => {
   setTimeout(() => {
     joinSession()
   }, 1000)
@@ -103,63 +103,55 @@ watch(isPassword, (newisPassword) => {
     isPasswordSpan.innerText = '미설정'
   }
 })
-watch(isPrivacy, (newisPrivacySpan) => {
-  const isPrivacySpan = document.getElementById('isPrivacySpan')
-  if (newisPrivacySpan) {
-    isPrivacySpan.innerText = '설정'
-  } else {
-    isPrivacySpan.innerText = '미설정'
-  }
-})
 // isPassword가 변동되면 webrtcstore의 isPassword도 변동
 
 // 방 생성에 사용할 함수들
-function updateMyuserName(event) {
+const updateMyuserName = (event) => {
   webrtcstore.updateMyUserName(event.target.value) // pinia에 의해 dispatch로 접근X
   myUserName.value = event.target.value
 }
 
-function updateMysessionId(event) {
+const updateMysessionId = (event) => {
   webrtcstore.updateMySessionId(event.target.value)
   mySessionId.value = event.target.value
 }
 
-function updateEndHour(event) {
+const updateEndHour = (event) => {
   webrtcstore.updateEndHour(Number(event.target.value))
   endHour.value = Number(event.target.value)
 }
-function updateEndMinute(event) {
+const updateEndMinute = (event) => {
   webrtcstore.updateEndMinute(Number(event.target.value))
   endMinute.value = Number(event.target.value)
 }
 
-function updateIsPassword(event) {
+const updateIsPassword = (event) => {
   webrtcstore.updateIsPassword(event.target.checked)
   isPassword.value = event.target.checked
   password.value = webrtcstore.password
 }
-function updateIsPrivacy(event) {
+const updateIsPrivacy = (event) => {
   webrtcstore.updateIsPrivacy(event.target.checked)
   isPrivacy.value = event.target.checked
 }
 
-function updatePassword(event) {
+const updatePassword = (event) => {
   webrtcstore.updatePassword(event.target.value)
   password.value = event.target.value
 }
 
-function updateQuota(event) {
+const updateQuota = (event) => {
   webrtcstore.updateQuota(Number(event.target.value))
   quota.value = Number(event.target.value)
 }
 
-function creatorIsHost() {
+const creatorIsHost = () => {
   // webrtcstore의 isHost값을 true로 만들어줌
   webrtcstore.creatorIsHost()
   isHost.value = true
 }
 
-function joinSession() {
+const joinSession = () => {
   // if(!webrtcstore.myUserName || !webrtcstore.mySessionId){
   if (!webrtcstore.myUserName) {
     alert('이름을 작성해주세요.')
@@ -184,7 +176,7 @@ function joinSession() {
 const roomTags = ref([])
 const roomTag = ref(null)
 // 키워드 추가하는 함수
-function addTag(event) {
+const addTag = (event) => {
   event.preventDefault()
   // if(roomTag.value in roomTags.value){
   if (roomTags.value.includes(roomTag.value)) {
@@ -204,12 +196,12 @@ function addTag(event) {
   roomTag.value = null
 }
 // 키워드 삭제하는 함수
-function removeTag(index) {
+const removeTag = (index) => {
   roomTags.value.splice(index, 1)
   webrtcstore.updateRoomTags(roomTag.value)
 }
 // 키워드는 최대 15글자.
-function limitInput() {
+const limitInput = () => {
   const maxLength = 15
   if (roomTag && roomTag.value && roomTag.value.length > maxLength) {
     roomTag.value = roomTag.value.slice(0, maxLength)
@@ -217,7 +209,7 @@ function limitInput() {
 }
 
 // 이미지 업로드 및 미리보기 함수
-async function readInputImage(event) {
+const readInputImage = async (event) => {
   // console.log(event.target.files[0])
   webrtcstore.updateBackImg(event.target.files[0])
   backImgFile.value = webrtcstore.backImgFile
@@ -232,13 +224,13 @@ async function readInputImage(event) {
 }
 
 const rule = ref(webrtcstore.rule)
-function updateRule(event) {
+const updateRule = (event) => {
   webrtcstore.updateRule(event.target.value)
   rule.value = event.target.value
 }
 
 // 이미지 파일 업로드 함수
-async function uploadImagetoServer() {
+const uploadImagetoServer = async () => {
   // 서버로 전송할 FormData 객체 생성
   try {
     const imgformData = new FormData()
@@ -249,10 +241,34 @@ async function uploadImagetoServer() {
     console.log(error)
   }
 }
+
+const openAddRoom = () => {
+  const e = document.getElementById('room-add')
+  if (e.style.display == '' || e.style.display == 'none')
+    e.style.display = 'block'
+  else e.style.display = 'none'
+
+  const a = document.getElementById('alarms')
+  if (a.style.display == 'block') a.style.display = 'none'
+}
 </script>
 
 <template>
   <!-- <router-link :to="{name: 'ArticleDetailView',params: {id: article.id }}"></router-link> -->
+  <div
+    id="room-add-show-button"
+    @click="openAddRoom">
+    <svg
+      width="1.8rem"
+      height="1.8rem"
+      viewBox="0 0 128 105"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M116.364 0H11.6364C5.17818 0 0 5.17818 0 11.6364V81.4545C0 87.8545 5.17818 93.0909 11.6364 93.0909H40.7273V104.727H87.2727V93.0909H116.364C122.764 93.0909 127.942 87.8545 127.942 81.4545L128 11.6364C128 5.17818 122.764 0 116.364 0ZM116.364 81.4545H11.6364V11.6364H116.364V81.4545ZM87.2727 40.7273V52.3636H69.8182V69.8182H58.1818V52.3636H40.7273V40.7273H58.1818V23.2727H69.8182V40.7273H87.2727Z"
+        fill="black" />
+    </svg>
+  </div>
   <div id="room-add">
     <div id="img-div"></div>
     <div id="add-dialog-box">
@@ -279,6 +295,7 @@ async function uploadImagetoServer() {
         @submit.prevent="uploadImage"
         enctype="multipart/form-data"
         id="file-upload-btn">
+        <label for="file">배경 업로드</label>
         <input
           type="file"
           accept="image/*"
@@ -289,7 +306,7 @@ async function uploadImagetoServer() {
         <img
           :src="imgPreviewUrl"
           alt="imgPreview"
-          style="max-width: 300px; max-height: 300px" />
+          id="room-add-back-img" />
       </div>
       <!-- 닉네임 설정은 백 연동 완료 이후 삭제해야 함 -->
 
@@ -321,59 +338,79 @@ async function uploadImagetoServer() {
         type="text"
         :value="password"
         @keyup="updatePassword" />
-      <!-- 프라이버시 설정여부 -->
-      <label for="">프라이버시 여부</label>
-      <input
-        type="checkbox"
-        :checked="isPrivacy"
-        @change="updateIsPrivacy" />
-      <span id="isPrivacySpan">미설정</span>
-
       <!-- 방 종료 시간 작성 -->
-      <label>시간 설정</label>
-      <input
-        type="checkbox"
-        v-model="timeSet" />
-
-      <div v-if="timeSet">
-        <select
-          :value="endHour"
-          @change="updateEndHour">
-          <option disabled>시간(시)을 설정해주세요</option>
-          <option
-            v-for="hour in hours"
-            :key="hour">
-            {{ hour }}
-          </option>
-        </select>
-        <span>시간</span>
-        <select
-          :value="endMinute"
-          @change="updateEndMinute">
-          <option disabled>시간(분)을 설정해주세요</option>
-          <option
-            v-for="minute in minutes"
-            :key="minute">
-            {{ minute }}
-          </option>
-        </select>
-        <span>분</span>
+      <div id="add-room-others">
+        <div id="add-room-selects">
+          <div
+            id="add-room-times"
+            v-if="timeSet">
+            <select
+              :value="endHour"
+              @change="updateEndHour">
+              <option disabled>시간(시)을 설정해주세요</option>
+              <option
+                v-for="hour in hours"
+                :key="hour">
+                {{ hour }}
+              </option>
+            </select>
+            <span>시간</span>
+            <br />
+            <select
+              :value="endMinute"
+              @change="updateEndMinute">
+              <option disabled>시간(분)을 설정해주세요</option>
+              <option
+                v-for="minute in minutes"
+                :key="minute">
+                {{ minute }}
+              </option>
+            </select>
+            <span>분</span>
+          </div>
+          <select
+            name=""
+            id=""
+            :value="quota"
+            @change="updateQuota">
+            <option>2</option>
+            <option>4</option>
+            <option>8</option>
+            <option>16</option>
+          </select>
+          <label>제한 인원수</label>
+        </div>
+        <div id="add-room-options">
+          <div class="add-room-option">
+            <label>종료 시간</label>
+            <input
+              type="checkbox"
+              v-model="timeSet" />
+          </div>
+          <!-- 프라이버시 설정여부 -->
+          <div class="add-room-option">
+            <label for="">프라이버시</label>
+            <input
+              type="checkbox"
+              :checked="isPrivacy"
+              @change="updateIsPrivacy" />
+          </div>
+        </div>
       </div>
 
       <!-- 방 제한 인원수 -->
-      <label>제한 인원수:</label>
-      <select
-        name=""
-        id=""
-        :value="quota"
-        @change="updateQuota">
-        <option>2</option>
-        <option>4</option>
-        <option>8</option>
-        <option>16</option>
-      </select>
 
-      <button @click="joinSession">방 생성하기</button>
+      <button
+        id="add-room-cancel"
+        @click="openAddRoom">
+        취소
+      </button>
+
+      <button
+        id="add-room-btn"
+        @click="joinSession">
+        설정 완료
+      </button>
 
       <!-- <p>
           <img :src="computedImage" alt="업로드 후 다운로드가 되나?">
@@ -383,12 +420,32 @@ async function uploadImagetoServer() {
 </template>
 
 <style>
+#room-add-show-button {
+  z-index: 101;
+  position: fixed;
+  top: 13px;
+  right: 480px;
+
+  cursor: pointer;
+}
+
+#room-add-show-button > svg > path {
+  fill: var(--hl-light);
+  transition: fill 0.4s;
+}
+
+#room-add-show-button:hover > svg > path {
+  fill: var(--hl-pres);
+}
+
 #room-add {
+  display: none;
+
   position: fixed;
   top: 55px;
-  right: 500px;
+  right: 20px;
 
-  width: 400px;
+  width: 440px;
 
   padding: 20px;
   padding-top: 1rem;
@@ -417,7 +474,7 @@ async function uploadImagetoServer() {
   font-size: 1rem;
   color: var(--font100);
 
-  width: 336px;
+  width: 376px;
   height: 46px;
   border-radius: 10px;
   border: 1px solid var(--font30);
@@ -441,7 +498,7 @@ async function uploadImagetoServer() {
   font-family: Arial;
   color: var(--font100);
 
-  width: 339px;
+  width: 379px;
   height: 120px;
   border-radius: 10px;
   border: 1px solid var(--font30);
@@ -468,19 +525,48 @@ async function uploadImagetoServer() {
   background-color: var(--hl-light);
 }
 
-#file-upload-btn > input[type='file']::file-selector-button {
+#file-upload-btn {
+  position: relative;
+  left: 3px;
+}
+
+#file-upload-btn > label {
   color: var(--hl-pres);
   font-family: 'ASDGothicM';
   font-size: 1rem;
+
   border: none;
   background-color: transparent;
+
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+#file-upload-btn > input[type='file']::file-selector-button {
+  position: absolute;
+  left: 0px;
+  top: -2px;
+  opacity: 0;
 
   cursor: pointer;
 }
 
+#room-add-back-img {
+  width: 398px;
+  height: 100px;
+
+  margin-top: 2px;
+
+  object-fit: cover;
+
+  border-radius: 10px;
+
+  box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1), 0 0px 3px rgba(0, 0, 0, 0.16);
+}
+
 #keyword-box {
-  margin-top: 30px;
   position: relative;
+  margin-top: 30px;
 }
 
 #keyword-box > button {
@@ -503,6 +589,9 @@ async function uploadImagetoServer() {
 }
 
 .keyword-tag {
+  position: relative;
+  left: 3px;
+
   color: var(--font100);
   font-size: 0.9rem;
 }
@@ -515,8 +604,96 @@ async function uploadImagetoServer() {
   background-color: transparent;
 }
 
-.password-check {
-  display: block;
-  margin-top: 30px;
+#add-room-others {
+  position: relative;
+
+  width: 402px;
+  height: 150px;
+}
+
+#add-room-selects {
+  position: absolute;
+
+  display: inline-block;
+  top: 0px;
+  left: 3px;
+}
+
+#add-room-selects > select,
+#add-room-selects > div > select {
+  width: 40px;
+  margin-right: 5px;
+  transform: translate(0px, -1px);
+
+  border: 1px solid var(--font50);
+  border-radius: 3px;
+
+  margin-bottom: 3px;
+}
+
+#add-room-options {
+  position: absolute;
+  top: -1px;
+  right: 3px;
+
+  text-align: right;
+}
+
+.add-room-option {
+  position: relative;
+
+  margin-bottom: 1px;
+}
+
+/* .add-room-option > label {
+  margin-right: 5px;
+} */
+
+#add-room-btn {
+  position: absolute;
+  right: 15px;
+  bottom: 40px;
+
+  border: 0;
+  background-color: transparent;
+
+  color: var(--font80);
+  transition: color 0.4s;
+  font-size: 1.2rem;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+#add-room-btn:hover {
+  color: var(--hl-green);
+}
+
+#add-room-cancel {
+  position: absolute;
+  left: 15px;
+  bottom: 40px;
+
+  border: 0;
+  background-color: transparent;
+
+  color: var(--font80);
+  transition: color 0.4s;
+  font-size: 1.2rem;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+@media (max-width: 1180px) {
+  #room-add {
+    left: 721px;
+    right: auto;
+  }
+
+  #room-add-show-button {
+    left: 672px;
+    right: auto;
+  }
 }
 </style>
