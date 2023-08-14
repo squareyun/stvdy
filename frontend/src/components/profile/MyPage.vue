@@ -57,83 +57,103 @@
     router.go('mypage')
   }
 
-  const schema = Yup.object().shape({
-    username: Yup.string()
-      .required('닉네임을 작성해주세요.')
-      .max(45, '길이를 줄여주세요.')
-      .min(4, '더 긴 닉네임을 사용해야합니다.'),
+  await nameUser(
+    data,
+    (res) => {
+      console.log(res)
+      user.value.username = name
+    },
+    (fail) => {
+      console.log(fail)
+    },
+  )
+  router.go('mypage')
+}
+
+const schema = Yup.object().shape({
+  username: Yup.string()
+    .required('닉네임을 작성해주세요.')
+    .max(45, '길이를 줄여주세요.')
+    .min(4, '더 긴 닉네임을 사용해야합니다.'),
+})
+
+function updateStudyImage(e) {
+  e.preventDefault()
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.accept = 'image/*'
+
+  input.addEventListener('change', (event) => {
+    const selectedFile = event.target.files[0]
+    console.log(selectedFile)
+
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const imgPreviewUrl = event.target.result
+      // console.log('이게 미리보기 url',imgPreviewUrl)
+      tmpStudyImagePath.value = imgPreviewUrl
+    }
+    reader.readAsDataURL(selectedFile)
+
+    const imgformData = new FormData()
+    imgformData.append('file', selectedFile)
+    // imagePath.uploadStudyImagetoServer(userStore.user.id, imgformData) // 업로드된 이미지를 서버로 전송
+    imagePath
+      .uploadStudyImagetoServer(userStore.user.id, imgformData) // 업로드된 이미지를 서버로 전송하고 그 path를 받을거임.
+      .then(() => {
+        const StudyResoponse = imagePath.downloadStudyImagefromServer(
+          userStore.user.id,
+        )
+        if (StudyResoponse.message !== 'getUrl 실패') {
+          studyImageUrl = StudyResoponse.url // .url로 표현하는게 맞는지 모르겠음.
+        }
+      })
+      .catch((error) => {
+        console.error(
+          '이미지 업로드 및 다운로드 중 오류가 발생했습니다:',
+          error,
+        )
+      })
   })
+  input.click()
+}
 
-  function updateStudyImage(e) {
-    e.preventDefault()
-    const input = document.createElement("input")
-    input.type = "file"
-    input.accept = "image/*"
+function updateProfileImage(e) {
+  e.preventDefault()
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.accept = 'image/*'
 
-    input.addEventListener("change", (event) => {
-      const selectedFile = event.target.files[0]
-      console.log(selectedFile)
-      
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        const imgPreviewUrl = event.target.result
-        // console.log('이게 미리보기 url',imgPreviewUrl)
-        tmpStudyImagePath.value = imgPreviewUrl; 
-      }
-      reader.readAsDataURL(selectedFile)
-      
-      const imgformData = new FormData()
-      imgformData.append("file", selectedFile)
-      // imagePath.uploadStudyImagetoServer(userStore.user.id, imgformData) // 업로드된 이미지를 서버로 전송
-      imagePath.uploadStudyImagetoServer(userStore.user.id, imgformData) // 업로드된 이미지를 서버로 전송하고 그 path를 받을거임.
-        .then(() => {
-          const StudyResoponse = imagePath.downloadStudyImagefromServer(userStore.user.id)
-          if(StudyResoponse.message !== 'getUrl 실패'){
-            studyImageUrl = StudyResoponse.url  // .url로 표현하는게 맞는지 모르겠음.
-          }
-        })
-        .catch((error) => {
-          console.error('이미지 업로드 및 다운로드 중 오류가 발생했습니다:', error);
-        });
-    });
-    input.click();
-  }
-  
-  function updateProfileImage(e) {
-    e.preventDefault()
-    const input = document.createElement("input")
-    input.type = "file"
-    input.accept = "image/*"
+  input.addEventListener('change', async (event) => {
+    const selectedFile = event.target.files[0]
+    console.log(selectedFile)
 
-    input.addEventListener("change", async (event) => {
-      const selectedFile = event.target.files[0]
-      console.log(selectedFile)
-      
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        const imgPreviewUrl = event.target.result
-        // console.log('이게 미리보기 url',imgPreviewUrl)
-        tmpProfileImagePath.value = imgPreviewUrl; 
-      }
-      reader.readAsDataURL(selectedFile)
-      
-      const imgformData = new FormData()
-      imgformData.append("file", selectedFile)
-      imagePath.uploadProfileImagetoServer(userStore.user.id, imgformData) // 업로드된 이미지를 서버로 전송
-      // studyImageUrl = await downloadProfileImagefromServer(userStore.user.id)
-    });
-    input.click();
-  }
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const imgPreviewUrl = event.target.result
+      // console.log('이게 미리보기 url',imgPreviewUrl)
+      tmpProfileImagePath.value = imgPreviewUrl
+    }
+    reader.readAsDataURL(selectedFile)
 
+    const imgformData = new FormData()
+    imgformData.append('file', selectedFile)
+    imagePath.uploadProfileImagetoServer(userStore.user.id, imgformData) // 업로드된 이미지를 서버로 전송
+    // studyImageUrl = await downloadProfileImagefromServer(userStore.user.id)
+  })
+  input.click()
+}
 </script>
 
 <template>
   <div>
     <span class="mypage-content-title">프로필</span>
     <div class="mypage-content">
-      <div id="user-background-img"
+      <div
+        id="user-background-img"
         :style="`background-image: url(${studyImagePath})`"></div>
-      <div id="user-profile-img" 
+      <div
+        id="user-profile-img"
         :style="`background-image: url(${profileImagePath})`"></div>
       <h1 id="user-name">{{ user.username }}#{{ user.id }}</h1>
       <div id="user-edit">
@@ -153,7 +173,7 @@
             :class="{ 'is-invalid': errors.username }"
             v-model="nameWant" />
           <button
-            id="transmit-button"
+            id="name-transmit-button"
             type="button"
             :disabled="isSubmitting"
             @click="changeUserName(nameWant)">
@@ -179,8 +199,18 @@
       </div>
 
       <div id="edit-menu">
-        <a href="" @click="updateStudyImage">대표 이미지(스터디룸) 변경</a><!--클릭시 스터디 이미지 update할수 있게 폴더 열림-->
-        <a href="" @click="updateProfileImage">프로필 이미지 변경</a><!--클릭시 프로필 update할수 있게 폴더 열림-->
+        <a
+          href=""
+          @click="updateStudyImage">
+          대표 이미지(스터디룸) 변경
+        </a>
+        <!--클릭시 스터디 이미지 update할수 있게 폴더 열림-->
+        <a
+          href=""
+          @click="updateProfileImage">
+          프로필 이미지 변경
+        </a>
+        <!--클릭시 프로필 update할수 있게 폴더 열림-->
         <router-link to="/mypage/changepwd">비밀번호 변경</router-link>
         <router-link to="/mypage/changecolor">레이아웃 색상 설정</router-link>
       </div>

@@ -140,13 +140,16 @@ const bestAns = (id) => {
   )
 }
 
-const questionerImage = function(){
-  if(sessionStorage.getItem('questionerImage') !== undefined || sessionStorage.getItem('questionerImage') !== null){
+const questionerImage = function () {
+  if (
+    sessionStorage.getItem('questionerImage') !== undefined ||
+    sessionStorage.getItem('questionerImage') !== null
+  ) {
     return '/authorImage.png'
-  }
-  else{
+  } else {
     return sessionStorage.getItem('questionerImage')
-  }}
+  }
+}
 </script>
 
 <template>
@@ -208,7 +211,7 @@ const questionerImage = function(){
             </svg>
           </div>
           <div
-          :style="`background-image: url('${questionerImage()}');`" 
+            :style="`background-image: url('${questionerImage()}');`"
             id="author-image"></div>
           <div id="author-name">
             {{ question.regist_time }}
@@ -261,8 +264,11 @@ const questionerImage = function(){
               <span class="bested-title">채택 답변</span>
             </div>
 
-            <div 
-              :style="`background-image: url('${ans.profileimagePath || `/randomImages/randomImage${Math.floor(Math.random() * 34)}.png`}');`"
+            <div
+              :style="`background-image: url('${
+                ans.profileimagePath ||
+                `/randomImages/randomImage${Math.floor(Math.random() * 34)}.png`
+              }');`"
               id="author-image"></div>
 
             <div id="author-name">
@@ -554,6 +560,8 @@ const questionerImage = function(){
   position: absolute;
   left: 30px;
   bottom: 15px;
+
+  cursor: pointer;
 }
 
 .best-btn > path {

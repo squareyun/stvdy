@@ -134,8 +134,14 @@ async function moreAlarms() {
 
       <p
         id="alarm-more-btn"
-        @click="moreAlarms">
+        @click="moreAlarms"
+        v-if="alarms[0]">
         더 보기 +
+      </p>
+      <p
+        id="alarm-nothing"
+        v-if="!alarms[0]">
+        알림이 없습니다.
       </p>
     </div>
   </div>
@@ -312,6 +318,14 @@ async function moreAlarms() {
 
 #alarm-more-btn:hover {
   color: var(--font100);
+}
+
+#alarm-nothing {
+  margin-top: 25px;
+
+  text-align: center;
+  color: var(--font80);
+  transition: color 0.4s;
 }
 
 .closed {
