@@ -4,7 +4,7 @@
   import { nameUser } from '@/api/user'
   import Deactivate from '@/components/profile/Deactivate.vue'
   import { RouterLink, RouterView } from 'vue-router'
-  import { ref, computed } from 'vue'
+  import { ref, computed,onMounted } from 'vue'
   import { Form, Field } from 'vee-validate'
   import * as Yup from 'yup'
   import router from '@/router'
@@ -34,6 +34,10 @@
   let tmpProfileImagePath = ref(tmpProfileUrl)    // 우선 등록해둔게 없으면 무작위 프로필을 보여줌
   const profileImagePath = computed(() => {
     return profileImageUrl?profileImageUrl: tmpProfileImagePath.value
+  })
+  onMounted(() => {
+    console.log(studyImageUrl)
+    console.log(profileImageUrl)
   })
   const changeUserName = async (name) => {
     const data = {
