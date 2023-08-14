@@ -1,53 +1,64 @@
 <script setup>
-  import { useUserStore } from '@/stores' 
-  import { useImagePath } from '@/stores' //useImagePath를 추가함
-  import { nameUser } from '@/api/user'
-  import Deactivate from '@/components/profile/Deactivate.vue'
-  import { RouterLink, RouterView } from 'vue-router'
-  import { ref, computed, onMounted } from 'vue'
-  import { Form, Field } from 'vee-validate'
-  import * as Yup from 'yup'
-  import router from '@/router'
-  import { WebRtcPeer } from 'openvidu-browser/lib/OpenViduInternal/WebRtcPeer/WebRtcPeer'
-  import axios from 'axios' // 파일업로드에 이용하기 위해 사용
+import { useUserStore } from '@/stores'
+import { useImagePath } from '@/stores' //useImagePath를 추가함
+import { nameUser } from '@/api/user'
+import Deactivate from '@/components/profile/Deactivate.vue'
+import { RouterLink, RouterView } from 'vue-router'
+import { ref, computed, onMounted } from 'vue'
+import { Form, Field } from 'vee-validate'
+import * as Yup from 'yup'
+import router from '@/router'
+import { WebRtcPeer } from 'openvidu-browser/lib/OpenViduInternal/WebRtcPeer/WebRtcPeer'
+import axios from 'axios' // 파일업로드에 이용하기 위해 사용
 
-  const userStore = useUserStore()
-  const user = computed(() => userStore.user)
-  const imagePath = useImagePath()
+const userStore = useUserStore()
+const user = computed(() => userStore.user)
+const imagePath = useImagePath()
 
-  let nameWant = ''
-  nameWant = user.value.username
-  
-  let studyImageUrl = ref(sessionStorage.getItem("roomImg")?sessionStorage.getItem("roomImg"):userStore.user.roomImg) // 스터디룸 이미지를 sessionStorage에 저장된 roomImg로 부터 받아오기
-  let tmpStudyImagePath = ref('/testBackground.png')
-  let studyImagePath = computed(()=>{
-    return studyImageUrl.value?studyImageUrl.value: tmpStudyImagePath.value
-  })
-  
-  let profileImageUrl = ref(sessionStorage.getItem("profileImg")?sessionStorage.getItem("profileImg"):userStore.user.profileImg)
-  let tmpProfileUrl = `/randomImages/randomImage${Math.floor(Math.random() * 34)}.png`
-  let tmpProfileImagePath = ref(tmpProfileUrl)    // 우선 등록해둔게 없으면 무작위 프로필을 보여줌
-  const profileImagePath = computed(() => {
-    return profileImageUrl.value?profileImageUrl.value: tmpProfileImagePath.value
-  })
-  const changeUserName = async (name) => {
-    const data = {
-      nickname: name,
-    }
+let nameWant = ''
+nameWant = user.value.username
 
-    await nameUser(
-      data,
-      (res) => {
-        console.log(res)
-        user.value.username = name
-      },
-      (fail) => {
-        console.log(fail)
-      },
-    )
-    router.go('mypage')
+let studyImageUrl = ref(
+  sessionStorage.getItem('roomImg')
+    ? sessionStorage.getItem('roomImg')
+    : userStore.user.roomImg,
+) // 스터디룸 이미지를 sessionStorage에 저장된 roomImg로 부터 받아오기
+let tmpStudyImagePath = ref('/testBackground.png')
+let studyImagePath = computed(() => {
+  return studyImageUrl.value ? studyImageUrl.value : tmpStudyImagePath.value
+})
+
+let profileImageUrl = ref(
+  sessionStorage.getItem('profileImg')
+    ? sessionStorage.getItem('profileImg')
+    : userStore.user.profileImg,
+)
+let tmpProfileUrl = `/randomImages/randomImage${Math.floor(
+  Math.random() * 34,
+)}.png`
+let tmpProfileImagePath = ref(tmpProfileUrl) // 우선 등록해둔게 없으면 무작위 프로필을 보여줌
+const profileImagePath = computed(() => {
+  return profileImageUrl.value
+    ? profileImageUrl.value
+    : tmpProfileImagePath.value
+})
+const changeUserName = async (name) => {
+  const data = {
+    nickname: name,
   }
 
+  await nameUser(
+    data,
+    (res) => {
+      console.log(res)
+      user.value.username = name
+    },
+    (fail) => {
+      console.log(fail)
+    },
+  )
+  router.go('mypage')
+}
 
 const schema = Yup.object().shape({
   username: Yup.string()
@@ -103,56 +114,56 @@ function updateProfileImage(e) {
   input.type = 'file'
   input.accept = 'image/*'
 
-    input.addEventListener("change", (event) => {
-      const selectedFile = event.target.files[0]
-      console.log(selectedFile)
-      
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        const imgPreviewUrl = event.target.result
-        studyImageUrl.value = imgPreviewUrl  // tmpStudyImagePath.value = imgPreviewUrl; 
-        sessionStorage.setItem("roomImg",studyImageUrl.value) // 세션스토리지에 룸이미지를 따로 저장해서 재로그인해야만 보이는 문제 해결하기.
-      }
-      reader.readAsDataURL(selectedFile)
-      
-      const imgformData = new FormData()
-      imgformData.append("file", selectedFile)
-      imagePath.uploadStudyImagetoServer(userStore.user.id, imgformData) // 업로드된 이미지를 서버로 전송하고 그 path를 받을거임.
-        .then(() => {
-          console.log('uploadStudyImagetoServer 완료!')
-        })
-        .catch((error) => {
-          console.error('이미지 업로드에 오류가 발생했습니다:', error);
-        });
-    });
-    input.click();
-  }
-  
-  function updateProfileImage(e) {
-    e.preventDefault()
-    const input = document.createElement("input")
-    input.type = "file"
-    input.accept = "image/*"
+  input.addEventListener('change', (event) => {
+    const selectedFile = event.target.files[0]
+    console.log(selectedFile)
 
-    input.addEventListener("change", async (event) => {
-      const selectedFile = event.target.files[0]
-      console.log(selectedFile)
-      
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        const imgPreviewUrl = event.target.result
-        profileImageUrl.value = imgPreviewUrl; //tmpProfileImagePath.value = imgPreviewUrl; 
-        sessionStorage.setItem("profileImg",profileImageUrl.value) // 세션스토리지에 프로필이미지를 따로 저장해서 재로그인해야만 보이는 문제 해결하기.
-      }
-      reader.readAsDataURL(selectedFile)
-      
-      const imgformData = new FormData()
-      imgformData.append("file", selectedFile)
-      imagePath.uploadProfileImagetoServer(userStore.user.id, imgformData) // 업로드된 이미지를 서버로 전송
-    });
-    input.click();
-  }
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const imgPreviewUrl = event.target.result
+      studyImageUrl.value = imgPreviewUrl // tmpStudyImagePath.value = imgPreviewUrl;
+      sessionStorage.setItem('roomImg', studyImageUrl.value) // 세션스토리지에 룸이미지를 따로 저장해서 재로그인해야만 보이는 문제 해결하기.
+    }
+    reader.readAsDataURL(selectedFile)
 
+    const imgformData = new FormData()
+    imgformData.append('file', selectedFile)
+    imagePath
+      .uploadStudyImagetoServer(userStore.user.id, imgformData) // 업로드된 이미지를 서버로 전송하고 그 path를 받을거임.
+      .then(() => {
+        console.log('uploadStudyImagetoServer 완료!')
+      })
+      .catch((error) => {
+        console.error('이미지 업로드에 오류가 발생했습니다:', error)
+      })
+  })
+  input.click()
+}
+
+// function updateProfileImage(e) {
+//   e.preventDefault()
+//   const input = document.createElement("input")
+//   input.type = "file"
+//   input.accept = "image/*"
+
+//   input.addEventListener("change", async (event) => {
+//     const selectedFile = event.target.files[0]
+//     console.log(selectedFile)
+
+//     const reader = new FileReader()
+//     reader.onload = (event) => {
+//       const imgPreviewUrl = event.target.result
+//       profileImageUrl.value = imgPreviewUrl; //tmpProfileImagePath.value = imgPreviewUrl;
+//       sessionStorage.setItem("profileImg",profileImageUrl.value) // 세션스토리지에 프로필이미지를 따로 저장해서 재로그인해야만 보이는 문제 해결하기.
+//     }
+//     reader.readAsDataURL(selectedFile)
+
+//     const imgformData = new FormData()
+//     imgformData.append("file", selectedFile)
+//     imagePath.uploadProfileImagetoServer(userStore.user.id, imgformData) // 업로드된 이미지를 서버로 전송
+//   });
+//   input.click();
+// }
 </script>
 
 <template>
