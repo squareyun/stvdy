@@ -49,7 +49,7 @@ export const useImagePath = defineStore({
     async uploadProfileImagetoServer(userNo, newimgformData){
       try {
         console.log('프로필 이미지 업로드중1')
-        const response = await axios.post(this.applicationServerUrl+'files/upload/room/'+userNo, newimgformData, {
+        const response = await axios.post(this.applicationServerUrl+'files/upload/profile/'+userNo, newimgformData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
