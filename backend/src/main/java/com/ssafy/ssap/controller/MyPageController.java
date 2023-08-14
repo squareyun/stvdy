@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -65,6 +66,44 @@ public class MyPageController {
 			status = HttpStatus.ACCEPTED;
 		} catch (Exception e) {
 			logger.error("닉네임 변경 실패: ", e);
+			resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage());
+			status = HttpStatus.INTERNAL_SERVER_ERROR;
+		}
+
+		return new ResponseEntity<Map<String, Object>>(resultMap, status);
+	}
+
+	@PutMapping("/api-key")
+	@PreAuthorize("hasAnyRole('USER','ADMIN')")
+	public ResponseEntity<Map<String, Object>> updateApiKey(@RequestBody Map<String, String> map) {
+		Map<String, Object> resultMap = new HashMap<>();
+		HttpStatus status = null;
+		try {
+			String apiKey = userService.updateApiKey(map.get("apiKey"));
+			logger.info("api-key 변경 성공: apiKey = {}", apiKey);
+			resultMap.put("message", MessageFormat.SUCCESS);
+			status = HttpStatus.ACCEPTED;
+		} catch (Exception e) {
+			logger.error("api-key 변경 실패: ", e);
+			resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage());
+			status = HttpStatus.INTERNAL_SERVER_ERROR;
+		}
+
+		return new ResponseEntity<Map<String, Object>>(resultMap, status);
+	}
+
+	@DeleteMapping("/api-key")
+	@PreAuthorize("hasAnyRole('USER','ADMIN')")
+	public ResponseEntity<Map<String, Object>> deleteApiKey() {
+		Map<String, Object> resultMap = new HashMap<>();
+		HttpStatus status = null;
+		try {
+			userService.deleteApiKey();
+			logger.info("api-key 삭제 성공");
+			resultMap.put("message", MessageFormat.SUCCESS);
+			status = HttpStatus.ACCEPTED;
+		} catch (Exception e) {
+			logger.error("api-key 삭제 실패");
 			resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage());
 			status = HttpStatus.INTERNAL_SERVER_ERROR;
 		}
