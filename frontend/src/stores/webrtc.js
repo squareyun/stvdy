@@ -7,9 +7,9 @@ import axios from 'axios'
 export const usewebRtcStore = defineStore({
   id: 'webrtc',
   state: () => ({
-    // APPLICATION_SERVER_URL: 'http://localhost:8080/',
+    APPLICATION_SERVER_URL: 'http://localhost:8080/',
     // APPLICATION_SERVER_URL: 'https://i9d205.p.ssafy.io/api/', // 배포된 서버
-    APPLICATION_SERVER_URL: '/api/', // 배포된 서버
+    // APPLICATION_SERVER_URL: '/api/', // 배포된 서버
 
     userNo: useUserStore().user.id,
     userId: (Math.floor(Math.random() * (200 - 1 + 1)) + 1), // 테스트를 위해서 임시로...
@@ -293,6 +293,7 @@ export const usewebRtcStore = defineStore({
         // participan~~ 는 방에 참여한 사람 번호,  userNo는 내 번호.
         // participantNo는 방에 독립적인 참여자 번호,
         console.log('함수 roomExit try중')
+        console.log(this.APPLICATION_SERVER_URL + 'rooms/exit')
         const response = await axios.post(
           this.APPLICATION_SERVER_URL + 'rooms/exit',
           { roomNo: roomId, userNo: this.userNo },

@@ -10,7 +10,8 @@ import {
   onBeforeUnmount,
 } from 'vue'
 import axios from 'axios'
-import { OpenVidu } from 'openvidu-browser'
+// import { OpenVidu } from 'openvidu-browser'
+import { OpenVidu } from 'assets/openvidu-browser-2.28.0.min.js'; // 파일의 상대 경로로 수정
 import UserVideo from '@/components/webrtc/UserVideo.vue'
 import MessageChat from '@/components/webrtc/MessageChat.vue'
 import { useRouter } from 'vue-router'
@@ -71,8 +72,9 @@ axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8'
 // 추후 배포와 관련해서 이부분에 대해서 설정을 할 필요가 있게 될것.
 // const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'https://i9d205.p.ssafy.io/api/';
 // const APPLICATION_SERVER_URL = 'https://i9d205.p.ssafy.io/api/'
-const APPLICATION_SERVER_URL =
-  process.env.NODE_ENV === 'production' ? '' : '/api'
+// const APPLICATION_SERVER_URL =
+//   process.env.NODE_ENV === 'production' ? '' : '/api'
+const APPLICATION_SERVER_URL ='http://localhost:8080/'
 // const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://54.180.9.43:8080/';
 
 // OpenVidu objects
@@ -541,7 +543,7 @@ async function createToken(mySessionId, roomId) {
       localStorage.setItem('roomId', response.data.room.id) // 로컬스토리지에 roomId를 저장시켰으니 shutDown시킬때
 
       // const responseImagePath = webrtcstore.downloadImagefromServer(userNo)
-      console.log(responseImagePath)
+      // console.log(responseImagePath)
       // try{
       //   webrtcstore.giveRole(roomId)
       // }
