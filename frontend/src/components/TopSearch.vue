@@ -19,7 +19,8 @@ const openAlarms = () => {
 
 
 let tmpProfileUrl = `/randomImages/randomImage${Math.floor(Math.random() * 34)}.png`
-let profileImg = userStore.user.profileImg
+// let profileImg = userStore.user.profileImg
+let profileImg = userStore.user.profileImg.replace(/&quot;/g, '"');
 
 const profileImagePath = computed(() => { // user가 등록한 프로필 이미지가 없으면, 임의 프로필을 보여줌
   // return userStore.user.profileImagePath?userStore.user.profileImagePath:tmpProfileUrl   //'/testProfile.png'

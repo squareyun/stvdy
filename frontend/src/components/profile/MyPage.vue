@@ -28,7 +28,8 @@
     return studyImageUrl?studyImageUrl: tmpStudyImagePath.value
   })
 
-  let profileImageUrl = userStore.user.profileImg //let profileImageUrl = userStore.user.profileImagePath
+  // let profileImageUrl = userStore.user.profileImg //let profileImageUrl = userStore.user.profileImagePath
+  let profileImageUrl = userStore.user.profileImg.replace(/&quot;/g, '"');
   // let tmpProfileImagePath = ref('/testProfile.png')           // 세션이나 로컬에 따로 저장해버리면 되지않을까?
   let tmpProfileImagePath = ref(tmpProfileUrl)    // 우선 등록해둔게 없으면 무작위 프로필을 보여줌
   const profileImagePath = computed(() => {
