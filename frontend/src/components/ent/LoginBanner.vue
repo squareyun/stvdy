@@ -1,5 +1,5 @@
 <template>
-  <div id="banner">Test Image</div>
+  <div id="banner"></div>
 </template>
 
 <style scoped>
