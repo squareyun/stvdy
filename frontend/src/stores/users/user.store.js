@@ -43,6 +43,8 @@ export const useUserStore = defineStore('users', () => {
       email: values.email,
       realname: values.name,
       username: values.nickname,
+      profileImg: values.profileImagePath,
+      roomImg: values.roomImagePath,
     }
   }
 
