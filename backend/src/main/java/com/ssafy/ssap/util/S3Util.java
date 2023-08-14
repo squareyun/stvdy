@@ -104,7 +104,7 @@ public class S3Util {
 
     @Transactional
     public void updateDatabase(Object entity, List<String> fileNameList) {
-        String basePath = "https://s3.amazonaws.com/ssapbucket/";
+        String basePath = "https://ssapbucket.s3.ap-northeast-2.amazonaws.com/";
 
         JpaRepository<?, Integer> repository = getRepository(entity);
         List<ArticleImage> articleImagesToUpdate = new ArrayList<>();
