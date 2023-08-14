@@ -340,6 +340,7 @@ function joinSession() {
       // roomId가 변경되면 localstorage에 저장합니다.
       localStorage.setItem('roomId', roomId.value) // 로컬스토리지에 roomId를 저장시켰으니 shutDown시킬때
     }
+    console.log(':: session ::', session.value)
     session.value
       .connect(token, { clientData: myUserName.value })
       .then(() => {

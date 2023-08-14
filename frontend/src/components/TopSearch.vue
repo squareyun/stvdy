@@ -17,12 +17,15 @@ const openAlarms = () => {
   else alarmList.className = 'closed'
 }
 
+let tmpProfileUrl = `/randomImages/randomImage${Math.floor(
+  Math.random() * 34,
+)}.png`
 
-let tmpProfileUrl = `/randomImages/randomImage${Math.floor(Math.random() * 34)}.png`
-
-
-const profileImagePath = computed(() => { // user가 등록한 프로필 이미지가 없으면, 임의 프로필을 보여줌
-  return userStore.user.profileImagePath?userStore.user.profileImagePath:tmpProfileUrl   //'/testProfile.png'
+const profileImagePath = computed(() => {
+  // user가 등록한 프로필 이미지가 없으면, 임의 프로필을 보여줌
+  return userStore.user.profileImagePath
+    ? userStore.user.profileImagePath
+    : tmpProfileUrl //'/testProfile.png'
 })
 
 async function showDetail(url) {
@@ -132,8 +135,14 @@ async function moreAlarms() {
 
       <p
         id="alarm-more-btn"
-        @click="moreAlarms">
+        @click="moreAlarms"
+        v-if="alarms[0]">
         더 보기 +
+      </p>
+      <p
+        id="alarm-nothing"
+        v-if="!alarms[0]">
+        알림이 없습니다.
       </p>
     </div>
   </div>
@@ -310,6 +319,14 @@ async function moreAlarms() {
 
 #alarm-more-btn:hover {
   color: var(--font100);
+}
+
+#alarm-nothing {
+  margin-top: 25px;
+
+  text-align: center;
+  color: var(--font80);
+  transition: color 0.4s;
 }
 
 .closed {
