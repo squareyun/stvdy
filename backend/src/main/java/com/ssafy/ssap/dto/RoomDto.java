@@ -23,7 +23,7 @@ public class RoomDto {
     private String rule;
     private Integer currentNumber;
 
-    public RoomDto(int id, String title, int quota, Boolean isPrivacy, Boolean isValid, String sessionId, String password, LocalDateTime due_time, String imagePath, String rule){
+    public RoomDto(int id, String title, int quota, Boolean isPrivacy, Boolean isValid, String sessionId, String password, LocalDateTime due_time, String rule){
         this.id = id;
         this.title = title;
         this.quota = quota;
@@ -32,11 +32,11 @@ public class RoomDto {
         this.sessionId = sessionId;
         this.password = password;
         this.due_time = due_time;
-        this.imagePath = imagePath;
+        this.imagePath = null;
         this.rule = rule;
     }
 
-    public RoomDto(Room room) {
+    public RoomDto(Room room, String imagePath) {
         this.id = room.getId();
         this.title = room.getTitle();
         this.quota = room.getQuota();
@@ -45,7 +45,9 @@ public class RoomDto {
         this.sessionId = room.getSessionId();
         this.password = room.getPassword();
         this.due_time = room.getEndTime();
-        this.imagePath = room.getImagePath();
+//        this.imagePath = room.getImagePath();
         this.rule = room.getRule();
+
+        this.imagePath = imagePath;
     }
 }

@@ -1,6 +1,6 @@
 <script setup>
 import { Form, Field } from 'vee-validate'
-import { useQuestionStore, useUserStore } from '@/stores'
+import { useQuestionStore, useUserStore, useImagePath } from '@/stores'
 import { computed, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import router from '@/router'
@@ -15,6 +15,8 @@ import {
 const $route = useRoute()
 
 let myAnswer = ''
+
+const imagePath = useImagePath()
 
 const userStore = useUserStore()
 const user = computed(() => userStore.user)
@@ -137,6 +139,17 @@ const bestAns = (id) => {
     (fail) => console.log(fail),
   )
 }
+
+const questionerImage = function () {
+  if (
+    sessionStorage.getItem('questionerImage') !== undefined ||
+    sessionStorage.getItem('questionerImage') !== null
+  ) {
+    return '/authorImage.png'
+  } else {
+    return sessionStorage.getItem('questionerImage')
+  }
+}
 </script>
 
 <template>
@@ -197,7 +210,9 @@ const bestAns = (id) => {
               </defs>
             </svg>
           </div>
-          <div id="author-image"></div>
+          <div
+            :style="`background-image: url('${questionerImage()}');`"
+            id="author-image"></div>
           <div id="author-name">
             {{ question.regist_time }}
             <span id="wrote-time">{{ question.userNickname }}</span>
@@ -249,7 +264,12 @@ const bestAns = (id) => {
               <span class="bested-title">채택 답변</span>
             </div>
 
-            <div id="author-image"></div>
+            <div
+              :style="`background-image: url('${
+                ans.profileimagePath ||
+                `/randomImages/randomImage${Math.floor(Math.random() * 34)}.png`
+              }');`"
+              id="author-image"></div>
 
             <div id="author-name">
               <span
@@ -427,7 +447,7 @@ const bestAns = (id) => {
   width: 60px;
   height: 30px;
 
-  background-image: url('/authorImage.png');
+  /* background-image: url('/authorImage.png'); */
   background-size: cover;
   background-position: center;
   cursor: pointer;
@@ -540,6 +560,8 @@ const bestAns = (id) => {
   position: absolute;
   left: 30px;
   bottom: 15px;
+
+  cursor: pointer;
 }
 
 .best-btn > path {

@@ -60,7 +60,7 @@ public class RoomService {
 
     @PostConstruct
     public void roomServiceInitialize(){
-        String OPENVIDU_URL = "https://i9d205.p.ssafy.io:8442/";
+        String OPENVIDU_URL = "https://i9d205.p.ssafy.io:8443/";
         String SECRET = "ssapssap";
         openVidu = new OpenVidu(OPENVIDU_URL,SECRET);
     }
@@ -89,7 +89,7 @@ public class RoomService {
                     .sessionId(session.getSessionId())
                     .password(roomCreateDto.getPassword())
                     .endTime(LocalDateTime.now().plusHours(roomCreateDto.getEndHour()).plusMinutes(roomCreateDto.getEndMinute()))
-                    .imagePath(roomCreateDto.getImagePath())
+//                    .imagePath(roomCreateDto.getImagePath())
                     .rule(roomCreateDto.getRule())
                     .build();
             roomRepository.save(room);
@@ -200,7 +200,10 @@ public class RoomService {
     public void close(Integer roomNo) throws OpenViduJavaClientException, OpenViduHttpException {
         // 방에 접속한 사람들의 room_log 데이터 업데이트
         roomLogRepository.updateSpendHourByAllRoomId(roomNo);
-        participantRepository.deleteByRoomId(roomNo);
+        List<Participant> participantList = participantRepository.findAllByRoomId(roomNo);
+        for(Participant p : participantList){
+            p.setIsOut(true);
+        }
 
         roomRepository.setValidToZeroByRoomId(roomNo);
 
@@ -229,14 +232,21 @@ public class RoomService {
         logger.debug("getRoom, code:"+code);
         Map<String, Object> resultMap = new HashMap<>();
         Room room = roomRepository.findByCode(code).orElse(null);
-        if(room!=null){
-            RoomDto roomDto = new RoomDto(room);
+       try{
+           if(room.getIsValid()==false){
+               resultMap.put("meesage","이 방은 폐쇄되었습니다.");
+               return resultMap;
+           }
+            User host = participantRepository.findUserByRoomIdAndRole(room, participantRoleNsRepository.findByName("호스트"));
+            RoomDto roomDto = new RoomDto(room, host.getRoomImagePath());
             Integer num = participantRepository.countByRoomIdAndIsOut(roomDto.getId(),false);
             roomDto.setCurrentNumber(num);
 
             resultMap.put("room",roomDto);
             resultMap.put("matched",true);
-        }else{
+        }catch(NullPointerException e){
+           logger.error("code에 해당하는 방 없음"+code+"/"+room.getId());
+           logger.error("혹은 host is null");
             resultMap.put("matched",false);
         }
         return resultMap;
@@ -330,11 +340,6 @@ public class RoomService {
     @SuppressWarnings("DataFlowIssue")
     @Transactional
     public HttpStatus exit(Integer roomNo, Integer userNo) throws OpenViduJavaClientException, OpenViduHttpException {
-        /*
-        1. openvidu connection close
-        2. room_log 수정
-        3. participant 테이블 수정
-         */
         String connectionId;
         Session session;
         HttpStatus status;
@@ -397,10 +402,20 @@ public class RoomService {
                 .and(RoomSpecifications.isValid(true));
         Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by(Sort.Direction.DESC,"id"));
         Page<Room> roomList = roomRepository.findAll(specification, pageable);
-        @SuppressWarnings("Convert2MethodRef")
-        Page<RoomDto> roomDtoList = roomList.map(room -> new RoomDto(room));
+        try{
+            Page<RoomDto> roomDtoList = roomList.map(room -> {
+                User host = participantRepository.findUserByRoomIdAndRole(room, participantRoleNsRepository.findByName("호스트"));
+                logger.debug("user의 roomiMagePath 조회중"+room.getId()+"/"+host.getRoomImagePath()+"/"+host.getId());
+                return new RoomDto(room,host.getRoomImagePath());
+            });
 
-        resultMap.put("roomList",roomDtoList);
+            resultMap.put("roomList",roomDtoList);
+        }catch(NullPointerException e){
+            logger.error("특정 room에 해당하는 host 찾지 못함"+e);
+        }catch(Exception e){
+            logger.error("뭔에러고이건"+e);
+        }
+
         return resultMap;
     }
 

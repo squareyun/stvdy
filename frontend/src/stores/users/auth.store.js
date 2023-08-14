@@ -77,6 +77,8 @@ export const useAuthStore = defineStore({
       localStorage.removeItem('access-token')
       sessionStorage.removeItem('access-token')
       sessionStorage.removeItem('user')
+      sessionStorage.removeItem('roomImg')    // 세션에 저장된 roomimg 제거
+      sessionStorage.removeItem('profileImg') // 세션에 저장된 profileimg 제거
 
       router.push('/about')
     },

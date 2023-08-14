@@ -11,6 +11,7 @@ import {
 } from 'vue'
 import axios from 'axios'
 import { OpenVidu } from 'openvidu-browser'
+// import { OpenVidu } from 'assets/openvidu-browser-2.28.0.min.js'; // 파일의 상대 경로로 수정
 import UserVideo from '@/components/webrtc/UserVideo.vue'
 import MessageChat from '@/components/webrtc/MessageChat.vue'
 import { useRouter } from 'vue-router'
@@ -38,7 +39,6 @@ function preventRefresh(event) {
 }
 
 var deviceToggled = ref(false)
-
 const deviceSettingToggle = () => {
   const deviceBox = document.getElementById('profile-div')
   if (!deviceToggled.value) {
@@ -70,11 +70,12 @@ const deviceSettingToggle = () => {
 
 axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8'
 // 추후 배포와 관련해서 이부분에 대해서 설정을 할 필요가 있게 될것.
-// const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'https://i9d205.p.ssafy.io/api/';
-// const APPLICATION_SERVER_URL = 'https://i9d205.p.ssafy.io/api/'
+
+// const APPLICATION_SERVER_URL =
+//   process.env.NODE_ENV === 'production' ? '' : 'https://i9d205.p.ssafy.io/api/'
+// const APPLICATION_SERVER_URL = 'https://i9d205.p.ssafy.io/api/api/'
 const APPLICATION_SERVER_URL =
-  process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080/'
-// const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://54.180.9.43:8080/';
+  process.env.NODE_ENV === 'production' ? '' : '/api'
 
 // OpenVidu objects
 const OV = ref(undefined)
@@ -339,6 +340,7 @@ function joinSession() {
       // roomId가 변경되면 localstorage에 저장합니다.
       localStorage.setItem('roomId', roomId.value) // 로컬스토리지에 roomId를 저장시켰으니 shutDown시킬때
     }
+    console.log(':: session ::', session.value)
     session.value
       .connect(token, { clientData: myUserName.value })
       .then(() => {
@@ -471,7 +473,7 @@ async function createToken(mySessionId, roomId) {
       console.log(roomNo, userNo, inputPassword)
       // const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/' + roomNo, {userNo: userNo, password: inputPassword}, {
       const response = await axios.post(
-        APPLICATION_SERVER_URL + 'rooms/' + roomNo,
+        'https://i9d205.p.ssafy.io/api/rooms/' + roomNo,
         { userNo: userNo, password: inputPassword },
         {
           headers: { 'Content-Type': 'application/json' },
@@ -507,7 +509,7 @@ async function createToken(mySessionId, roomId) {
     try {
       // console.log('몇시간작동할겨?',endHour, endMinute)
       const response = await axios.post(
-        APPLICATION_SERVER_URL + 'rooms/add',
+        'https://i9d205.p.ssafy.io/api/rooms/add',
         {
           userNo: userNo,
           title: mySessionId,
@@ -541,8 +543,8 @@ async function createToken(mySessionId, roomId) {
       // roomId가 변경되면 localstorage에 저장합니다.
       localStorage.setItem('roomId', response.data.room.id) // 로컬스토리지에 roomId를 저장시켰으니 shutDown시킬때
 
-      const responseImagePath = webrtcstore.downloadImagefromServer(userNo)
-      console.log(responseImagePath)
+      // const responseImagePath = webrtcstore.downloadImagefromServer(userNo)
+      // console.log(responseImagePath)
       // try{
       //   webrtcstore.giveRole(roomId)
       // }
@@ -716,7 +718,7 @@ async function checkConnection(roomId) {
   console.log(subscribersComputed.value.length)
   try {
     const response = await axios.get(
-      APPLICATION_SERVER_URL + `rooms/currentConnection/${roomId}`,
+      `https://i9d205.p.ssafy.io/api/rooms/currentConnection/${roomId}`,
     )
     console.log(response.data)
   } catch (error) {
@@ -751,7 +753,12 @@ async function handleForceDisconnect(subscriber) {
 
 <template>
   <div id="session-top">
-    <h1 id="session-title">{{ mySessionId }}</h1>
+    <!-- <span
+      v-if="isHost"
+      @click="handleShutDownRoom(roomId)">
+      방 폐쇄하기
+    </span> -->
+    <span id="session-title">{{ mySessionId }}</span>
   </div>
   <div
     id="session"
@@ -778,11 +785,6 @@ async function handleForceDisconnect(subscriber) {
       <!-- 캠 및 오디오 관련 -->
 
       <!-- 방 종료 버튼 -->
-      <div
-        id=""
-        v-if="isHost">
-        <button @click="handleShutDownRoom(roomId)">방 폐쇄하기</button>
-      </div>
     </div>
   </div>
   <!--  -->
@@ -793,22 +795,7 @@ async function handleForceDisconnect(subscriber) {
     <div id="function-tabs">
       <ul
         id="function-ui"
-        style="display: flex"
-        v-if="isHost">
-        <li
-          v-for="(tab, index) in funcTabsHost"
-          :key="index"
-          id="tab{{index}}"
-          class="function-tab"
-          :class="{ active: activeFuncTab === index }"
-          @click="changeTab(index)">
-          {{ tab }}
-        </li>
-      </ul>
-      <ul
-        id="function-ui"
-        style="display: flex"
-        v-else>
+        style="display: flex">
         <li
           :key="0"
           class="function-tab"
@@ -1182,7 +1169,7 @@ async function handleForceDisconnect(subscriber) {
 <style scoped>
 #session-top {
   position: fixed;
-  top: 9px;
+  top: 12px;
   right: 20px;
 
   z-index: 2;
@@ -1190,10 +1177,13 @@ async function handleForceDisconnect(subscriber) {
   color: var(--hl-light80);
   font-family: 'ASDGothicM';
   font-size: 1rem;
+
+  vertical-align: middle;
 }
 
 #session-title {
-  margin: 0px;
+  font-family: 'ASDGothicH';
+  font-size: 1.6rem;
 }
 #session {
   position: fixed;

@@ -1,11 +1,12 @@
 <script setup>
-import { useQuestionStore } from '@/stores'
+import { useQuestionStore, useImagePath } from '@/stores'
 import router from '@/router'
 import { useRoute } from 'vue-router'
 import { computed, onBeforeUnmount } from 'vue'
 
 const $route = useRoute()
 
+const imagePath = useImagePath()
 const questionStore = useQuestionStore()
 const questions = computed(() => questionStore.questions)
 const totalAmount = computed(() => questionStore.totalAmount)
@@ -66,7 +67,8 @@ const sortNone = () => {
   questionStore.getList(query)
 }
 
-async function showDetail(id) {
+async function showDetail(id,path) {
+  imagePath.updateQuestionerProfilePath(path) // 질문자 프로필을 세션에 저장해두는 함수
   router.push(`/questiondetail/${id}`)
 }
 
@@ -111,7 +113,7 @@ onBeforeUnmount(() => {
           class="question-row"
           v-for="(qtn, index) in questions"
           :key="qtn.id"
-          @click="showDetail(qtn.id)">
+          @click="showDetail(qtn.id,qtn.profileimagePath)">
           <td class="question-done">
             <div
               id="best-selected"

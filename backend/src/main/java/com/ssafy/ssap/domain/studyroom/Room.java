@@ -47,8 +47,8 @@ public class Room {
     @Column(name = "session_id", length = 30)
     private String sessionId;
 
-    @Column(name = "image_path", length = 45)
-    private String imagePath;
+//    @Column(name = "image_path", length = 45)
+//    private String imagePath;
 
     @Column
     private String rule;

@@ -1,9 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-// import RoomView from '../views/RoomView.vue'
 import { useAuthStore, useAlertStore, useUserStore } from '@/stores'
-import TestView from '../views/TestView.vue'
-import Test from '../components/Test.vue'
-import MyPageView from '../views/MyPageView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,76 +7,70 @@ const router = createRouter({
     {
       path: '/',
       alias: ['/home'],
-      component: TestView,
-      // component: () => import('../views/HomeView.vue'),
+      component: () => import('@/views/HomeView.vue'),
       children: [
-        // {
-        //   path: '',
-        //   name: 'main',
-        //   component: Test,
-        // },
         {
           path: '/hometest',
           name: 'hometest',
-          component: () => import('../components/HomeMain.vue'),
+          component: () => import('@/components/HomeMain.vue'),
         },
       ],
     },
     {
       path: '/mypage',
-      component: MyPageView,
+      component: () => import('@/views/MyPageView.vue'),
       children: [
         {
           path: '',
-          component: () => import('../components/profile/MyPage.vue'),
+          component: () => import('@/components/profile/MyPage.vue'),
           children: [
             {
               path: 'changepwd',
-              component: () => import('../components/profile/ChangePwd.vue'),
+              component: () => import('@/components/profile/ChangePwd.vue'),
             },
             {
               path: 'changecolor',
-              component: () => import('../components/profile/ChangeColor.vue'),
+              component: () => import('@/components/profile/ChangeColor.vue'),
             },
           ],
         },
         {
           path: '/alarms',
           name: 'alarms',
-          component: () => import('../components/alarm/MyAlarmList.vue'),
+          component: () => import('@/components/alarm/MyAlarmList.vue'),
         },
       ],
     },
     {
       path: '/question',
       name: 'question',
-      component: () => import('../views/QuestionView.vue'),
+      component: () => import('@/views/QuestionView.vue'),
       children: [
         {
           path: '/question/:page',
           name: 'listquestions',
-          component: () => import('../components/qna/QuestionList.vue'),
+          component: () => import('@/components/qna/QuestionList.vue'),
         },
         {
           path: '/myquestion/:page',
           name: 'myquestion',
-          component: () => import('../components/qna/MyQuestionList.vue'),
+          component: () => import('@/components/qna/MyQuestionList.vue'),
         },
         {
           path: '/createquestion',
           name: 'createquestion',
-          component: () => import('../components/qna/CreateQuestion.vue'),
+          component: () => import('@/components/qna/CreateQuestion.vue'),
         },
         {
           path: '/modifyquestion/:id',
           name: 'modifyquestion',
-          component: () => import('../components/qna/CreateQuestion.vue'),
+          component: () => import('@/components/qna/CreateQuestion.vue'),
         },
         {
           path: '/questiondetail/:id',
           name: 'questiondetail',
           params: {},
-          component: () => import('../components/qna/QuestionDetail.vue'),
+          component: () => import('@/components/qna/QuestionDetail.vue'),
         },
       ],
     },
@@ -90,30 +80,36 @@ const router = createRouter({
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
+      component: () => import('@/views/AboutView.vue'),
       children: [
         {
           path: '',
           name: 'login',
-          component: () => import('../components/ent/LoginBox.vue'),
+          component: () => import('@/components/ent/LoginBox.vue'),
         },
         {
           path: '/regist',
           name: 'regist',
-          component: () => import('../components/ent/RegisterBox.vue'),
+          component: () => import('@/components/ent/RegisterBox.vue'),
         },
         {
           path: '/passwordReset',
           name: 'passwordReset',
-          component: () => import('../components/ent/PasswordReset.vue'),
+          component: () => import('@/components/ent/PasswordReset.vue'),
         },
       ],
     },
     {
-      // 화상 채팅 방 생성
       path: '/room',
-      name: 'roomAdd',
-      component: () => import('@/components/webrtc/RoomAdd.vue'),
+      name: 'room',
+      component: () => import('@/views/RoomView.vue'),
+      children: [
+        {
+          path: '/room/list',
+          name: 'listrooms',
+          component: () => import('@/components/main/HomeMain.vue'),
+        },
+      ],
     },
     {
       // 화상 채팅 방 참여
@@ -159,11 +155,7 @@ router.beforeEach(async (to) => {
 
   // 로그인 없이도 접근 가능한 라우터
   // 접근 하려는 라우터가 public 인지 확인
-  const testPages = [
-    '/about',
-    '/regist',
-    '/passwordReset',
-  ]
+  const testPages = ['/about', '/regist', '/passwordReset']
   const authRequired = !testPages.includes(to.path)
   const loginLogics = ['/about', '/regist', '/passwordReset']
 

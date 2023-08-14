@@ -1,7 +1,10 @@
 <script setup>
 import { useAlarmStore } from '@/stores'
-import { computed } from 'vue'
+import { useUserStore } from '@/stores' // 프로필이미지 등록을 위해서 import
+import { ref, computed, onMounted } from 'vue'
 import router from '@/router'
+
+const userStore = useUserStore() // 프로필 이미지 등록을 위해 userStore사용
 
 const alarmStore = useAlarmStore()
 const alarms = computed(() => alarmStore.alarms)
@@ -9,10 +12,30 @@ const alarms = computed(() => alarmStore.alarms)
 alarmStore.getList()
 
 const openAlarms = () => {
-  const alarmList = document.getElementById('alarms')
-  if (alarmList.className == 'closed') alarmList.className = 'opened'
-  else alarmList.className = 'closed'
+  const a = document.getElementById('alarms')
+  if (a.style.display == '' || a.style.display == 'none')
+    a.style.display = 'block'
+  else a.style.display = 'none'
+
+  const e = document.getElementById('room-add')
+  if (e.style.display == 'block') e.style.display = 'none'
 }
+
+let tmpProfileUrl = `/randomImages/randomImage${Math.floor(
+  Math.random() * 34,
+)}.png`
+
+let profileValue = ref(
+  sessionStorage.getItem('profileImg')
+    ? sessionStorage.getItem('profileImg')
+    : userStore.user.profileImg,
+)
+let profileImageUrl = ref(profileValue.value ? profileValue.value : null)
+
+const profileImagePath = computed(() => {
+  // user가 등록한 프로필 이미지가 없으면, 임의 프로필을 보여줌
+  return profileImageUrl.value ? profileImageUrl.value : tmpProfileUrl //'/testProfile.png'
+})
 
 async function showDetail(url) {
   router.push(url)
@@ -49,12 +72,11 @@ async function moreAlarms() {
       </button>
     </form>
     <div
+      :style="`background-image: url(${profileImagePath})`"
       @click="openAlarms"
       id="alarms-btn"></div>
 
-    <div
-      id="alarms"
-      class="closed">
+    <div id="alarms">
       <p>알림</p>
       <!-- <router-link
         id="mypage-btn"
@@ -120,8 +142,14 @@ async function moreAlarms() {
 
       <p
         id="alarm-more-btn"
-        @click="moreAlarms">
+        @click="moreAlarms"
+        v-if="alarms[0]">
         더 보기 +
+      </p>
+      <p
+        id="alarm-nothing"
+        v-if="!alarms[0]">
+        알림이 없습니다.
       </p>
     </div>
   </div>
@@ -186,7 +214,7 @@ async function moreAlarms() {
   width: 82px;
   height: 41px;
 
-  background-image: url('/testProfile.png');
+  /* background-image: url('/testProfile.png'); */
   background-size: cover;
   background-position: center;
   cursor: pointer;
@@ -194,24 +222,9 @@ async function moreAlarms() {
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.16), 0 2px 3px rgba(0, 0, 0, 0.23);
 }
 
-@media (max-width: 1190px) {
-  #search-input {
-    left: 721px;
-    right: auto;
-  }
-
-  #search-btn {
-    left: 1016px;
-    right: auto;
-  }
-
-  #alarms-btn {
-    left: 1078px;
-    right: auto;
-  }
-}
-
 #alarms {
+  display: none;
+
   position: fixed;
   top: 55px;
   right: 20px;
@@ -300,17 +313,39 @@ async function moreAlarms() {
   color: var(--font100);
 }
 
-.closed {
-  display: none;
-}
+#alarm-nothing {
+  margin-top: 25px;
 
-.opened {
-  display: block;
+  text-align: center;
+  color: var(--font80);
+  transition: color 0.4s;
 }
 
 .top-alarm-title {
   display: block;
   font-size: 0.95rem;
   color: var(--font100);
+}
+
+@media (max-width: 1180px) {
+  #search-input {
+    left: 721px;
+    right: auto;
+  }
+
+  #search-btn {
+    left: 1016px;
+    right: auto;
+  }
+
+  #alarms-btn {
+    left: 1078px;
+    right: auto;
+  }
+
+  #alarms {
+    left: 721px;
+    right: auto;
+  }
 }
 </style>
