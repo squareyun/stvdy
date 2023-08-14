@@ -46,7 +46,7 @@
   const isPrivacy = ref(webrtcstore.isPrivacy)
 
   // sc3 이미지 잘되나????
-  const computedImage = ref(null)
+  // const computedImage = ref(null)
   // onUpdated(()=>{
   //   computedImage.value = downloadImagefromServer()
   // })
@@ -240,10 +240,10 @@
     }
     reader.readAsDataURL(backImgFile.value)
     uploadImagetoServer()
-    setTimeout(() => {
-      webrtcstore.downloadImagefromServer(userNo.value)
-      // webrtcstore.downloadImagefromServer(1)
-      }, 3000);  
+    // setTimeout(() => {
+    //   webrtcstore.downloadImagefromServer(userNo.value)
+    //   // webrtcstore.downloadImagefromServer(1)
+    //   }, 3000);  
   }
   
   const rule = ref(webrtcstore.rule)
@@ -369,9 +369,9 @@
           </button>
         </p>
 
-        <p>
+        <!-- <p>
           <img :src="computedImage" alt="업로드 후 다운로드가 되나?">
-        </p>
+        </p> -->
       </div>
     </div>
   </div>

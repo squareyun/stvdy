@@ -540,7 +540,7 @@ async function createToken(mySessionId, roomId) {
       // roomId가 변경되면 localstorage에 저장합니다.
       localStorage.setItem('roomId', response.data.room.id) // 로컬스토리지에 roomId를 저장시켰으니 shutDown시킬때
 
-      const responseImagePath = webrtcstore.downloadImagefromServer(userNo)
+      // const responseImagePath = webrtcstore.downloadImagefromServer(userNo)
       console.log(responseImagePath)
       // try{
       //   webrtcstore.giveRole(roomId)
