@@ -60,7 +60,7 @@ public class RoomService {
 
     @PostConstruct
     public void roomServiceInitialize(){
-        String OPENVIDU_URL = "https://i9d205.p.ssafy.io:8442/";
+        String OPENVIDU_URL = "https://i9d205.p.ssafy.io:8443/";
         String SECRET = "ssapssap";
         openVidu = new OpenVidu(OPENVIDU_URL,SECRET);
     }
