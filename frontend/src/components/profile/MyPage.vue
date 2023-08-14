@@ -4,7 +4,7 @@
   import { nameUser } from '@/api/user'
   import Deactivate from '@/components/profile/Deactivate.vue'
   import { RouterLink, RouterView } from 'vue-router'
-  import { ref, computed } from 'vue'
+  import { ref, computed, onMounted } from 'vue'
   import { Form, Field } from 'vee-validate'
   import * as Yup from 'yup'
   import router from '@/router'
@@ -17,23 +17,20 @@
 
   let nameWant = ''
   nameWant = user.value.username
-
-  let tmpProfileUrl = `/randomImages/randomImage${Math.floor(Math.random() * 34)}.png`
-
-
-  let studyImageUrl = userStore.user.roomImg // 스터디룸 이미지.  //let studyImageUrl = userStore.user.roomImagePath // 스터디룸 이미지.
-  // let tmpStudyImagePath = ref('/testBackground.png')   
-  let tmpStudyImagePath = ref('/testBackground.png')   
+  
+  let studyImageUrl = ref(sessionStorage.getItem("roomImg")?sessionStorage.getItem("roomImg"):userStore.user.roomImg) // 스터디룸 이미지를 sessionStorage에 저장된 roomImg로 부터 받아오기
+  let tmpStudyImagePath = ref('/testBackground.png')
   let studyImagePath = computed(()=>{
-    return studyImageUrl?studyImageUrl: tmpStudyImagePath.value
+    return studyImageUrl.value?studyImageUrl.value: tmpStudyImagePath.value
   })
-
-  let profileImageUrl = userStore.user.profileImg //let profileImageUrl = userStore.user.profileImagePath
-  // let tmpProfileImagePath = ref('/testProfile.png')           // 세션이나 로컬에 따로 저장해버리면 되지않을까?
+  
+  let profileImageUrl = ref(sessionStorage.getItem("profileImg")?sessionStorage.getItem("profileImg"):userStore.user.profileImg)
+  let tmpProfileUrl = `/randomImages/randomImage${Math.floor(Math.random() * 34)}.png`
   let tmpProfileImagePath = ref(tmpProfileUrl)    // 우선 등록해둔게 없으면 무작위 프로필을 보여줌
   const profileImagePath = computed(() => {
-    return profileImageUrl?profileImageUrl: tmpProfileImagePath.value
+    return profileImageUrl.value?profileImageUrl.value: tmpProfileImagePath.value
   })
+
   const changeUserName = async (name) => {
     const data = {
       nickname: name,
@@ -72,23 +69,19 @@
       const reader = new FileReader()
       reader.onload = (event) => {
         const imgPreviewUrl = event.target.result
-        // console.log('이게 미리보기 url',imgPreviewUrl)
-        tmpStudyImagePath.value = imgPreviewUrl; 
+        studyImageUrl.value = imgPreviewUrl  // tmpStudyImagePath.value = imgPreviewUrl; 
+        sessionStorage.setItem("roomImg",studyImageUrl.value) // 세션스토리지에 룸이미지를 따로 저장해서 재로그인해야만 보이는 문제 해결하기.
       }
       reader.readAsDataURL(selectedFile)
       
       const imgformData = new FormData()
       imgformData.append("file", selectedFile)
-      // imagePath.uploadStudyImagetoServer(userStore.user.id, imgformData) // 업로드된 이미지를 서버로 전송
       imagePath.uploadStudyImagetoServer(userStore.user.id, imgformData) // 업로드된 이미지를 서버로 전송하고 그 path를 받을거임.
         .then(() => {
-          const StudyResoponse = imagePath.downloadStudyImagefromServer(userStore.user.id)
-          if(StudyResoponse.message !== 'getUrl 실패'){
-            studyImageUrl = StudyResoponse.url  // .url로 표현하는게 맞는지 모르겠음.
-          }
+          console.log('uploadStudyImagetoServer 완료!')
         })
         .catch((error) => {
-          console.error('이미지 업로드 및 다운로드 중 오류가 발생했습니다:', error);
+          console.error('이미지 업로드에 오류가 발생했습니다:', error);
         });
     });
     input.click();
@@ -107,15 +100,14 @@
       const reader = new FileReader()
       reader.onload = (event) => {
         const imgPreviewUrl = event.target.result
-        // console.log('이게 미리보기 url',imgPreviewUrl)
-        tmpProfileImagePath.value = imgPreviewUrl; 
+        profileImageUrl.value = imgPreviewUrl; //tmpProfileImagePath.value = imgPreviewUrl; 
+        sessionStorage.setItem("profileImg",profileImageUrl.value) // 세션스토리지에 프로필이미지를 따로 저장해서 재로그인해야만 보이는 문제 해결하기.
       }
       reader.readAsDataURL(selectedFile)
       
       const imgformData = new FormData()
       imgformData.append("file", selectedFile)
       imagePath.uploadProfileImagetoServer(userStore.user.id, imgformData) // 업로드된 이미지를 서버로 전송
-      // studyImageUrl = await downloadProfileImagefromServer(userStore.user.id)
     });
     input.click();
   }
