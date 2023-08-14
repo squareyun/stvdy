@@ -12,4 +12,8 @@ public interface ArticleImageRepository  extends JpaRepository<ArticleImage, Int
     List<ArticleImage> findAllByQuestionId(Integer id);
 
     List<ArticleImage> findAllByAnswerId(Integer id);
+
+    void deleteByQuestionId(Integer id);
+
+    void deleteByAnswerId(Integer id);
 }

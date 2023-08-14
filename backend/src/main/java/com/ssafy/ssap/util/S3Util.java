@@ -109,14 +109,6 @@ public class S3Util {
         JpaRepository<?, Integer> repository = getRepository(entity);
         List<ArticleImage> articleImagesToUpdate = new ArrayList<>();
 
-//        switch (pattern) {
-//            case "alarm" -> repository = alarmRepository;
-//            case "room", "profile" -> repository = userRepository;
-//            case "question", "answer" -> repository = pattern.equals("question") ? questionRepository : answerRepository;
-//            default -> throw new IllegalStateException("Unexpected value: " + pattern);
-//        }
-//
-//        Optional<?> entityOptional = repository.findById(id);
         for (String fileName : fileNameList) {
             String filePath = basePath + fileName;
 
@@ -155,12 +147,6 @@ public class S3Util {
         JpaRepository<?, Integer> repository;
         Object entity;
 
-//        switch (pattern) {
-//            case "alarm" -> repository = alarmRepository;
-//            case "room", "profile" -> repository = userRepository;
-//            case "question", "answer" -> repository = pattern.equals("question") ? questionRepository : answerRepository;
-//            default -> throw new IllegalStateException("Unexpected value: " + pattern);
-//        }
         repository = getRepository(pattern);
 
         entity = repository.findById(id).orElse(null);

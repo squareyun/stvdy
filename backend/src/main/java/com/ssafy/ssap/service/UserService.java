@@ -137,4 +137,36 @@ public class UserService {
 		return user.getNickname();
 	}
 
+	/**
+	 * api-key 등록 및 변경
+	 */
+	@Transactional
+	public String updateApiKey(String apiKey){
+		String userEmail = SecurityUtil.getCurrentUsername()
+			.orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
+
+		User user = userRepository.findOneWithAuthoritiesByEmail(userEmail)
+			.orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
+
+		user.setApiKey(apiKey);
+		userRepository.save(user);
+
+		return user.getApiKey();
+	}
+
+	/**
+	 * api-key 삭제
+	 */
+	@Transactional
+	public void deleteApiKey(){
+		String userEmail = SecurityUtil.getCurrentUsername()
+			.orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
+
+		User user = userRepository.findOneWithAuthoritiesByEmail(userEmail)
+			.orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
+
+		user.deleteApiKey();
+		userRepository.save(user);
+	}
+
 }

@@ -30,6 +30,16 @@ public class S3Service {
 
     @Transactional
     public HttpStatus uploadFile(String pattern, List<MultipartFile> files, Integer id) {
+        if(pattern.equals("question")){
+            if(articleImageRepository.findAllByQuestionId(id)!=null){
+                articleImageRepository.deleteByQuestionId(id);
+            }
+        } else if(pattern.equals("answer")){
+            if(articleImageRepository.findAllByAnswerId(id)!=null){
+                articleImageRepository.deleteByAnswerId(id);
+            }
+        }
+
         List<String> fileNameList = s3Util.createFileName(files, pattern, id);
 
         Object entity = s3Util.checkPresentAndGetEntity(pattern, id);
