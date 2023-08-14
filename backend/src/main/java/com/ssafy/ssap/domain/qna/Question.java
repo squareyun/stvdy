@@ -1,12 +1,6 @@
 package com.ssafy.ssap.domain.qna;
 
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.hibernate.annotations.CreationTimestamp;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ssafy.ssap.domain.user.User;
 import jakarta.annotation.Nullable;
@@ -16,14 +10,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
-@Getter
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
+@Getter
 public class Question {
 
     @Id
@@ -63,8 +62,8 @@ public class Question {
     @OneToMany(mappedBy = "question")
     List<Answer> answerList = new ArrayList<>();
 
-	@OneToMany(mappedBy = "question")
-	List<ArticleImage> articleImage;
+    @OneToMany(mappedBy = "question")
+    List<ArticleImage> articleImage;
 
     @OneToMany(mappedBy = "question")
     List<Likes> likes;
@@ -84,3 +83,5 @@ public class Question {
         this.hit++;
     }
 }
+
+
