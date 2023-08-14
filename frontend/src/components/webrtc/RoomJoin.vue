@@ -10,8 +10,8 @@ import {
   onBeforeUnmount,
 } from 'vue'
 import axios from 'axios'
-// import { OpenVidu } from 'openvidu-browser'
-import { OpenVidu } from 'assets/openvidu-browser-2.28.0.min.js'; // 파일의 상대 경로로 수정
+import { OpenVidu } from 'openvidu-browser'
+// import { OpenVidu } from 'assets/openvidu-browser-2.28.0.min.js'; // 파일의 상대 경로로 수정
 import UserVideo from '@/components/webrtc/UserVideo.vue'
 import MessageChat from '@/components/webrtc/MessageChat.vue'
 import { useRouter } from 'vue-router'
