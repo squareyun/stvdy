@@ -50,6 +50,9 @@ public class User {
 	@Column(name = "nickname", length = 45)
 	private String nickname;
 
+	@Column(name = "api_key", length = 100)
+	private String apiKey;
+
 	@NotNull
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "state")
@@ -91,5 +94,9 @@ public class User {
 
 	public void changeState(UserStateNs newState) {
 		this.setState(newState);
+	}
+
+	public void deleteApiKey() {
+		this.apiKey = null;
 	}
 }

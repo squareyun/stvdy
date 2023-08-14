@@ -17,15 +17,14 @@ const openAlarms = () => {
   else alarmList.className = 'closed'
 }
 
-let tmpProfileUrl = `/randomImages/randomImage${Math.floor(
-  Math.random() * 34,
-)}.png`
 
-const profileImagePath = computed(() => {
-  // user가 등록한 프로필 이미지가 없으면, 임의 프로필을 보여줌
-  return userStore.user.profileImagePath
-    ? userStore.user.profileImagePath
-    : tmpProfileUrl //'/testProfile.png'
+let tmpProfileUrl = `/randomImages/randomImage${Math.floor(Math.random() * 34)}.png`
+// let profileImg = userStore.user.profileImg
+let profileImg = userStore.user.profileImg.replace(/&quot;/g, '"');
+
+const profileImagePath = computed(() => { // user가 등록한 프로필 이미지가 없으면, 임의 프로필을 보여줌
+  // return userStore.user.profileImagePath?userStore.user.profileImagePath:tmpProfileUrl   //'/testProfile.png'
+  return profileImg?profileImg:tmpProfileUrl   //'/testProfile.png'
 })
 
 async function showDetail(url) {

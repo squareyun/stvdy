@@ -23,6 +23,7 @@ public class LoginResponseDto {
 	private String nickname;
 	private String profileImagePath;
 	private String roomImagePath;
+	private String apiKey;
 
 	public static LoginResponseDto from(User user) {
 		if (user == null)
@@ -35,6 +36,7 @@ public class LoginResponseDto {
 			.nickname(user.getNickname())
 			.profileImagePath(user.getProfileImagePath())
 			.roomImagePath(user.getRoomImagePath())
+			.apiKey(user.getApiKey())
 			.build();
 	}
 }

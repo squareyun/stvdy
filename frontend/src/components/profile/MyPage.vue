@@ -1,43 +1,60 @@
 <script setup>
-import { useUserStore } from '@/stores'
-import { useImagePath } from '@/stores' //useImagePath를 추가함
-import { nameUser } from '@/api/user'
-import Deactivate from '@/components/profile/Deactivate.vue'
-import { RouterLink, RouterView } from 'vue-router'
-import { ref, computed } from 'vue'
-import { Form, Field } from 'vee-validate'
-import * as Yup from 'yup'
-import router from '@/router'
-import { WebRtcPeer } from 'openvidu-browser/lib/OpenViduInternal/WebRtcPeer/WebRtcPeer'
-import axios from 'axios' // 파일업로드에 이용하기 위해 사용
+  import { useUserStore } from '@/stores' 
+  import { useImagePath } from '@/stores' //useImagePath를 추가함
+  import { nameUser } from '@/api/user'
+  import Deactivate from '@/components/profile/Deactivate.vue'
+  import { RouterLink, RouterView } from 'vue-router'
+  import { ref, computed,onMounted } from 'vue'
+  import { Form, Field } from 'vee-validate'
+  import * as Yup from 'yup'
+  import router from '@/router'
+  import { WebRtcPeer } from 'openvidu-browser/lib/OpenViduInternal/WebRtcPeer/WebRtcPeer'
+  import axios from 'axios' // 파일업로드에 이용하기 위해 사용
 
-const userStore = useUserStore()
-const user = computed(() => userStore.user)
-const imagePath = useImagePath()
+  const userStore = useUserStore()
+  const user = computed(() => userStore.user)
+  const imagePath = useImagePath()
 
-let nameWant = ''
-nameWant = user.value.username
+  let nameWant = ''
+  nameWant = user.value.username
 
-let tmpProfileUrl = `/randomImages/randomImage${Math.floor(
-  Math.random() * 34,
-)}.png`
+  let tmpProfileUrl = `/randomImages/randomImage${Math.floor(Math.random() * 34)}.png`
 
-let studyImageUrl = userStore.user.roomImagePath // 스터디룸 이미지.
-// let tmpStudyImagePath = ref('/testBackground.png')
-let tmpStudyImagePath = ref('/testBackground.png')
-let studyImagePath = computed(() => {
-  return studyImageUrl ? studyImageUrl : tmpStudyImagePath.value
-})
 
-let profileImageUrl = userStore.user.profileImagePath
-// let tmpProfileImagePath = ref('/testProfile.png')           // 세션이나 로컬에 따로 저장해버리면 되지않을까?
-let tmpProfileImagePath = ref(tmpProfileUrl) // 우선 등록해둔게 없으면 무작위 프로필을 보여줌
-const profileImagePath = computed(() => {
-  return profileImageUrl ? profileImageUrl : tmpProfileImagePath.value
-})
-const changeUserName = async (name) => {
-  const data = {
-    nickname: name,
+  let studyImageUrl = userStore.user.roomImg // 스터디룸 이미지.  //let studyImageUrl = userStore.user.roomImagePath // 스터디룸 이미지.
+  // let tmpStudyImagePath = ref('/testBackground.png')   
+  let tmpStudyImagePath = ref('/testBackground.png')   
+  let studyImagePath = computed(()=>{
+    return studyImageUrl?studyImageUrl: tmpStudyImagePath.value
+  })
+
+  // let profileImageUrl = userStore.user.profileImg //let profileImageUrl = userStore.user.profileImagePath
+  let profileImageUrl = userStore.user.profileImg.replace(/&quot;/g, '"');
+  // let tmpProfileImagePath = ref('/testProfile.png')           // 세션이나 로컬에 따로 저장해버리면 되지않을까?
+  let tmpProfileImagePath = ref(tmpProfileUrl)    // 우선 등록해둔게 없으면 무작위 프로필을 보여줌
+  const profileImagePath = computed(() => {
+    return profileImageUrl?profileImageUrl: tmpProfileImagePath.value
+  })
+  onMounted(() => {
+    console.log(studyImageUrl)
+    console.log(profileImageUrl)
+  })
+  const changeUserName = async (name) => {
+    const data = {
+      nickname: name,
+    }
+
+    await nameUser(
+      data,
+      (res) => {
+        console.log(res)
+        user.value.username = name
+      },
+      (fail) => {
+        console.log(fail)
+      },
+    )
+    router.go('mypage')
   }
 
   await nameUser(
