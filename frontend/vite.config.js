@@ -14,7 +14,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://i9d205.p.ssafy.io:8080',
+        target: 'https://i9d205.p.ssafy.io/api/',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },

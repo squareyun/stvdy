@@ -56,7 +56,7 @@ function sendMessage() {
 //         const joinMessage = `${myUserName} 님이 참여했습니다. 방 규칙을 잘 지켜주세요.`;
 //         sendMessageToChat(joinMessage)
 //         webrtcstore.updateisWelcome(true)              // 참여 메세지를 보냈음을 보여줌
-//       }  
+//       }
 //     }, 400)
 //   })
 //   // onBeforeUnmount(() => {  // 오작동함.
@@ -73,7 +73,7 @@ function sendMessage() {
 <template>
   <div id="chatContainer">
     <div id="chatWindow">
-      <ul id="chatHistory">
+      <ul id="chat-history">
         <div id="chat-welcome">
           <div>환영합니다!</div>
           <div>
@@ -114,7 +114,7 @@ function sendMessage() {
 </template>
 
 <style>
-#chatHistory {
+#chat-history {
   height: calc(100vh - 360px);
   min-height: 240px;
 
@@ -125,21 +125,20 @@ function sendMessage() {
   overflow-y: scroll;
 }
 
-#chatHistory::-webkit-scrollbar {
+#chat-history::-webkit-scrollbar {
   width: 10px;
-  border-left: 1px solid var(--hl-light30);
 }
 
-#chatHistory::-webkit-scrollbar-thumb {
+#chat-history::-webkit-scrollbar-thumb {
   background: #a0a0a0; /* 스크롤바 색상 */
   border-radius: 3px;
 }
 
-#chatHistory::-webkit-scrollbar-track {
+#chat-history::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0); /*스크롤바 뒷 배경 색상*/
 }
 
-#chatHistory::-webkit-scrollbar-button {
+#chat-history::-webkit-scrollbar-button {
   height: 6px;
 }
 
@@ -179,13 +178,13 @@ function sendMessage() {
   border-radius: 1rem;
 }
 
-#chatHistory > li {
+#chat-history > li {
   position: relative;
   display: block;
   width: 260px;
 }
 
-#chatHistory > li > div {
+#chat-history > li > div {
   padding: 6px 10px 6px 10px;
   display: inline-block;
 
@@ -193,7 +192,7 @@ function sendMessage() {
   word-break: break-all;
 }
 
-#chatHistory > li > .message-mine {
+#chat-history > li > .message-mine {
   position: relative;
   float: right;
   clear: both;
@@ -207,7 +206,7 @@ function sendMessage() {
   border-radius: 1.1rem 0px 1.1rem 1.1rem;
 }
 
-#chatHistory > li > .message-others {
+#chat-history > li > .message-others {
   position: relative;
   margin-top: 25px;
   background-color: #e5e5e5;
@@ -260,5 +259,7 @@ function sendMessage() {
   border-radius: 15px;
 
   background-color: #202020;
+
+  cursor: pointer;
 }
 </style>
