@@ -67,8 +67,8 @@ const sortNone = () => {
   questionStore.getList(query)
 }
 
-async function showDetail(id,path) {
-  imagePath.updateQuestionerProfilePath(path) // 질문자 프로필을 세션에 저장해두는 함수
+async function showDetail(id) {
+  // imagePath.updateQuestionerProfilePath(path) // w질문목록이 아닌 질문 상세에서 받으니 필요없어짐.// 질문자 프로필을 세션에 저장해두는 함수
   router.push(`/questiondetail/${id}`)
 }
 
@@ -113,7 +113,7 @@ onBeforeUnmount(() => {
           class="question-row"
           v-for="(qtn, index) in questions"
           :key="qtn.id"
-          @click="showDetail(qtn.id,qtn.profileimagePath)">
+          @click="showDetail(qtn.id)">
           <td class="question-done">
             <div
               id="best-selected"

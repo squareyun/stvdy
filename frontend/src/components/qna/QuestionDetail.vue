@@ -139,17 +139,14 @@ const bestAns = (id) => {
     (fail) => console.log(fail),
   )
 }
+let tmpquestionerImage = ref('/authorImage.png')
+let questionerImage = ref(question.value.profileImage) // question에 담겨있는 profileImage 경로를 받아옴.
+let questionerImagePath = computed(()=>{
+  return questionerImage.value?questionerImage.value:tmpquestionerImage.value
+})
 
-const questionerImage = function () {
-  if (
-    sessionStorage.getItem('questionerImage') !== undefined ||
-    sessionStorage.getItem('questionerImage') !== null
-  ) {
-    return '/authorImage.png'
-  } else {
-    return sessionStorage.getItem('questionerImage')
-  }
-}
+let tmprespondentImage = ref(`/randomImages/randomImage${Math.floor(Math.random() * 34)}.png`)
+
 </script>
 
 <template>
@@ -211,7 +208,7 @@ const questionerImage = function () {
             </svg>
           </div>
           <div
-            :style="`background-image: url('${questionerImage()}');`"
+            :style="`background-image: url('${questionerImagePath}');`"
             id="author-image"></div>
           <div id="author-name">
             {{ question.regist_time }}
@@ -265,10 +262,7 @@ const questionerImage = function () {
             </div>
 
             <div
-              :style="`background-image: url('${
-                ans.profileimagePath ||
-                `/randomImages/randomImage${Math.floor(Math.random() * 34)}.png`
-              }');`"
+              :style="`background-image: url('${ans.profileImage || tmprespondentImage}');`"
               id="author-image"></div>
 
             <div id="author-name">

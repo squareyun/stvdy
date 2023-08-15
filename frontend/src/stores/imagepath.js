@@ -33,19 +33,19 @@ export const useImagePath = defineStore({
         console.error("스터디룸 이미지 업로드 에러: ", error);
       }
     },
-    async downloadStudyImagefromServer(userNo){
-      try {
-        const response = await axios.get(this.applicationServerUrl+'files/get/room/'+userNo,{
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-        console.log("스터디룸 이미지 경로 다운로드 성공: ", response.data.message)
-        return response.data
-      } catch (error) {
-        console.error("스터디룸 이미지 경로 다운로드 에러: ", error)
-      }
-    },
+    // async downloadStudyImagefromServer(userNo){
+    //   try {
+    //     const response = await axios.get(this.applicationServerUrl+'files/get/room/'+userNo,{
+    //       headers: {
+    //         "Content-Type": "multipart/form-data",
+    //       },
+    //     });
+    //     console.log("스터디룸 이미지 경로 다운로드 성공: ", response.data.message)
+    //     return response.data
+    //   } catch (error) {
+    //     console.error("스터디룸 이미지 경로 다운로드 에러: ", error)
+    //   }
+    // },
     async uploadProfileImagetoServer(userNo, newimgformData){
       try {
         console.log('프로필 이미지 업로드중1')
