@@ -17,8 +17,8 @@ if ($route.name == 'modifyquestion') {
 }
 
 const schema = Yup.object().shape({
-  title: Yup.string().required('제목을 작성해주세요.'),
-  content: Yup.string().required('본문을 작성해주세요.'),
+  title: Yup.string().required('*제목을 작성해주세요.'),
+  content: Yup.string().required('*본문을 작성해주세요.'),
 })
 
 const userStore = useUserStore()

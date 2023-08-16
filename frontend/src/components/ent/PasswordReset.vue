@@ -14,7 +14,7 @@ const onSubmit = async (values) => {
   try {
     await authStore.passwordreset(values)
     await router.push('/login')
-    alertStore.success('임시 비밀번호가 메일로 전송되었습니다.')
+    alertStore.success('*임시 비밀번호가 메일로 전송되었습니다.')
   } catch (error) {
     alertStore.error(error)
   }
