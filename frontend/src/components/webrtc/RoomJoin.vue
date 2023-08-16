@@ -473,7 +473,7 @@ async function createToken(mySessionId, roomId) {
       console.log(roomNo, userNo, inputPassword)
       // const response = await axios.post(APPLICATION_SERVER_URL + 'rooms/' + roomNo, {userNo: userNo, password: inputPassword}, {
       const response = await axios.post(
-        'https://i9d205.p.ssafy.io:8080/rooms/' + roomNo,
+        'https://i9d205.p.ssafy.io/api/rooms/' + roomNo,
         { userNo: userNo, password: inputPassword },
         {
           headers: { 'Content-Type': 'application/json' },
@@ -509,7 +509,7 @@ async function createToken(mySessionId, roomId) {
     try {
       // console.log('몇시간작동할겨?',endHour, endMinute)
       const response = await axios.post(
-        'https://i9d205.p.ssafy.io:8080/rooms/add',
+        'https://i9d205.p.ssafy.io/api/rooms/add',
         {
           userNo: userNo,
           title: mySessionId,
@@ -718,7 +718,7 @@ async function checkConnection(roomId) {
   console.log(subscribersComputed.value.length)
   try {
     const response = await axios.get(
-      `https://i9d205.p.ssafy.io:8080/rooms/currentConnection/${roomId}`,
+      `https://i9d205.p.ssafy.io/api/rooms/currentConnection/${roomId}`,
     )
     console.log(response.data)
   } catch (error) {

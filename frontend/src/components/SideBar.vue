@@ -181,7 +181,9 @@ const logout = async () => {
 
         로그인
       </a>
-      <router-link to="/mypage">
+      <router-link
+        to="/mypage"
+        v-if="user.id">
         <svg
           width="1.2rem"
           height="1.2rem"
@@ -205,7 +207,7 @@ const logout = async () => {
 #side-panel {
   position: fixed;
   left: 0;
-  top: 110px;
+  top: 130px;
   width: 200px;
   height: calc(100vh - 110px);
   /*
@@ -288,14 +290,14 @@ path {
 
 #side-foot {
   position: absolute;
-  bottom: 40px;
+  bottom: 60px;
 }
 
 #side-foot #logout-btn {
   color: var(--hl-warn);
 }
 
-@media (max-height: 535px) {
+@media (max-height: 555px) {
   #side-foot {
     top: 315px;
     bottom: auto;
