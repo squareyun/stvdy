@@ -162,6 +162,7 @@ public class RoomService {
         Room room = roomRepository.findById(roomNo).orElse(null);
         try{
             addParticipant(room, role, userNo, connectionId);
+            //noinspection DataFlowIssue
             logger.debug("add Participant find Room 결과 :"+room.getId());
         }catch(NullPointerException e){
             logger.error("룸 객체를 찾지 못함 "+e);
@@ -233,7 +234,8 @@ public class RoomService {
         Map<String, Object> resultMap = new HashMap<>();
         Room room = roomRepository.findByCode(code).orElse(null);
        try{
-           if(room.getIsValid()==false){
+           //noinspection DataFlowIssue
+           if(!room.getIsValid()){
                resultMap.put("meesage","이 방은 폐쇄되었습니다.");
                return resultMap;
            }
@@ -406,7 +408,10 @@ public class RoomService {
             Page<RoomDto> roomDtoList = roomList.map(room -> {
                 User host = participantRepository.findUserByRoomIdAndRole(room, participantRoleNsRepository.findByName("호스트"));
                 logger.debug("user의 roomiMagePath 조회중"+room.getId()+"/"+host.getRoomImagePath()+"/"+host.getId());
-                return new RoomDto(room,host.getRoomImagePath());
+                RoomDto roomDto = new RoomDto(room,host.getRoomImagePath());
+                Integer num = participantRepository.countByRoomIdAndIsOut(roomDto.getId(),false);
+                roomDto.setCurrentNumber(num);
+                return roomDto;
             });
 
             resultMap.put("roomList",roomDtoList);
@@ -450,6 +455,7 @@ public class RoomService {
             }
             //DB처리
             try {
+                //noinspection DataFlowIssue
                 addParticipant(roomNo, "참여자", userNo, connection.getConnectionId()); //4번
                 logger.debug("JoinRoom - addParticipant 종료");
                 addRoomLog(roomNo, userNo); //5번
