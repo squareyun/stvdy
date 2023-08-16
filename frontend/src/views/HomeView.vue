@@ -3,6 +3,7 @@ import SideBar from '@/components/SideBar.vue'
 import TopSearch from '@/components/TopSearch.vue'
 import Advertisment from '@/components/home/Advertisment.vue'
 import TagRank from '@/components/home/TagRank.vue'
+import Words from '@/components/home/Words.vue'
 import MeetingRoom from '@/components/home/MeetingRoom.vue'
 import RecentAsk from '@/components/home/RecentAsk.vue'
 import RoomAdd from '@/components/webrtc/RoomAdd.vue'
@@ -23,6 +24,7 @@ const user = computed(() => userStore.user)
   <main id="home-main">
     <Advertisment />
     <TagRank />
+    <Words />
     <MeetingRoom />
     <RecentAsk />
   </main>

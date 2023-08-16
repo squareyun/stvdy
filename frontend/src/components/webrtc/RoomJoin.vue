@@ -162,13 +162,14 @@ const randomImage = () => {
   }
 }
 
-let profileImageUrl = ref(  // 프로필 이미지를 가지고 있으면 해당 이미지 사용
+let profileImageUrl = ref(
+  // 프로필 이미지를 가지고 있으면 해당 이미지 사용
   sessionStorage.getItem('profileImg')
     ? sessionStorage.getItem('profileImg')
     : userstore.user.profileImg,
 )
 let tmpProfileUrl = ref(`/userBalloon.png`) // 기본 프로필 이미지
-const profileImagePath = computed(()=>{
+const profileImagePath = computed(() => {
   return profileImageUrl.value ? profileImageUrl.value : tmpProfileUrl.value
 })
 // watch(participantNumber, (numb) => {
@@ -309,10 +310,7 @@ function joinSession() {
     if (event.forced) {
       console.log('얍! streamManagerRemoved')
       // leaveSession();
-      router.push({
-        name: 'hometest', // 임시로 main으로 넘겨줌.
-        // name:'main',
-      })
+      router.push('/')
     }
   })
 
@@ -320,10 +318,7 @@ function joinSession() {
     // 이벤트 처리 코드
     console.log('세션에서 연결 끊어짐:', event)
     // 필요한 추가 작업을 수행합니다. 예: UI 업데이트, 사용자 알림 등
-    router.push({
-      name: 'hometest', // 임시로 main으로 넘겨줌.
-      // name:'main',
-    })
+    router.push('/')
   })
 
   session.value.on('exception', ({ exception }) => {
@@ -344,7 +339,7 @@ function joinSession() {
 
   // createToken(mySessionId.value).then((token) => {
   createToken(mySessionId.value, roomId.value).then((token) => {
-    console.log('이게',token)
+    console.log('이게', token)
     roomId.value = webrtcstore.roomId
     if (roomId.value !== undefined && roomId.value !== null) {
       // roomId가 변경되면 localstorage에 저장합니다.
@@ -421,10 +416,7 @@ function leaveSession() {
   // const localRoomId = localStorage.getItem('roomId')
   // openNewWindow2(`이건 리브세션버튼 누른거` + '섭스크라이브'+ subscribersComputed.value.length+'방id'+localRoomId)
   // 메인페이지로 넘어감
-  router.push({
-    name: 'hometest', // 임시로 main으로 넘겨줌.
-    // name:'main',
-  })
+  router.push(router.push('/'))
 }
 function escapePage() {
   console.log('escapePage() 함수 호출됨')
@@ -561,7 +553,7 @@ async function createToken(mySessionId, roomId) {
       // catch(error){
       //   console.log(error)
       // }
-      console.log('이거토큰',response.data.token)
+      console.log('이거토큰', response.data.token)
       return response.data.token
     } catch (error) {
       console.error('방 생성에도 오류 났음.', error)
@@ -1124,7 +1116,9 @@ async function handleForceDisconnect(subscriber) {
       <!-- <button @click="checkConnection(roomId)">체크커넥션</button> -->
       <!-- 캠,오디오 선택 옵션 -->
       <div id="profile-div">
-        <div id="profile-image" :style="`background-image: url(${profileImagePath})`" ></div>
+        <div
+          id="profile-image"
+          :style="`background-image: url(${profileImagePath})`"></div>
         <div id="profile-name">{{ userInfo.username }}</div>
         <div id="profile-email-name">{{ userInfo.email }}</div>
         <div
