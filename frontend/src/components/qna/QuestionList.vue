@@ -2,7 +2,8 @@
 import { useQuestionStore, useImagePath } from '@/stores'
 import router from '@/router'
 import { useRoute } from 'vue-router'
-import { computed, onBeforeUnmount } from 'vue'
+import { computed, onBeforeUnmount, watch } from 'vue'
+import { array } from 'yup'
 
 const $route = useRoute()
 
@@ -10,6 +11,27 @@ const imagePath = useImagePath()
 const questionStore = useQuestionStore()
 const questions = computed(() => questionStore.questions)
 const totalAmount = computed(() => questionStore.totalAmount)
+const pageable = computed(() => questionStore.pageable)
+
+let pages
+watch(pageable, () => {
+  let start =
+    1 > pageable.value.pageNumber - 3 ? 1 : pageable.value.pageNumber - 3
+  let end =
+    pageable.value.totalPages < pageable.value.pageNumber + 5
+      ? pageable.value.totalPages
+      : pageable.value.pageNumber + 5
+
+  pages = []
+  for (let i = start; i <= end; i++) {
+    pages.push(i)
+  }
+
+  console.log(pages)
+})
+
+let AnsFilter = false
+let BestAnsFilter = false
 
 const query = {
   keyword: '',
@@ -26,6 +48,9 @@ const sortNew = () => {
   document.getElementById('sort-active').style.fontWeight = 100
   document.getElementById('sort-none').style.fontWeight = 100
 
+  AnsFilter = false
+  BestAnsFilter = false
+
   const query = {
     keyword: '',
     nickname: '',
@@ -40,6 +65,9 @@ const sortActive = () => {
   document.getElementById('sort-new').style.fontWeight = 100
   document.getElementById('sort-active').style.fontWeight = 700
   document.getElementById('sort-none').style.fontWeight = 100
+
+  AnsFilter = false
+  BestAnsFilter = true
 
   const query = {
     keyword: '',
@@ -56,6 +84,9 @@ const sortNone = () => {
   document.getElementById('sort-active').style.fontWeight = 100
   document.getElementById('sort-none').style.fontWeight = 700
 
+  AnsFilter = true
+  BestAnsFilter = false
+
   const query = {
     keyword: '',
     nickname: '',
@@ -63,13 +94,23 @@ const sortNone = () => {
     noAnsFilter: true,
     noBestAnsFilter: false,
   }
-  console.log(33, query)
   questionStore.getList(query)
 }
 
-async function showDetail(id) {
-  // imagePath.updateQuestionerProfilePath(path) // w질문목록이 아닌 질문 상세에서 받으니 필요없어짐.// 질문자 프로필을 세션에 저장해두는 함수
+const showDetail = async (id, path) => {
+  imagePath.updateQuestionerProfilePath(path) // 질문자 프로필을 세션에 저장해두는 함수
   router.push(`/questiondetail/${id}`)
+}
+
+const pageMove = (page) => {
+  const query = {
+    keyword: '',
+    nickname: '',
+    page: page - 1,
+    noAnsFilter: AnsFilter,
+    noBestAnsFilter: BestAnsFilter,
+  }
+  questionStore.getList(query)
 }
 
 onBeforeUnmount(() => {
@@ -113,7 +154,7 @@ onBeforeUnmount(() => {
           class="question-row"
           v-for="(qtn, index) in questions"
           :key="qtn.id"
-          @click="showDetail(qtn.id)">
+          @click="showDetail(qtn.id, qtn.profileimagePath)">
           <td class="question-done">
             <div
               id="best-selected"
@@ -151,10 +192,104 @@ onBeforeUnmount(() => {
         </tr>
       </div>
     </div>
+    <div
+      v-if="pageable.totalPages"
+      id="page-list">
+      <div
+        class="page-nav-left"
+        :class="{ deactivated: 1 === pageable.pageNumber + 1 }"
+        @click="pageMove(1)">
+        <svg
+          width="1.2rem"
+          height="1.2rem"
+          viewBox="0 0 66 56"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M20 56H38L18 28L38 0H20L0 28L20 56Z"
+            fill="black" />
+          <path
+            d="M48 56H66L46 28L66 0H48L28 28L48 56Z"
+            fill="black" />
+        </svg>
+      </div>
+      <ul>
+        <li
+          :class="{ active: page === pageable.pageNumber + 1 }"
+          v-for="page in pageable.totalPages"
+          :key="page"
+          @click="pageMove(page)">
+          {{ page }}
+        </li>
+      </ul>
+      <div
+        class="page-nav-right"
+        :class="{
+          deactivated: pageable.pageNumber + 1 === pageable.totalPages,
+        }"
+        @click="pageMove(pageable.totalPages)">
+        <svg
+          width="1.2rem"
+          height="1.2rem"
+          viewBox="0 0 66 56"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M46 0H28L48 28L28 56H46L66 28L46 0Z"
+            fill="black" />
+          <path
+            d="M18 0H0L20 28L0 56H18L38 28L18 0Z"
+            fill="black" />
+        </svg>
+      </div>
+    </div>
   </div>
 </template>
 
 <style>
+#page-list {
+  text-align: center;
+  width: calc(960px - 7rem);
+}
+
+#page-list > div {
+  position: relative;
+  display: inline-block;
+
+  top: 3px;
+  cursor: pointer;
+}
+
+#page-list > div.deactivated {
+  pointer-events: none;
+}
+
+#page-list > div > svg > path {
+  fill: var(--hl-pres);
+  opacity: 0.8;
+}
+
+#page-list > ul {
+  display: inline-block;
+  list-style: none;
+
+  padding: 0 10px 0 10px;
+}
+
+#page-list > ul > li {
+  margin: 10px;
+
+  font-size: 1rem;
+  display: inline;
+}
+
+#page-list > ul > li.active {
+  font-family: 'ASDGothicH';
+  font-size: 1rem;
+
+  color: var(--hl-pres);
+}
+
 .question-list {
   position: relative;
 

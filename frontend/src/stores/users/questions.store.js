@@ -12,6 +12,7 @@ export const useQuestionStore = defineStore('questions', () => {
   const questions = ref([])
   const answers = ref([])
   const totalAmount = ref([])
+  const pageable = ref([])
 
   const getList = async (cond) => {
     await listQuestion(cond, (res) => {
@@ -42,6 +43,9 @@ export const useQuestionStore = defineStore('questions', () => {
           questions.value[q].regist_time = dSeconds + '초 전'
         }
       }
+
+      pageable.value = res.data.question.pageable
+      pageable.value.totalPages = res.data.question.totalPages
     })
   }
 
@@ -75,6 +79,9 @@ export const useQuestionStore = defineStore('questions', () => {
           questions.value[q].regist_time = dSeconds + '초 전'
         }
       }
+
+      pageable.value = res.data.question.pageable
+      pageable.value.totalPages = res.data.question.totalPages
     })
   }
 
@@ -156,6 +163,7 @@ export const useQuestionStore = defineStore('questions', () => {
     question,
     answers,
     totalAmount,
+    pageable,
     getList,
     getMyList,
     getQuestionById,

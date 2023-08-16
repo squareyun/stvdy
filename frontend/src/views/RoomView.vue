@@ -16,9 +16,6 @@ const user = computed(() => userStore.user)
   <RoomAdd
     v-if="user.id"
     id="room-add" />
-  <AiChat
-    v-if="user.id"
-    id="ai-assist" />
   <main>
     <!-- <TheWelcome /> -->
     <router-view id="mypage-contents" />

@@ -216,6 +216,8 @@ const openAiAssist = () => {
   height: 396px;
   padding-right: 5px;
 
+  color: var(--hl-light);
+
   overflow-x: hidden;
   overflow-y: auto;
 }
