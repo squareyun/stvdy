@@ -255,12 +255,12 @@ const openAiAssist = () => {
 }
 
 #ai-type {
-  width: 279px;
+  width: 278.5px;
   height: 38px;
 
-  border-radius: 19px;
+  border: 1px solid var(--font30);
+  border-radius: 20px 20px 0px 0px;
   padding-left: 6px;
-  margin-bottom: 5px;
 
   background-color: #f8f8f2f0;
 }
@@ -271,7 +271,7 @@ const openAiAssist = () => {
   margin-bottom: 9px;
 
   border: 1px solid var(--font30);
-  border-radius: 20px;
+  border-radius: 0px 0px 20px 20px;
   padding: 3px;
   padding-left: 10px;
   padding-right: 55px;

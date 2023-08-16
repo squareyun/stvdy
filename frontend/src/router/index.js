@@ -8,13 +8,6 @@ const router = createRouter({
       path: '/',
       alias: ['/home'],
       component: () => import('@/views/HomeView.vue'),
-      children: [
-        {
-          path: '/hometest',
-          name: 'hometest',
-          component: () => import('@/components/HomeMain.vue'),
-        },
-      ],
     },
     {
       path: '/mypage',
@@ -107,7 +100,7 @@ const router = createRouter({
         {
           path: '',
           name: 'listroom',
-          component: () => import('@/components/main/HomeMain.vue'),
+          component: () => import('@/components/webrtc/RoomList.vue'),
         },
       ],
     },
@@ -122,7 +115,7 @@ const router = createRouter({
     // {
     //   path: '/room',
     //   name: 'maintmp',
-    //   component: () => import('@/components/main/HomeMain.vue'),
+    //   component: () => import('@/components/webrtc/RoomList.vue'),
     //   children: [],
     // },
     {
