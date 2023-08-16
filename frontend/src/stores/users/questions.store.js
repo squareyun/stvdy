@@ -24,29 +24,22 @@ export const useQuestionStore = defineStore('questions', () => {
 
         var wrote = new Date(questions.value[q].regist_time)
 
-        var dDay = now.getDay() - wrote.getDay()
-        if (dDay > 0) {
+        var diff = now.getTime() - wrote.getTime()
+        if (diff > 86_400_000) {
           var year = wrote.getFullYear()
           var month = ('0' + (wrote.getMonth() + 1)).slice(-2)
           var day = ('0' + wrote.getDate()).slice(-2)
 
           questions.value[q].regist_time = year + '-' + month + '-' + day
-          continue
-        }
-        var dHour = now.getHours() - wrote.getHours()
-        if (dHour > 0) {
+        } else if (diff > 3_600_000) {
+          var dHour = Math.floor(diff / 3_600_000)
           questions.value[q].regist_time = dHour + '시간 전'
-          continue
-        }
-        var dMinutes = now.getMinutes() - wrote.getMinutes()
-        if (dMinutes > 0) {
+        } else if (diff > 60_000) {
+          var dMinutes = Math.floor(diff / 60_000)
           questions.value[q].regist_time = dMinutes + '분 전'
-          continue
-        }
-        var dSeconds = now.getSeconds() - wrote.getSeconds()
-        if (dSeconds > 0) {
+        } else if (diff / 1_000) {
+          var dSeconds = Math.floor(diff / 1_000)
           questions.value[q].regist_time = dSeconds + '초 전'
-          continue
         }
       }
     })
@@ -64,29 +57,22 @@ export const useQuestionStore = defineStore('questions', () => {
 
         var wrote = new Date(questions.value[q].regist_time)
 
-        var dDay = now.getDay() - wrote.getDay()
-        if (dDay > 0) {
+        var diff = now.getTime() - wrote.getTime()
+        if (diff > 86_400_000) {
           var year = wrote.getFullYear()
           var month = ('0' + (wrote.getMonth() + 1)).slice(-2)
           var day = ('0' + wrote.getDate()).slice(-2)
 
           questions.value[q].regist_time = year + '-' + month + '-' + day
-          continue
-        }
-        var dHour = now.getHours() - wrote.getHours()
-        if (dHour > 0) {
+        } else if (diff > 3_600_000) {
+          var dHour = Math.floor(diff / 3_600_000)
           questions.value[q].regist_time = dHour + '시간 전'
-          continue
-        }
-        var dMinutes = now.getMinutes() - wrote.getMinutes()
-        if (dMinutes > 0) {
+        } else if (diff > 60_000) {
+          var dMinutes = Math.floor(diff / 60_000)
           questions.value[q].regist_time = dMinutes + '분 전'
-          continue
-        }
-        var dSeconds = now.getSeconds() - wrote.getSeconds()
-        if (dSeconds > 0) {
+        } else if (diff / 1_000) {
+          var dSeconds = Math.floor(diff / 1_000)
           questions.value[q].regist_time = dSeconds + '초 전'
-          continue
         }
       }
     })
