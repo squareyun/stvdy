@@ -7,11 +7,11 @@ const userStore = useUserStore()
 
 const schema = Yup.object().shape({
   password: Yup.string()
-    .required('비밀번호를 넣어주세요')
-    .min(4, '더 긴 비밀번호를 사용해야합니다.'),
+    .required('*비밀번호를 넣어주세요')
+    .min(4, '*더 긴 비밀번호를 사용해야합니다.'),
   passwordConfirm: Yup.string().oneOf(
     [Yup.ref('password'), null],
-    '비밀번호가 일치하지않습니다.',
+    '*비밀번호가 일치하지않습니다.',
   ),
 })
 
