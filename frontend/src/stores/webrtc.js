@@ -240,14 +240,15 @@ export const usewebRtcStore = defineStore({
 
     async getsearchRooms(pageNo = 0, keyword = '', size = 20) { // 이 것을 이용해야 룸의 이미지를 받아올수 있음
       try {
-        console.log('안되나1')
+        console.log('getsearchRooms함수1')
         const response = await axios.get(
           `https://i9d205.p.ssafy.io/api/rooms/list?pageNo=${pageNo}&keyword=${keyword}&pageSize=${size}`,
         )
-        console.log('안되나2')
+        console.log('getsearchRooms함수2')
+        console.log(response.data.roomList)
         this.roomList = response.data.roomList.content
         console.log(this.roomList)
-        console.log('안되나3')
+        console.log('getsearchRooms함수3')
         console.log('갯수',this.roomList.length)
       } catch (error) {
         console.error('getsearchRooms함수 오류: ', error)

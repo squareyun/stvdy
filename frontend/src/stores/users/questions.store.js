@@ -43,7 +43,7 @@ export const useQuestionStore = defineStore('questions', () => {
           questions.value[q].regist_time = dSeconds + '초 전'
         }
       }
-
+      console.log('찍어보자',res.data.question)
       pageable.value = res.data.question.pageable
       pageable.value.totalPages = res.data.question.totalPages
     })

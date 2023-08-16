@@ -307,9 +307,14 @@ function joinSession() {
 
   // 새로 추가한 이벤트 리스너, 강제 종료되면 leaveSession()함.
   session.value.on('streamManagerRemoved', (event) => {
-    if (event.forced) {
-      console.log('얍! streamManagerRemoved')
-      // leaveSession();
+    console.log('얍! streamManagerRemoved')
+    try{            // froced면 메인으로 보내고
+      if (event.forced) {
+        // leaveSession();
+        router.push('/')
+      }
+    }catch(error){  // 실패해도 다시, 메인으로 보냅.
+      console.error('streamManagerRemoved에러', error)
       router.push('/')
     }
   })
@@ -317,8 +322,13 @@ function joinSession() {
   session.value.on('sessionDisconnected', (event) => {
     // 이벤트 처리 코드
     console.log('세션에서 연결 끊어짐:', event)
-    // 필요한 추가 작업을 수행합니다. 예: UI 업데이트, 사용자 알림 등
-    router.push('/')
+    try{                // 세션연결이 끊어지면 메인으로 보냄
+      // 필요한 추가 작업을 수행합니다. 예: UI 업데이트, 사용자 알림 등
+      router.push('/')
+    }catch(error){      // try 실패해도 메인으로 보내버리기
+      console.error('sessionDisconnected에러', error)
+      router.push('/')
+    }
   })
 
   session.value.on('exception', ({ exception }) => {
@@ -401,22 +411,27 @@ function leaveSession() {
   console.log('leaveSession() 함수 호출됨') // 확인용 로그
   console.log('참여자', subscribersComputed.value)
   console.log('참여자수', subscribersComputed.value.length)
-  if (session.value) session.value.disconnect()
-  // Empty all properties...
-  session.value = undefined
-  mainStreamManager.value = undefined
-  publisher.value = undefined
-  subscribers.value = []
-  OV.value = undefined
-  // 이벤트리스너 제거하기 beforeunload listener
-  // window.removeEventListener("beforeunload", handleLeaveSession)
-  // window.removeEventListener("beforeunload", leaveSession)
-  // document.removeEventListener('keydown', preventRefresh)
-  isExitTrue()
-  // const localRoomId = localStorage.getItem('roomId')
-  // openNewWindow2(`이건 리브세션버튼 누른거` + '섭스크라이브'+ subscribersComputed.value.length+'방id'+localRoomId)
-  // 메인페이지로 넘어감
-  router.push(router.push('/'))
+  try{
+    if (session.value) session.value.disconnect()
+    // Empty all properties...
+    session.value = undefined
+    mainStreamManager.value = undefined
+    publisher.value = undefined
+    subscribers.value = []
+    OV.value = undefined
+    // 이벤트리스너 제거하기 beforeunload listener
+    // window.removeEventListener("beforeunload", handleLeaveSession)
+    // window.removeEventListener("beforeunload", leaveSession)
+    // document.removeEventListener('keydown', preventRefresh)
+    isExitTrue()
+    // const localRoomId = localStorage.getItem('roomId')
+    // openNewWindow2(`이건 리브세션버튼 누른거` + '섭스크라이브'+ subscribersComputed.value.length+'방id'+localRoomId)
+    // 메인페이지로 넘어감
+    router.push('/')
+  }catch(error){  // 에러를 출력하고 메인으로 보내버리기
+    console.error('leaveSession함수에서 에러발생', error)
+    router.push('/')
+  }
 }
 function escapePage() {
   console.log('escapePage() 함수 호출됨')

@@ -9,21 +9,22 @@ const questionsStore = useQuestionStore()
 // 화상 회의 방과 관련된 것들
 // const roomList = ref(webRtcStore.roomList)
 const roomList = computed(() => webRtcStore.roomList)
-const wholepage = computed(() => Math.ceil(webRtcStore.wholeroomNo / 20)) // 페이지네이션을 위한 작업
-
 const title = ref(null)
 const isRoomInfo = ref(false)
 const selectedRoom = ref(null) // 선택한 방의 정보
 const selectedRoomPw = ref(null) // 선택한 방의 비밀번호
-const inputPw = ref(null) // 선택한 방 입장시 입력하는 비밀번호
+const inputPw = ref(null)       // 선택한 방 입장시 입력하는 비밀번호
 const isSeeInputPw = ref(false)
 const isHost = ref(false)
-const isnotFull = ref(true) // 선택한 방의 입장가능 여부. default는 true
+const isnotFull = ref(true)     // 선택한 방의 입장가능 여부. default는 true
 let tmpStudyImagePath = ref('/testBackground.png')
+const wholepage = computed(() => Math.ceil(webRtcStore.wholeroomNo / pageSize.value)) // 페이지네이션을 위한 작업
+const pageSize = ref(10)        // 한 번에 몇개의 방을 보여줄지 정해주는 값
+const currentPage = ref(1)
 
 onBeforeMount(async () => {
   await webRtcStore.getRtcRooms() // 페이지 네이션을 위해 전체 방의 갯수를 받기 위해 사용
-  await webRtcStore.getsearchRooms() // 20개의 방씩 페이지로 받는중. wholeList로는 이미지path를 받지 못함.
+  await webRtcStore.getsearchRooms(0,'',pageSize.value) // 20개의 방씩 페이지로 받는중. wholeList로는 이미지path를 받지 못함.
   webRtcStore.notIsHost()
 })
 
@@ -42,25 +43,9 @@ watch(
   },
 )
 
-/// CSS 적용을 위한 임시 함수
-// async function tmpGoRoom() {
-//   setTimeout(() => {
-//     console.log(roomList.value)
-//     console.log(roomList.value[roomList.value.length - 1])
-//     // joinTheRoom(roomList.value[roomList.value.length - 1])
-//     tmpJoin(roomList.value[roomList.value.length - 1])
-//   }, 2000)
-// }
-// function tmpJoin(room) {
-//   console.log('되긴되나', room)
-//   webRtcStore.joinTheRoom(room)
-// }
-
-////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////
 // button 클릭시 사용할 수 있도록. getsearchRooms 정의해줌.
 function getsearchRooms(pageNo = 0, keyword = '', size = 20) {
+  currentPage.value = pageNo +1
   webRtcStore.getsearchRooms(pageNo, keyword, size)
 }
 
@@ -108,22 +93,6 @@ function updateIsSeeInputPw(event) {
   isSeeInputPw.value = event.target.checked
 }
 
-// // 질문글의 내용을 일부만 보여주기 위한 함수
-// function limitQesCon(str, maxLength) {
-//   return str.length > maxLength ? str.slice(0, maxLength - 3) + '...' : str
-// }
-
-// // 해당 질문글을 보러 가는 글
-// function goThisQuestion(question) {
-//   console.log('질문정보', question)
-//   router.push({
-//     name: 'qtndetail',
-//     params: {
-//       // roomName: encodeURIComponent(question.id),
-//       roomName: question.id,
-//     },
-//   })
-// }
 </script>
 
 <template>
@@ -133,7 +102,7 @@ function updateIsSeeInputPw(event) {
     <div id="room-list-area">
       <div
         class="room-list"
-        v-for="room in roomList"
+        v-for="(room,index) in roomList" :key="index"
         @click="showRoomInfo(room)">
         <div>
           <div
@@ -160,9 +129,56 @@ function updateIsSeeInputPw(event) {
         </div>
       </div>
     </div>
-    <div>
-      <div v-for="page in wholepage">
-        <button @click="getsearchRooms(`${page - 1}`)">{{ page }}</button>
+    <!-- 페이지네이션 -->
+    <div
+      v-if="wholepage"
+      id="page-list">
+      <div
+        class="page-nav-left"
+        :class="{ deactivated: 1 === currentPage }"
+        @click="getsearchRooms(0,'',pageSize)">
+        <svg
+          width="1.2rem"
+          height="1.2rem"
+          viewBox="0 0 66 56"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M20 56H38L18 28L38 0H20L0 28L20 56Z"
+            fill="black" />
+          <path
+            d="M48 56H66L46 28L66 0H48L28 28L48 56Z"
+            fill="black" />
+        </svg>
+      </div>
+      <ul>
+        <li
+          :class="{ active: page === currentPage }"
+          v-for="page in wholepage"
+          :key="page"
+          @click="getsearchRooms(page-1,'',pageSize)">
+          {{ page }}
+        </li>
+      </ul>
+      <div
+        class="page-nav-right"
+        :class="{
+          deactivated: currentPage === wholepage,
+        }"
+        @click="getsearchRooms(wholepage-1,'',pageSize)">
+        <svg
+          width="1.2rem"
+          height="1.2rem"
+          viewBox="0 0 66 56"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M46 0H28L48 28L28 56H46L66 28L46 0Z"
+            fill="black" />
+          <path
+            d="M18 0H0L20 28L0 56H18L38 28L18 0Z"
+            fill="black" />
+        </svg>
       </div>
     </div>
     <!-- 방선택시 모달창 -->
@@ -177,7 +193,7 @@ function updateIsSeeInputPw(event) {
         <p
           class="join-field-name"
           v-if="selectedRoomPw">
-          &nbsp;&nbsp;키워드 &nbsp;
+          &nbsp;&nbsp;비밀번호 &nbsp;
         </p>
         <input
           v-if="selectedRoomPw"
@@ -323,6 +339,8 @@ function updateIsSeeInputPw(event) {
   column-count: 4;
 
   color: var(--hl-light);
+  display: flex;
+  flex-wrap: wrap;
 }
 .room-list {
   position: relative;
@@ -382,5 +400,47 @@ function updateIsSeeInputPw(event) {
   padding: 20px;
   /* display: flex; */
   justify-content: center;
+}
+#page-list {
+  text-align: center;
+  width: calc(960px - 7rem);
+}
+
+#page-list > div {
+  position: relative;
+  display: inline-block;
+
+  top: 3px;
+  cursor: pointer;
+}
+
+#page-list > div.deactivated {
+  pointer-events: none;
+}
+
+#page-list > div > svg > path {
+  fill: var(--hl-pres);
+  opacity: 0.8;
+}
+
+#page-list > ul {
+  display: inline-block;
+  list-style: none;
+
+  padding: 0 10px 0 10px;
+}
+
+#page-list > ul > li {
+  margin: 10px;
+
+  font-size: 1rem;
+  display: inline;
+}
+
+#page-list > ul > li.active {
+  font-family: 'ASDGothicH';
+  font-size: 1rem;
+
+  color: var(--hl-pres);
 }
 </style>
