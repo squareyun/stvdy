@@ -14,7 +14,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+//import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -377,6 +377,9 @@ public class RoomService {
         } catch(OpenViduJavaClientException | OpenViduHttpException e){
             logger.error("Openvidu connection 처리 실패");
             status = HttpStatus.MULTI_STATUS;
+        } catch(Exception e){
+            logger.error("Another Error Not Expected while exiting Room");
+            status = HttpStatus.MULTI_STATUS;
         }
         logger.debug("room/exit 트랜잭션 정상 완료");
         return status;
@@ -420,7 +423,7 @@ public class RoomService {
     }
 
     @Transactional
-    public void kickAndAlarm(Integer roomNo, Integer staffNo, Integer targetNo, String reason) throws OpenViduJavaClientException, OpenViduHttpException {
+    public void kickAndAlarm(Integer roomNo, Integer staffNo, Integer targetNo, String reason) {
         /*
         participant테이블의 participantNo가 일치하는 유저의 is_out을 0으로 바꾼다.
         alarm 테이블에 insert (insert into alarm(title, detail, link, user_id) values("강제퇴장 처리", kickinfo.reason, ?, kickInfo.partiNo))
