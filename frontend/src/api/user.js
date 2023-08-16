@@ -28,4 +28,16 @@ const changeOpenAiKey = async (apiKey, success, fail) => {
   await axios.put(`/api//mypage/api-key`, key).then(success).catch(fail)
 }
 
-export { getUser, joinUser, nameUser, changePwd, deleteUser, changeOpenAiKey }
+const emailCheck = async (email, success, fail) => {
+  await axios.get(`/users/join/${email}`).then(success).catch(fail)
+}
+
+export {
+  getUser,
+  joinUser,
+  nameUser,
+  changePwd,
+  deleteUser,
+  changeOpenAiKey,
+  emailCheck,
+}

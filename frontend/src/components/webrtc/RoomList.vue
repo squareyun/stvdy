@@ -68,7 +68,8 @@ function getsearchRooms(pageNo = 0, keyword = '', size = 20) {
 function joinTheRoom(room) {
   // cconsole.log()
   selectedRoom.value = room
-  if (selectedRoomPw.value != inputPw.value) {
+
+  if (selectedRoomPw.value && selectedRoomPw.value != inputPw.value) {
     // 비밀번호 불일치시
     alert('비밀번호가 불일치합니다.')
     return
@@ -126,67 +127,68 @@ function updateIsSeeInputPw(event) {
 </script>
 
 <template>
+  <!-- 주 화면 -->
   <div>
-    <span id="main-room-list-tile">인기 스터디 룸</span>
-    <div id="main-room-list-area">
-      <section class="main-card-list">
-        <article
-          class="main-card"
-          v-for="room in roomList.slice(0, 5)"
-          @click="showRoomInfo(room)">
+    <span class="room-content-title">스터디 룸</span>
+    <div id="room-list-area">
+      <div
+        class="room-list"
+        v-for="room in roomList"
+        @click="showRoomInfo(room)">
+        <div>
           <div
-            class="main-card-image"
+            class="room-card-image"
             :style="`background-image: url(${
               room.imagePath || tmpStudyImagePath
             });
             background-repeat : no-repeat;background-size: cover; background-position: center;`"></div>
-          <div class="main-card-filter"></div>
-          <div class="main-card-filter-grad"></div>
-          <div class="main-card-info-box">
-            <h2>{{ room.title }}</h2>
-            <div>{{ room.rule }}</div>
-
-            <span>
-              <svg
-                width="1.4rem"
-                height="1.4rem"
-                viewBox="0 0 95 128"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M25.0435 75.1304L0 100.174L8.34783 108.522L27.8261 89.0435H38.9565L25.0435 75.1304ZM61.2174 0C55.0957 0 50.087 5.0087 50.087 11.1304C50.087 17.2522 55.0957 22.2609 61.2174 22.2609C67.3391 22.2609 72.3478 17.2522 72.3478 11.1304C72.3478 5.0087 67.3391 0 61.2174 0ZM94.6087 111.36L77.913 128L61.273 111.249V102.957L21.76 63.4991C20.0348 63.7774 18.3652 63.8887 16.6957 63.8887V51.8678C25.9339 52.0348 36.7861 47.0261 42.6852 40.5148L50.4765 31.8887C51.5339 30.72 52.8696 29.7739 54.3165 29.1061C55.9304 28.327 57.767 27.8261 59.6591 27.8261H59.8261C66.727 27.8261 72.3478 33.447 72.3478 40.3478V89.0435L67.2278 84.4243L47.3043 64.5009V51.8678C43.7983 54.7617 39.3461 57.5443 34.56 59.6035L69.5652 94.6087H77.913L94.6087 111.36Z"
-                  fill="white" />
-              </svg>
-              <span>{{ room.currentNumber }} / {{ room.quota }}</span>
-            </span>
+          <div class="room-image-filter-top">
+            <svg
+              width="1.4rem"
+              height="1.4rem"
+              viewBox="0 0 95 128"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M25.0435 75.1304L0 100.174L8.34783 108.522L27.8261 89.0435H38.9565L25.0435 75.1304ZM61.2174 0C55.0957 0 50.087 5.0087 50.087 11.1304C50.087 17.2522 55.0957 22.2609 61.2174 22.2609C67.3391 22.2609 72.3478 17.2522 72.3478 11.1304C72.3478 5.0087 67.3391 0 61.2174 0ZM94.6087 111.36L77.913 128L61.273 111.249V102.957L21.76 63.4991C20.0348 63.7774 18.3652 63.8887 16.6957 63.8887V51.8678C25.9339 52.0348 36.7861 47.0261 42.6852 40.5148L50.4765 31.8887C51.5339 30.72 52.8696 29.7739 54.3165 29.1061C55.9304 28.327 57.767 27.8261 59.6591 27.8261H59.8261C66.727 27.8261 72.3478 33.447 72.3478 40.3478V89.0435L67.2278 84.4243L47.3043 64.5009V51.8678C43.7983 54.7617 39.3461 57.5443 34.56 59.6035L69.5652 94.6087H77.913L94.6087 111.36Z"
+                fill="white" />
+            </svg>
+            <span>{{ room.currentNumber }} / {{ room.quota }}</span>
           </div>
-        </article>
-      </section>
-      <!-- 방선택시 모달창 -->
-      <div
-        class="room-join-window"
-        v-if="isRoomInfo">
-        <!-- <button @click="joinRoom(room)">방 입장</button> -->
-        <p>{{ selectedRoom.currentNumber }} / {{ selectedRoom.quota }}명</p>
-        <h1>{{ selectedRoom.title }}</h1>
-        <h4>{{ selectedRoom.rule }}</h4>
-        <div class="room-join-pwd">
-          <p
-            class="join-field-name"
-            v-if="selectedRoomPw">
-            &nbsp;&nbsp;키워드 &nbsp;
-          </p>
-          <input
-            v-if="selectedRoomPw"
-            class="join-field"
-            type="password"
-            @input="updatePwInput"
-            :value="inputPw" />
+          <div class="room-list-title">{{ room.title }}</div>
+          <div class="room-list-detail">{{ room.rule }}</div>
         </div>
-        <div class="room-join-btn">
-          <button @click="joinTheRoom(selectedRoom)">방 입장</button>
-          <button @click="hideRoomInfo">창 닫기</button>
-        </div>
+      </div>
+    </div>
+    <div>
+      <div v-for="page in wholepage">
+        <button @click="getsearchRooms(`${page - 1}`)">{{ page }}</button>
+      </div>
+    </div>
+    <!-- 방선택시 모달창 -->
+    <div
+      class="room-join-window"
+      v-if="isRoomInfo">
+      <!-- <button @click="joinRoom(room)">방 입장</button> -->
+      <p>{{ selectedRoom.currentNumber }} / {{ selectedRoom.quota }}명</p>
+      <h1>{{ selectedRoom.title }}</h1>
+      <h4>{{ selectedRoom.rule }}</h4>
+      <div class="room-join-pwd">
+        <p
+          class="join-field-name"
+          v-if="selectedRoomPw">
+          &nbsp;&nbsp;키워드 &nbsp;
+        </p>
+        <input
+          v-if="selectedRoomPw"
+          class="join-field"
+          type="password"
+          @input="updatePwInput"
+          :value="inputPw" />
+      </div>
+      <div class="room-join-btn">
+        <button @click="joinTheRoom(selectedRoom)">방 입장</button>
+        <button @click="hideRoomInfo">창 닫기</button>
       </div>
     </div>
   </div>
@@ -212,7 +214,7 @@ function updateIsSeeInputPw(event) {
 .room-join-window > h1,
 .room-join-window > h4,
 .room-join-window > p {
-  color: var(--font100);
+  color: var(--font80);
   margin: 0px;
 }
 
@@ -275,191 +277,86 @@ function updateIsSeeInputPw(event) {
   color: var(--hl-pres);
 }
 
-#main-room-list-area {
-  position: absolute;
-  top: 330px;
-  right: 0px;
-  height: 300px;
+.room-card-image {
+  width: 208px;
+  height: 140px;
 
-  overflow: hidden;
+  border-radius: 2px;
 }
 
-#main-room-list-tile {
-  position: absolute;
-  top: 309px;
+.room-image-filter-top > svg {
+  position: relative;
+  top: 8px;
+  left: 8px;
+}
 
+.room-image-filter-top > svg > path {
+  fill: #ffffff;
+}
+
+.room-image-filter-top > span {
+  color: #ffffff;
+  position: relative;
+  top: 2px;
+  left: 8px;
+}
+
+.room-image-filter-top {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+
+  width: 208px;
+  height: 140px;
+
+  background: linear-gradient(
+    180deg,
+    #00000055 0%,
+    transparent 50%,
+    transparent 100%
+  );
+
+  opacity: 1;
+}
+
+#room-list-area {
+  column-count: 4;
+
+  color: var(--hl-light);
+}
+.room-list {
+  position: relative;
+
+  padding: 10px;
+  margin-bottom: 20px;
+
+  cursor: pointer;
+
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.room-list-title {
   color: var(--hl-light);
   font-size: 1rem;
 }
 
-@media (min-width: 1600px) {
-  #main-room-list-area {
-    right: 0px;
-    width: 720px;
-  }
-
-  #main-room-list-tile {
-    right: 0px;
-  }
-}
-
-@media (max-width: 1600px) {
-  #main-room-list-area {
-    right: 0px;
-    width: 720px;
-  }
-
-  #main-room-list-tile {
-    right: 0px;
-  }
-}
-
-.main-card-list {
-  display: flex;
-  margin-bottom: 30px;
-  padding-left: 6px;
-}
-
-.main-card {
-  display: flex;
-  position: relative;
-  flex-direction: column;
-
-  height: calc(300px - 3rem);
-  width: 200px;
-
-  padding: 1.5rem;
-
-  border-radius: 12px 0px 0px 15px;
-
-  transition: 0.4s;
-
-  box-shadow: -3px 0px 3px rgba(0, 0, 0, 0.16), -2px 0px 3px rgba(0, 0, 0, 0.23);
-
-  overflow: hidden;
-
-  cursor: pointer;
-}
-
-.main-card:hover ~ .main-card {
-  transform: translateX(70px);
-}
-
-.main-card:not(:first-child) {
-  margin-left: -80px;
-}
-
-.main-card-image {
-  position: absolute;
-  left: 0px;
-  top: 0px;
-
-  width: 100%;
-  height: 100%;
-
-  filter: blur(1px) saturate(1.5);
-}
-
-.main-card-filter {
-  position: absolute;
-  left: 0px;
-  top: 0px;
-
-  width: 100%;
-  height: 100%;
-
-  background-color: #000000;
-
-  opacity: 0.1;
-}
-
-.main-card-filter-grad {
-  position: absolute;
-  left: 0px;
-  top: 0px;
-
-  width: 100%;
-  height: 100%;
-
-  background: linear-gradient(0deg, #000000bb 0%, transparent 100%);
-
-  opacity: 0.4;
-}
-
-.main-card-info-box {
-  position: absolute;
-  left: 0px;
-  bottom: 0px;
-
-  width: calc(100% - 20px);
-  height: 40%;
-
-  padding: 1rem;
-
-  border-radius: 0px 0px 12px 12px;
-}
-
-.main-card-info-box > h2 {
-  margin: 0px;
-
-  color: #f8f8f2;
-}
-
-.main-card-info-box > div {
-  width: 100%;
-  height: 55px;
-
-  overflow: hidden;
-  margin: 0px;
-
-  white-space: pre-wrap;
-  color: #f8f8f2;
-}
-
-.main-card-info-box > span {
-  vertical-align: middle;
-  color: #f8f8f2;
-}
-
-.main-card-info-box > span > svg {
-  position: absolute;
-  bottom: 12px;
-  left: 12px;
-}
-
-.main-card-info-box > span > span {
-  position: absolute;
-  bottom: 12px;
-  left: 35px;
-}
-
-#main-room-list-box {
-  width: 960px;
-}
-
-.main-room-row {
-  position: relative;
-  height: 140px;
-
+.room-list-detail {
+  font-size: 0.8rem;
+  font-family: 'ASDGothicUL';
   color: var(--hl-light);
 
+  max-height: 4rem;
+
   overflow: hidden;
 }
 
-#main-room-list {
-  position: relative;
-
-  background-color: var(--background-window);
-  border-radius: 10px;
-
-  margin-bottom: 20px;
-
+#room-list-box {
   width: 960px;
-
-  border: 1px solid var(--border-color);
 }
 
-.main-centered-container {
+.centered-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -471,14 +368,14 @@ function updateIsSeeInputPw(event) {
   align-items: center;
   background-color: transparent;
 } */
-.main-blackBg {
+.blackBg {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0);
   position: fixed;
   padding: 20px;
 }
-.main-whiteBg {
+.whiteBg {
   width: 80%;
   background: white;
   border-radius: 8px;
