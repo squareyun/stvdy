@@ -78,90 +78,42 @@ function updateStudyImage(e) {
     const reader = new FileReader()
     reader.onload = (event) => {
       const imgPreviewUrl = event.target.result
-      // console.log('이게 미리보기 url',imgPreviewUrl)
-      tmpStudyImagePath.value = imgPreviewUrl
+      studyImageUrl.value = imgPreviewUrl
+      sessionStorage.setItem("roomImg", studyImageUrl.value)  //// 세션스토리지에 스터디룸 이미지를 따로 저장해서 재로그인해야만 보이는 문제 해결하기
     }
     reader.readAsDataURL(selectedFile)
 
     const imgformData = new FormData()
     imgformData.append('file', selectedFile)
-    // imagePath.uploadStudyImagetoServer(userStore.user.id, imgformData) // 업로드된 이미지를 서버로 전송
-    imagePath
-      .uploadStudyImagetoServer(userStore.user.id, imgformData) // 업로드된 이미지를 서버로 전송하고 그 path를 받을거임.
-      .then(() => {
-        const StudyResoponse = imagePath.downloadStudyImagefromServer(
-          userStore.user.id,
-        )
-        if (StudyResoponse.message !== 'getUrl 실패') {
-          studyImageUrl = StudyResoponse.url // .url로 표현하는게 맞는지 모르겠음.
-        }
-      })
-      .catch((error) => {
-        console.error(
-          '이미지 업로드 및 다운로드 중 오류가 발생했습니다:',
-          error,
-        )
-      })
+    imagePath.uploadStudyImagetoServer(userStore.user.id, imgformData) // 업로드된 이미지를 서버로 전송하고 그 path를 받을거임.
   })
   input.click()
 }
 
 function updateProfileImage(e) {
   e.preventDefault()
-  const input = document.createElement('input')
-  input.type = 'file'
-  input.accept = 'image/*'
+  const input = document.createElement("input")
+  input.type = "file"
+  input.accept = "image/*"
 
-  input.addEventListener('change', (event) => {
+  input.addEventListener("change", async (event) => {
     const selectedFile = event.target.files[0]
     console.log(selectedFile)
 
     const reader = new FileReader()
     reader.onload = (event) => {
       const imgPreviewUrl = event.target.result
-      studyImageUrl.value = imgPreviewUrl // tmpStudyImagePath.value = imgPreviewUrl;
-      sessionStorage.setItem('roomImg', studyImageUrl.value) // 세션스토리지에 룸이미지를 따로 저장해서 재로그인해야만 보이는 문제 해결하기.
+      profileImageUrl.value = imgPreviewUrl; //tmpProfileImagePath.value = imgPreviewUrl;
+      sessionStorage.setItem("profileImg",profileImageUrl.value) // 세션스토리지에 프로필이미지를 따로 저장해서 재로그인해야만 보이는 문제 해결하기.
     }
     reader.readAsDataURL(selectedFile)
 
     const imgformData = new FormData()
-    imgformData.append('file', selectedFile)
-    imagePath
-      .uploadStudyImagetoServer(userStore.user.id, imgformData) // 업로드된 이미지를 서버로 전송하고 그 path를 받을거임.
-      .then(() => {
-        console.log('uploadStudyImagetoServer 완료!')
-      })
-      .catch((error) => {
-        console.error('이미지 업로드에 오류가 발생했습니다:', error)
-      })
-  })
-  input.click()
+    imgformData.append("file", selectedFile)
+    imagePath.uploadProfileImagetoServer(userStore.user.id, imgformData) // 업로드된 이미지를 서버로 전송
+  });
+  input.click();
 }
-
-// function updateProfileImage(e) {
-//   e.preventDefault()
-//   const input = document.createElement("input")
-//   input.type = "file"
-//   input.accept = "image/*"
-
-//   input.addEventListener("change", async (event) => {
-//     const selectedFile = event.target.files[0]
-//     console.log(selectedFile)
-
-//     const reader = new FileReader()
-//     reader.onload = (event) => {
-//       const imgPreviewUrl = event.target.result
-//       profileImageUrl.value = imgPreviewUrl; //tmpProfileImagePath.value = imgPreviewUrl;
-//       sessionStorage.setItem("profileImg",profileImageUrl.value) // 세션스토리지에 프로필이미지를 따로 저장해서 재로그인해야만 보이는 문제 해결하기.
-//     }
-//     reader.readAsDataURL(selectedFile)
-
-//     const imgformData = new FormData()
-//     imgformData.append("file", selectedFile)
-//     imagePath.uploadProfileImagetoServer(userStore.user.id, imgformData) // 업로드된 이미지를 서버로 전송
-//   });
-//   input.click();
-// }
 </script>
 
 <template>

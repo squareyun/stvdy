@@ -11,7 +11,8 @@ const router = useRouter()
 // 화상 회의 방과 관련된 것들
 // const roomList = ref(webRtcStore.roomList)
 const roomList = computed(() => webRtcStore.roomList)
-const roomListSample = ref([])
+const roomListSample = ref([])  // 현재 사용X
+const wholepage = computed(() => Math.ceil(webRtcStore.wholeroomNo/20)) // 페이지네이션을 위한 작업
 
 const title = ref(null)
 const isRoomInfo = ref(false)
@@ -21,11 +22,14 @@ const inputPw = ref(null) // 선택한 방 입장시 입력하는 비밀번호
 const isSeeInputPw = ref(false)
 const isHost = ref(false)
 const isnotFull = ref(true) // 선택한 방의 입장가능 여부. default는 true
+let tmpStudyImagePath = ref('/testBackground.png')
 
 onBeforeMount(async () => {
-  await webRtcStore.getRtcRooms()
+  await webRtcStore.getRtcRooms()     // 페이지 네이션을 위해 전체 방의 갯수를 받기 위해 사용
+  await webRtcStore.getsearchRooms()  // 20개의 방씩 페이지로 받는중. wholeList로는 이미지path를 받지 못함.
   extractSomeRooms()
   webRtcStore.notIsHost()
+  
 })
 
 watch(
@@ -60,10 +64,15 @@ watch(
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
+// button 클릭시 사용할 수 있도록. getsearchRooms 정의해줌.
+function getsearchRooms(pageNo = 0, keyword = '', size = 20) {
+  webRtcStore.getsearchRooms(pageNo, keyword, size)
+}
 
-// // 방 몇 개를 추출 하는 함수
+// // 방 몇 개를 추출 하는 함수 // 현재사용X
 function extractSomeRooms() {
   const tmpRoomList = []
+  console.log('이거',roomList.value)
   if (roomList.value.length > 3) {
     const usedIndexes = []
     for (let i = 0; i < 3; i++) {
@@ -123,49 +132,24 @@ function updatePwInput(event) {
 function updateIsSeeInputPw(event) {
   isSeeInputPw.value = event.target.checked
 }
-// // 이거 이미지 불러오려고 했는데 라이프사이클 바궈야 할 듯
-// onBeforeMount(()=>{
-//   readInputImage()
-// })
 
-// // 이미지 업로드 및 미리보기 함수
-// function readInputImage(event){
-//   // console.log(event.target.files[0])
-//   store.updateBackImg(event.target.files[0])
-//   backImgFile.value = event.target.files[0]
 
-//   // 이미지 파일을 데이터 Url로 변환하기
-//   const reader = new FileReader()
-//   reader.onload = (event) => {
-//     imgPreviewUrl.value = event.target.result
-//   }
-//   reader.readAsDataURL(backImgFile.value)
+// // 질문글의 내용을 일부만 보여주기 위한 함수
+// function limitQesCon(str, maxLength) {
+//   return str.length > maxLength ? str.slice(0, maxLength - 3) + '...' : str
 // }
 
-//// 카드로 이미지 가져오는 방법
-function roomImage(hostId) {}
-// {/* <img v-if="room.imgPreviewUrl" :src="room.imgPreviewUrl" alt="imgPreview" style="max-width: 100%; max-height: 100%" /> */}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-// 질문글의 내용을 일부만 보여주기 위한 함수
-function limitQesCon(str, maxLength) {
-  return str.length > maxLength ? str.slice(0, maxLength - 3) + '...' : str
-}
-
-// 해당 질문글을 보러 가는 글
-function goThisQuestion(question) {
-  console.log('질문정보', question)
-  router.push({
-    name: 'qtndetail',
-    params: {
-      // roomName: encodeURIComponent(question.id),
-      roomName: question.id,
-    },
-  })
-}
+// // 해당 질문글을 보러 가는 글
+// function goThisQuestion(question) {
+//   console.log('질문정보', question)
+//   router.push({
+//     name: 'qtndetail',
+//     params: {
+//       // roomName: encodeURIComponent(question.id),
+//       roomName: question.id,
+//     },
+//   })
+// }
 </script>
 
 <template>
@@ -182,10 +166,11 @@ function goThisQuestion(question) {
     </div>
 
     <p>중단= 공개 스터디 룸</p>
-    <div style="display: flex">
+    <!-- <div style="display: flex"> -->
+    <div>
       <!-- <div v-for="room in roomList" :key="room.id" class="card" style="margin: 10px;"> -->
       <div
-        v-for="room in roomListSample"
+        v-for="room in roomList"
         :key="room.id"
         class="card"
         style="margin: 10px">
@@ -198,14 +183,9 @@ function goThisQuestion(question) {
             height: 300px;
           "
           @click="showRoomInfo(room)">
-          <img
-            v-if="room.imgPreviewUrl"
-            :src="room.imgPreviewUrl"
-            alt="imgPreview"
-            style="max-width: 100%; max-height: 100%" />
           <div
-            v-else
-            style="width: 100%; height: 100%; background-color: crimson"></div>
+            :style="`width: 100%; height: 100%; background-image: url(${room.imagePath || tmpStudyImagePath});
+            background-repeat : no-repeat;background-size: cover; background-position: center;` "></div>
           <div
             style="
                 position: absolute;
@@ -227,6 +207,13 @@ function goThisQuestion(question) {
         <div></div>
       </div>
     </div>
+    <!-- 페이지네이션 관련 내용으로 구현하였음. -->
+    <div>
+      <div v-for="page in wholepage">
+        <button @click="getsearchRooms(`${page-1}`)">{{page}}</button>
+      </div>
+    </div>
+    <!-- 방선택시 모달창 -->
     <div
       class="whiteBg centered-container"
       v-if="isRoomInfo"

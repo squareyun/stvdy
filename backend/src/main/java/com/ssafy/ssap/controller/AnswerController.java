@@ -61,6 +61,7 @@ public class AnswerController {
         try {
             List<AnswerResponseDto> answerList = answerService.getList(questionNo);
             logger.debug("질문 {} 에 대한 답변 목록 {}개 조회 성공", questionNo, (long) answerList.size());
+            System.out.println(answerList.get(0).getRegist_time());
             return ResponseEntity.accepted()
                     .body(Map.of("answers", answerList, "message", MessageFormat.SUCCESS));
         } catch (Exception e) {

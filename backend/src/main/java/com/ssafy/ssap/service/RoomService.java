@@ -14,7 +14,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+//import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -162,6 +162,7 @@ public class RoomService {
         Room room = roomRepository.findById(roomNo).orElse(null);
         try{
             addParticipant(room, role, userNo, connectionId);
+            //noinspection DataFlowIssue
             logger.debug("add Participant find Room 결과 :"+room.getId());
         }catch(NullPointerException e){
             logger.error("룸 객체를 찾지 못함 "+e);
@@ -233,7 +234,8 @@ public class RoomService {
         Map<String, Object> resultMap = new HashMap<>();
         Room room = roomRepository.findByCode(code).orElse(null);
        try{
-           if(room.getIsValid()==false){
+           //noinspection DataFlowIssue
+           if(!room.getIsValid()){
                resultMap.put("meesage","이 방은 폐쇄되었습니다.");
                return resultMap;
            }
@@ -339,7 +341,7 @@ public class RoomService {
 
     @SuppressWarnings("DataFlowIssue")
     @Transactional
-    public HttpStatus exit(Integer roomNo, Integer userNo) throws OpenViduJavaClientException, OpenViduHttpException {
+    public HttpStatus exit(Integer roomNo, Integer userNo) {
         String connectionId;
         Session session;
         HttpStatus status;
@@ -349,37 +351,35 @@ public class RoomService {
 
 
         try{
+            //강제 disconnect 성공 시 db처리
+            //participant 테이블 수정 (is_Out 수정)
+            participant.setIsOut(true);
+            logger.trace("is_out 수정 완료");
+
+            //room_log 수정 (spend hour 갱신)
+            LocalDateTime time_start, time_end;
+            time_start = roomLog.getEnterTime();
+            time_end = LocalDateTime.now();
+            int spend_min = Math.toIntExact(ChronoUnit.MINUTES.between(time_start, time_end));
+            LocalTime spendTime = LocalTime.of(spend_min / 60, spend_min % 60);
+
+            roomLog.setSpendHour(spendTime);
+            logger.trace("spend hour 갱신 완료");
+            status = HttpStatus.OK;
+
             //대상자 connection 강제 disconnect
             connectionId = participant.getConnectionId();
             session = openVidu.getActiveSession(roomLog.getRoom().getSessionId());
             session.forceDisconnect(connectionId);
-
-            if(session.getConnection(connectionId) == null) {
-                //강제 disconnect 성공 시 db처리
-                //participant 테이블 수정 (is_Out 수정)
-                participant.setIsOut(true);
-                logger.trace("is_out 수정 완료");
-
-                //room_log 수정 (spend hour 갱신)
-                LocalDateTime time_start, time_end;
-                time_start = roomLog.getEnterTime();
-                time_end = LocalDateTime.now();
-                int spend_min = Math.toIntExact(ChronoUnit.MINUTES.between(time_start, time_end));
-                LocalTime spendTime = LocalTime.of(spend_min / 60, spend_min % 60);
-
-                roomLog.setSpendHour(spendTime);
-                logger.trace("spend hour 갱신 완료");
-                status = HttpStatus.OK;
-            } else{
-                logger.error("openvidu connection이 삭제되지 않음");
-                status = HttpStatus.CONFLICT;
-            }
         } catch(NullPointerException e){
             logger.error("매칭되는 객체 없음"+roomNo+"/"+userNo);
             status = HttpStatus.CONFLICT;
         } catch(OpenViduJavaClientException | OpenViduHttpException e){
             logger.error("Openvidu connection 처리 실패");
-            throw e;
+            status = HttpStatus.MULTI_STATUS;
+        } catch(Exception e){
+            logger.error("Another Error Not Expected while exiting Room");
+            status = HttpStatus.MULTI_STATUS;
         }
         logger.debug("room/exit 트랜잭션 정상 완료");
         return status;
@@ -406,7 +406,10 @@ public class RoomService {
             Page<RoomDto> roomDtoList = roomList.map(room -> {
                 User host = participantRepository.findUserByRoomIdAndRole(room, participantRoleNsRepository.findByName("호스트"));
                 logger.debug("user의 roomiMagePath 조회중"+room.getId()+"/"+host.getRoomImagePath()+"/"+host.getId());
-                return new RoomDto(room,host.getRoomImagePath());
+                RoomDto roomDto = new RoomDto(room,host.getRoomImagePath());
+                Integer num = participantRepository.countByRoomIdAndIsOut(roomDto.getId(),false);
+                roomDto.setCurrentNumber(num);
+                return roomDto;
             });
 
             resultMap.put("roomList",roomDtoList);
@@ -420,7 +423,7 @@ public class RoomService {
     }
 
     @Transactional
-    public void kickAndAlarm(Integer roomNo, Integer staffNo, Integer targetNo, String reason) throws OpenViduJavaClientException, OpenViduHttpException {
+    public void kickAndAlarm(Integer roomNo, Integer staffNo, Integer targetNo, String reason) {
         /*
         participant테이블의 participantNo가 일치하는 유저의 is_out을 0으로 바꾼다.
         alarm 테이블에 insert (insert into alarm(title, detail, link, user_id) values("강제퇴장 처리", kickinfo.reason, ?, kickInfo.partiNo))
@@ -450,6 +453,7 @@ public class RoomService {
             }
             //DB처리
             try {
+                //noinspection DataFlowIssue
                 addParticipant(roomNo, "참여자", userNo, connection.getConnectionId()); //4번
                 logger.debug("JoinRoom - addParticipant 종료");
                 addRoomLog(roomNo, userNo); //5번
