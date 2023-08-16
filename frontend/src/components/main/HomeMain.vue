@@ -21,6 +21,7 @@ const inputPw = ref(null) // 선택한 방 입장시 입력하는 비밀번호
 const isSeeInputPw = ref(false)
 const isHost = ref(false)
 const isnotFull = ref(true) // 선택한 방의 입장가능 여부. default는 true
+let tmpStudyImagePath = ref('/testBackground.png')
 
 onBeforeMount(async () => {
   await webRtcStore.getRtcRooms()
@@ -198,14 +199,8 @@ function goThisQuestion(question) {
             height: 300px;
           "
           @click="showRoomInfo(room)">
-          <img
-            v-if="room.imgPreviewUrl"
-            :src="room.imgPreviewUrl"
-            alt="imgPreview"
-            style="max-width: 100%; max-height: 100%" />
           <div
-            v-else
-            style="width: 100%; height: 100%; background-color: crimson"></div>
+            :style="`width: 100%; height: 100%; background-image: url(${room.imagePath || tmpStudyImagePath});`"></div>
           <div
             style="
                 position: absolute;

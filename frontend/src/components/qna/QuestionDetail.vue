@@ -1,7 +1,7 @@
 <script setup>
 import { Form, Field } from 'vee-validate'
 import { useQuestionStore, useUserStore, useImagePath } from '@/stores'
-import { computed, onBeforeUnmount } from 'vue'
+import { ref, computed, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import router from '@/router'
 import {
