@@ -24,9 +24,11 @@ const isnotFull = ref(true) // 선택한 방의 입장가능 여부. default는 
 let tmpStudyImagePath = ref('/testBackground.png')
 
 onBeforeMount(async () => {
-  await webRtcStore.getRtcRooms()
+  // await webRtcStore.getRtcRooms()
+  await webRtcStore.getsearchRooms()  // 20개의 방씩 페이지로 받는중. woleList로는 이미지path를 받지 못함.
   extractSomeRooms()
   webRtcStore.notIsHost()
+  
 })
 
 watch(
@@ -65,6 +67,7 @@ watch(
 // // 방 몇 개를 추출 하는 함수
 function extractSomeRooms() {
   const tmpRoomList = []
+  console.log('이거',roomList.value)
   if (roomList.value.length > 3) {
     const usedIndexes = []
     for (let i = 0; i < 3; i++) {
@@ -124,33 +127,8 @@ function updatePwInput(event) {
 function updateIsSeeInputPw(event) {
   isSeeInputPw.value = event.target.checked
 }
-// // 이거 이미지 불러오려고 했는데 라이프사이클 바궈야 할 듯
-// onBeforeMount(()=>{
-//   readInputImage()
-// })
 
-// // 이미지 업로드 및 미리보기 함수
-// function readInputImage(event){
-//   // console.log(event.target.files[0])
-//   store.updateBackImg(event.target.files[0])
-//   backImgFile.value = event.target.files[0]
 
-//   // 이미지 파일을 데이터 Url로 변환하기
-//   const reader = new FileReader()
-//   reader.onload = (event) => {
-//     imgPreviewUrl.value = event.target.result
-//   }
-//   reader.readAsDataURL(backImgFile.value)
-// }
-
-//// 카드로 이미지 가져오는 방법
-function roomImage(hostId) {}
-// {/* <img v-if="room.imgPreviewUrl" :src="room.imgPreviewUrl" alt="imgPreview" style="max-width: 100%; max-height: 100%" /> */}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 // 질문글의 내용을 일부만 보여주기 위한 함수
 function limitQesCon(str, maxLength) {
   return str.length > maxLength ? str.slice(0, maxLength - 3) + '...' : str
@@ -186,7 +164,7 @@ function goThisQuestion(question) {
     <div style="display: flex">
       <!-- <div v-for="room in roomList" :key="room.id" class="card" style="margin: 10px;"> -->
       <div
-        v-for="room in roomListSample"
+        v-for="room in roomList"
         :key="room.id"
         class="card"
         style="margin: 10px">

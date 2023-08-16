@@ -301,7 +301,7 @@ function joinSession() {
       console.log('얍! streamManagerRemoved')
       // leaveSession();
       router.push({
-        name: 'maintmp', // 임시로 main으로 넘겨줌.
+        name: 'hometest', // 임시로 main으로 넘겨줌.
         // name:'main',
       })
     }
@@ -312,7 +312,7 @@ function joinSession() {
     console.log('세션에서 연결 끊어짐:', event)
     // 필요한 추가 작업을 수행합니다. 예: UI 업데이트, 사용자 알림 등
     router.push({
-      name: 'maintmp', // 임시로 main으로 넘겨줌.
+      name: 'hometest', // 임시로 main으로 넘겨줌.
       // name:'main',
     })
   })
@@ -335,6 +335,7 @@ function joinSession() {
 
   // createToken(mySessionId.value).then((token) => {
   createToken(mySessionId.value, roomId.value).then((token) => {
+    console.log('이게',token)
     roomId.value = webrtcstore.roomId
     if (roomId.value !== undefined && roomId.value !== null) {
       // roomId가 변경되면 localstorage에 저장합니다.
@@ -412,7 +413,7 @@ function leaveSession() {
   // openNewWindow2(`이건 리브세션버튼 누른거` + '섭스크라이브'+ subscribersComputed.value.length+'방id'+localRoomId)
   // 메인페이지로 넘어감
   router.push({
-    name: 'maintmp', // 임시로 main으로 넘겨줌.
+    name: 'hometest', // 임시로 main으로 넘겨줌.
     // name:'main',
   })
 }
@@ -551,6 +552,7 @@ async function createToken(mySessionId, roomId) {
       // catch(error){
       //   console.log(error)
       // }
+      console.log('이거토큰',response.data.token)
       return response.data.token
     } catch (error) {
       console.error('방 생성에도 오류 났음.', error)
