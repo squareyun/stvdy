@@ -162,6 +162,15 @@ const randomImage = () => {
   }
 }
 
+let profileImageUrl = ref(  // 프로필 이미지를 가지고 있으면 해당 이미지 사용
+  sessionStorage.getItem('profileImg')
+    ? sessionStorage.getItem('profileImg')
+    : userstore.user.profileImg,
+)
+let tmpProfileUrl = ref(`/userBalloon.png`) // 기본 프로필 이미지
+const profileImagePath = computed(()=>{
+  return profileImageUrl.value ? profileImageUrl.value : tmpProfileUrl.value
+})
 // watch(participantNumber, (numb) => {
 //   changeBoxSize(numb)
 // })
@@ -1115,7 +1124,7 @@ async function handleForceDisconnect(subscriber) {
       <!-- <button @click="checkConnection(roomId)">체크커넥션</button> -->
       <!-- 캠,오디오 선택 옵션 -->
       <div id="profile-div">
-        <div id="profile-image"></div>
+        <div id="profile-image" :style="`background-image: url(${profileImagePath})`" ></div>
         <div id="profile-name">{{ userInfo.username }}</div>
         <div id="profile-email-name">{{ userInfo.email }}</div>
         <div
