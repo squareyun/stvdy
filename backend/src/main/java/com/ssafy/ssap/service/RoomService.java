@@ -341,7 +341,7 @@ public class RoomService {
 
     @SuppressWarnings("DataFlowIssue")
     @Transactional
-    public HttpStatus exit(Integer roomNo, Integer userNo) throws OpenViduJavaClientException, OpenViduHttpException {
+    public HttpStatus exit(Integer roomNo, Integer userNo) {
         String connectionId;
         Session session;
         HttpStatus status;
@@ -351,37 +351,32 @@ public class RoomService {
 
 
         try{
+            //강제 disconnect 성공 시 db처리
+            //participant 테이블 수정 (is_Out 수정)
+            participant.setIsOut(true);
+            logger.trace("is_out 수정 완료");
+
+            //room_log 수정 (spend hour 갱신)
+            LocalDateTime time_start, time_end;
+            time_start = roomLog.getEnterTime();
+            time_end = LocalDateTime.now();
+            int spend_min = Math.toIntExact(ChronoUnit.MINUTES.between(time_start, time_end));
+            LocalTime spendTime = LocalTime.of(spend_min / 60, spend_min % 60);
+
+            roomLog.setSpendHour(spendTime);
+            logger.trace("spend hour 갱신 완료");
+            status = HttpStatus.OK;
+
             //대상자 connection 강제 disconnect
             connectionId = participant.getConnectionId();
             session = openVidu.getActiveSession(roomLog.getRoom().getSessionId());
             session.forceDisconnect(connectionId);
-
-            if(session.getConnection(connectionId) == null) {
-                //강제 disconnect 성공 시 db처리
-                //participant 테이블 수정 (is_Out 수정)
-                participant.setIsOut(true);
-                logger.trace("is_out 수정 완료");
-
-                //room_log 수정 (spend hour 갱신)
-                LocalDateTime time_start, time_end;
-                time_start = roomLog.getEnterTime();
-                time_end = LocalDateTime.now();
-                int spend_min = Math.toIntExact(ChronoUnit.MINUTES.between(time_start, time_end));
-                LocalTime spendTime = LocalTime.of(spend_min / 60, spend_min % 60);
-
-                roomLog.setSpendHour(spendTime);
-                logger.trace("spend hour 갱신 완료");
-                status = HttpStatus.OK;
-            } else{
-                logger.error("openvidu connection이 삭제되지 않음");
-                status = HttpStatus.CONFLICT;
-            }
         } catch(NullPointerException e){
             logger.error("매칭되는 객체 없음"+roomNo+"/"+userNo);
             status = HttpStatus.CONFLICT;
         } catch(OpenViduJavaClientException | OpenViduHttpException e){
             logger.error("Openvidu connection 처리 실패");
-            throw e;
+            status = HttpStatus.MULTI_STATUS;
         }
         logger.debug("room/exit 트랜잭션 정상 완료");
         return status;
