@@ -1,10 +1,11 @@
 <script setup>
 import { useAlarmStore } from '@/stores'
 import { useUserStore } from '@/stores' // 프로필이미지 등록을 위해서 import
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import router from '@/router'
 
 const userStore = useUserStore() // 프로필 이미지 등록을 위해 userStore사용
+const user = computed(() => userStore.user)
 
 const alarmStore = useAlarmStore()
 const alarms = computed(() => alarmStore.alarms)
@@ -12,13 +13,18 @@ const alarms = computed(() => alarmStore.alarms)
 alarmStore.getList()
 
 const openAlarms = () => {
-  const a = document.getElementById('alarms')
-  if (a.style.display == '' || a.style.display == 'none')
-    a.style.display = 'block'
-  else a.style.display = 'none'
+  console.log(!user.value.id)
+  if (!user.value.id) {
+    router.push('/about')
+  } else {
+    const a = document.getElementById('alarms')
+    if (a.style.display == '' || a.style.display == 'none')
+      a.style.display = 'block'
+    else a.style.display = 'none'
 
-  const e = document.getElementById('room-add')
-  if (e.style.display == 'block') e.style.display = 'none'
+    const e = document.getElementById('room-add')
+    if (e.style.display == 'block') e.style.display = 'none'
+  }
 }
 
 let tmpProfileUrl = `/randomImages/randomImage${Math.floor(

@@ -6,12 +6,21 @@ import TagRank from '@/components/home/TagRank.vue'
 import MeetingRoom from '@/components/home/MeetingRoom.vue'
 import RecentAsk from '@/components/home/RecentAsk.vue'
 import RoomAdd from '@/components/webrtc/RoomAdd.vue'
+import AiChat from '@/components/main/AiAssist.vue'
+
+import { useUserStore } from '@/stores'
+import { computed } from 'vue'
+
+const userStore = useUserStore()
+const user = computed(() => userStore.user)
 </script>
 
 <template>
   <SideBar />
   <TopSearch id="top-items" />
-  <RoomAdd id="room-add" />
+  <RoomAdd
+    v-if="user.id"
+    id="room-add" />
   <main id="home-main">
     <Advertisment />
     <TagRank />
@@ -27,6 +36,10 @@ import RoomAdd from '@/components/webrtc/RoomAdd.vue'
 
 #room-add {
   z-index: 101;
+}
+
+#ai-assist {
+  z-index: 102;
 }
 
 @media (min-width: 1600px) {

@@ -105,8 +105,8 @@ const router = createRouter({
       component: () => import('@/views/RoomView.vue'),
       children: [
         {
-          path: '/room/list',
-          name: 'listrooms',
+          path: '',
+          name: 'listroom',
           component: () => import('@/components/main/HomeMain.vue'),
         },
       ],
@@ -119,12 +119,12 @@ const router = createRouter({
     },
 
     //// 메인화면입장 시
-    {
-      path: '/main',
-      name: 'maintmp',
-      component: () => import('@/components/main/HomeMain.vue'),
-      children: [],
-    },
+    // {
+    //   path: '/room',
+    //   name: 'maintmp',
+    //   component: () => import('@/components/main/HomeMain.vue'),
+    //   children: [],
+    // },
     {
       // path: '/'+{keyword},
       path: '/keyword/:TagName',

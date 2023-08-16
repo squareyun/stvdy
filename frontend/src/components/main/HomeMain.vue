@@ -1,19 +1,13 @@
 <script setup>
-  import SideBar from '@/components/SideBar.vue'
-  import { ref, computed, watch, onMounted, onBeforeMount } from 'vue'
-  import { useRouter } from "vue-router"
-  import { usewebRtcStore } from "@/stores"
-  import { useQuestionStore } from "@/stores"
-  // import { storeToRefs } from 'pinia';
-  import axios from 'axios'
+import { ref, computed, watch, onMounted, onBeforeMount } from 'vue'
+import { useRouter } from 'vue-router'
+import { usewebRtcStore } from '@/stores'
+import { useQuestionStore } from '@/stores'
+// import { storeToRefs } from 'pinia';
 
-  const webRtcStore = usewebRtcStore()
-  const questionsStore = useQuestionStore()
-  const router = useRouter();
-  
-////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////
+const webRtcStore = usewebRtcStore()
+const questionsStore = useQuestionStore()
+const router = useRouter()
 // 화상 회의 방과 관련된 것들
 // const roomList = ref(webRtcStore.roomList)
 const roomList = computed(() => webRtcStore.roomList)
@@ -28,38 +22,11 @@ const isSeeInputPw = ref(false)
 const isHost = ref(false)
 const isnotFull = ref(true) // 선택한 방의 입장가능 여부. default는 true
 
-////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////
-// const participantNo = ref(0)
-
-// const everyRoomTags = ref([])
-////////////////
-
-////////////////
-// 질문게시판과 관련한 것.
-// const { questions } = storeToRefs(questionsStore);
-// const questions = ref(questionsStore.questions);
-const questions = computed(() => questionsStore.questions)
-const questionsSample = ref([])
-////////////////
-
-////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////
 onBeforeMount(async () => {
   await webRtcStore.getRtcRooms()
-  // questionsStore.getAll() // 모든 질문을 가지고 옴.
-  // await webRtcStore.getEveryRoomTags()    // 230808 현재는 제대로 구현되어있지 않음
   extractSomeRooms()
-  extractSomeQuestions()
   webRtcStore.notIsHost()
 })
-
-  onMounted(async () => {
-    // localStorage.removeItem('roomId')
-    // await tmpGoRoom() // css 동안 임시 작동.
-  })
 
 watch(
   () => webRtcStore.roomList,
@@ -76,40 +43,19 @@ watch(
   },
 )
 
-  /// CSS 적용을 위한 임시 함수
-  async function tmpGoRoom() {
-    setTimeout(() => {
-      console.log(roomList.value)
-      console.log(roomList.value[roomList.value.length - 1])
-      // joinTheRoom(roomList.value[roomList.value.length - 1])
-      tmpJoin(roomList.value[roomList.value.length - 1])
-    }, 2000);
-  }
-  function tmpJoin(room) {
-    console.log('되긴되나',room)
-    webRtcStore.joinTheRoom(room)
-  }
-
-// // 질문 글 몇개를 추출 하는 함수
-function extractSomeQuestions() {
-  const tmpQuestionsSample = []
-  if (questions.value.length > 3) {
-    const usedIndexes = []
-    for (let i = 0; i < 3; i++) {
-      let randomNum
-      do {
-        randomNum = Math.floor(Math.random() * questions.value.length)
-      } while (usedIndexes.includes(randomNum))
-
-      usedIndexes.push(randomNum)
-      tmpQuestionsSample.push(questions.value[randomNum])
-    }
-
-    questionsSample.value = tmpQuestionsSample
-  } else {
-    questionsSample.value = questions.value
-  }
-}
+/// CSS 적용을 위한 임시 함수
+// async function tmpGoRoom() {
+//   setTimeout(() => {
+//     console.log(roomList.value)
+//     console.log(roomList.value[roomList.value.length - 1])
+//     // joinTheRoom(roomList.value[roomList.value.length - 1])
+//     tmpJoin(roomList.value[roomList.value.length - 1])
+//   }, 2000)
+// }
+// function tmpJoin(room) {
+//   console.log('되긴되나', room)
+//   webRtcStore.joinTheRoom(room)
+// }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -197,11 +143,8 @@ function updateIsSeeInputPw(event) {
 // }
 
 //// 카드로 이미지 가져오는 방법
-function roomImage(hostId) {
-  
-}
+function roomImage(hostId) {}
 // {/* <img v-if="room.imgPreviewUrl" :src="room.imgPreviewUrl" alt="imgPreview" style="max-width: 100%; max-height: 100%" /> */}
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -226,11 +169,64 @@ function goThisQuestion(question) {
 </script>
 
 <template>
-  <main style="color: white">
+  <!-- 주 화면 -->
+  <div style="margin-top: 30px; margin-left: 100px">
+    <!-- 임시로 마진값을 줘서 띄움 -->
+    <p>상단</p>
+    <div>
+      상단 왼쪽 = 인기 키워드
+      <!-- <div v-for="(tag,i) in everyRoomTags" :key="i">
+            {{ tag }}
+          </div> -->
+      <div>상단 오른쪽 = (배너)들어갈 자리</div>
+    </div>
 
-    <!-- <TheWelcome /> -->
-    <!-- <SideBar /> -->
-    <!-- 방 세부 정보 확인 모달 창 -->
+    <p>중단= 공개 스터디 룸</p>
+    <div style="display: flex">
+      <!-- <div v-for="room in roomList" :key="room.id" class="card" style="margin: 10px;"> -->
+      <div
+        v-for="room in roomListSample"
+        :key="room.id"
+        class="card"
+        style="margin: 10px">
+        <div
+          v-if="isnotFull"
+          style="
+            position: relative;
+            display: inline-block;
+            width: 300px;
+            height: 300px;
+          "
+          @click="showRoomInfo(room)">
+          <img
+            v-if="room.imgPreviewUrl"
+            :src="room.imgPreviewUrl"
+            alt="imgPreview"
+            style="max-width: 100%; max-height: 100%" />
+          <div
+            v-else
+            style="width: 100%; height: 100%; background-color: crimson"></div>
+          <div
+            style="
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;s
+              ">
+            {{ room.title }}
+          </div>
+          <div>
+            <span>정원: {{ room.quota }}</span>
+            <span>방 id : {{ room.id }}</span>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
     <div
       class="whiteBg centered-container"
       v-if="isRoomInfo"
@@ -259,91 +255,7 @@ function goThisQuestion(question) {
       <button @click="joinTheRoom(selectedRoom)">방 입장</button>
       <button @click="hideRoomInfo">창 닫기</button>
     </div>
-
-
-    <!-- 주 화면 -->
-    <div style="margin-top: 30px; margin-left: 100px">
-      <!-- 임시로 마진값을 줘서 띄움 -->
-      <p>상단</p>
-      <div>
-        상단 왼쪽 = 인기 키워드
-        <!-- <div v-for="(tag,i) in everyRoomTags" :key="i">
-            {{ tag }}
-          </div> -->
-        <div>상단 오른쪽 = (배너)들어갈 자리</div>
-      </div>
-
-   
-      <p>중단= 공개 스터디 룸</p>
-      <div style="display: flex">
-        <!-- <div v-for="room in roomList" :key="room.id" class="card" style="margin: 10px;"> -->
-        <div
-          v-for="room in roomListSample"
-          :key="room.id"
-          class="card"
-          style="margin: 10px">
-          <div
-            v-if="isnotFull"
-            style="
-              position: relative;
-              display: inline-block;
-              width: 300px;
-              height: 300px;
-            "
-            @click="showRoomInfo(room)">
-            <img
-              v-if="room.imgPreviewUrl"
-              :src="room.imgPreviewUrl"
-              alt="imgPreview"
-              style="max-width: 100%; max-height: 100%" />
-            <div
-              v-else
-              style="
-                width: 100%;
-                height: 100%;
-                background-color: crimson;
-              "></div>
-            <div
-              style="
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                display: flex;
-                justify-content: center;
-                align-items: center;s
-              ">
-              {{ room.title }}
-            </div>
-            <div>
-              <span>정원: {{ room.quota }}</span>
-              <span>방 id : {{ room.id }}</span>
-            </div>
-          </div>
-          <div></div>
-        </div>
-      </div>
- 
-      <div style="margin: 50px"></div>
-      <!-- 임시로 마진값을 줘서 띄움 -->
-
-      <p>하단= 칼럼 => 질문글 몇 개</p>
-      <div style="display: flex">
-        <div
-          v-for="question in questionsSample"
-          :key="question.id"
-          style="border-color: white; border: 1px solid white">
-          <!-- <p>{{ question.id }}</p> -->
-          <h3 @click="goThisQuestion(question)">{{ question.title }}</h3>
-          <p>{{ limitQesCon(question.detail, 100) }}</p>
-          <!-- <p>{{ question.regist_time }}</p> -->
-        </div>
-      </div>
-    </div>
-
-    <!-- <router-view /> -->
-  </main>
+  </div>
 </template>
 
 <style>
