@@ -8,7 +8,7 @@ const authStore = useAuthStore()
 
 const schema = Yup.object().shape({
   email: Yup.string().email('*올바른 입력이 필요합니다.'),
-  password: Yup.string().required('*올바른 입력이 필요합니다.'),
+  password: Yup.string().required('*비밀 번호가 필요합니다.'),
 })
 
 const onSubmit = async (values) => {

@@ -61,23 +61,28 @@ async function onSubmit(values) {
       await useOpenAiStore.qna(values)
 
       aiReply.innerText = 'GPT 3.5: ' + useOpenAiStore.answer
+      aiReply.style.color = 'var(--hl-light)'
       chatList.appendChild(aiReply)
       qnaQuery += `[Previous Question: ${values.question}, Previous Answer: ${useOpenAiStore.answer}], New Question: `
 
       if (first) first = false
     } catch (error) {
       aiReply.innerText = 'GPT 3.5: ' + '에러 확인. API Key를 확인해주세요.'
+      aiReply.style.color = 'var(--hl-light)'
+      chatList.appendChild(aiReply)
     }
     chatList.removeChild(loadingImg)
   } else {
     userStore.changeApiKey(values.question)
     if (useOpenAiStore.init()) {
       aiReply.innerText = 'GPT 3.5: ' + useOpenAiStore.answer
+      aiReply.style.color = 'var(--hl-light)'
       chatList.appendChild(aiReply)
     } else {
       activated = true
       if (first) first = false
       aiReply.innerText = 'GPT 3.5: ' + useOpenAiStore.answer
+      aiReply.style.color = 'var(--hl-light)'
       chatList.appendChild(aiReply)
     }
   }
@@ -210,6 +215,8 @@ const openAiAssist = () => {
   width: calc(100% - 5px);
   height: 396px;
   padding-right: 5px;
+
+  color: var(--hl-light);
 
   overflow-x: hidden;
   overflow-y: auto;

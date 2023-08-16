@@ -237,7 +237,7 @@ const questionerImage = function () {
             {{ ans.detail }}
             <svg
               class="best-btn"
-              v-if="!question.bestSelected && user.id != ans.userNo"
+              v-if="!question.bestSelected && user.id != question.userNo"
               @click="bestAns(ans.id)"
               width="1.4rem"
               height="1.4rem"
