@@ -14,8 +14,8 @@ export const usewebRtcStore = defineStore({
     userId: Math.floor(Math.random() * (200 - 1 + 1)) + 1, // 테스트를 위해서 임시로...
 
     mySessionId: 'SSAP STVDY' + (Math.floor(Math.random() * (200 - 1 + 1)) + 1),
-    // myUserName : useUserStore().user.username,
-    myUserName: '테스트 유저' + (Math.floor(Math.random() * (200 - 1 + 1)) + 1),
+    myUserName : useUserStore().user.username,  // user 닉네임
+    // myUserName: '테스트 유저' + (Math.floor(Math.random() * (200 - 1 + 1)) + 1),
 
     endHour: 0,
     endMinute: 0,
@@ -44,9 +44,10 @@ export const usewebRtcStore = defineStore({
 
     //////////////////////////
     // 메인페이지에서 사용되는 방 목록 관련
+    roomListAll: [],
     roomList: [],
     roomId: null,
-
+    wholeroomNo: 0,   // 페이지네이션을 위해 전체 방의 갯수를 가져옴
     peopleNo: 0, // 우선 peopleNo은 0으로 둠. 방 탈퇴 및 방 정보에 사용할 예정임
 
     router: useRouter(),
@@ -228,8 +229,10 @@ export const usewebRtcStore = defineStore({
         const response = await axios.get(
           'https://i9d205.p.ssafy.io/api/rooms/wholeList',
         )
-        this.roomList = response.data.roomList
-        console.log(this.roomList)
+        this.roomListAll = response.data.roomList   // roomListAll이라는 별칭으로 바꿔줌.
+        this.wholeroomNo = this.roomListAll.length
+        console.log(this.roomListAll)
+        console.log('전체갯수',this.roomListAll.length)
       } catch (error) {
         console.error('getRtcRooms함수 오류: ', error)
       }
@@ -245,6 +248,7 @@ export const usewebRtcStore = defineStore({
         this.roomList = response.data.roomList.content
         console.log(this.roomList)
         console.log('안되나3')
+        console.log('갯수',this.roomList.length)
       } catch (error) {
         console.error('getsearchRooms함수 오류: ', error)
       }
