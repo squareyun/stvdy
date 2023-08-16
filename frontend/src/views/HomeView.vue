@@ -6,7 +6,6 @@ import TagRank from '@/components/home/TagRank.vue'
 import MeetingRoom from '@/components/home/MeetingRoom.vue'
 import RecentAsk from '@/components/home/RecentAsk.vue'
 import RoomAdd from '@/components/webrtc/RoomAdd.vue'
-import AiChat from '@/components/main/AiAssist.vue'
 
 import { useUserStore } from '@/stores'
 import { computed } from 'vue'

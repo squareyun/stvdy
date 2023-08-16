@@ -1,17 +1,20 @@
 import { defineStore } from 'pinia'
 import { Configuration, OpenAIApi } from 'openai'
+import { computed } from 'vue'
+import { useUserStore } from '@/stores'
 
-const configuration = new Configuration({
-  // 아래의 organization과 key는 절대 git에 commit 금지!!
-  organization: import.meta.env.VITE_organization_key,
-  apiKey: import.meta.env.VITE_openAI_key,
-  // 위의 organization과 key는 절대 git에 commit 금지!!
-  // commit 전 공란으로 두기 - 차후 별도의 파일로 관리 예정
-})
+var openai = {}
 
-delete configuration.baseOptions.headers['User-Agent']
-
-const openai = new OpenAIApi(configuration)
+// const configuration = new Configuration({
+//   // 아래의 organization과 key는 절대 git에 commit 금지!!
+//   organization: 'org-2q23jAHtGZvY2Oumz698ofuA',
+//   // apiKey: user.apiKey,
+//   apiKey: '34',
+//   // 위의 organization과 key는 절대 git에 commit 금지!!
+//   // commit 전 공란으로 두기 - 차후 별도의 파일로 관리 예정
+// })
+// delete configuration.baseOptions.headers['User-Agent']
+// const openai = new OpenAIApi(configuration)
 
 export const useAiAssist = defineStore({
   id: 'aiAssist',
@@ -19,6 +22,31 @@ export const useAiAssist = defineStore({
     answer: {},
   }),
   actions: {
+    init() {
+      const userStore = useUserStore()
+      const user = computed(() => userStore.user)
+
+      if (!user.value.apiKey) {
+        this.answer = '첫 사용이신가요? OpenAI API Key를 입력해주세요.'
+
+        return true
+      } else {
+        this.answer = 'API Key가 활성화 되었습니다! 이제 무엇이든지 물어보세요!'
+        const configuration = new Configuration({
+          // 아래의 organization과 key는 절대 git에 commit 금지!!
+          organization: 'org-2q23jAHtGZvY2Oumz698ofuA',
+          apiKey: user.value.apiKey,
+          // apiKey: '34',
+          // 위의 organization과 key는 절대 git에 commit 금지!!
+          // commit 전 공란으로 두기 - 차후 별도의 파일로 관리 예정
+        })
+
+        delete configuration.baseOptions.headers['User-Agent']
+        openai = new OpenAIApi(configuration)
+
+        return false
+      }
+    },
     // 아래 기능은 질문에 답변 하는 기능
     // { type : 'string', question: 'string'} 형태의 매개변수를 가짐
     // string 형태로 답변자의 정체성을 설정할 수 있음
@@ -33,7 +61,6 @@ export const useAiAssist = defineStore({
         ],
       })
       let result = sampleQuestion.data.choices[0].message.content
-      console.log(`배포시에는 본 콘솔출력문을 삭제하시오. ${result}`)
       this.answer = result
     },
 

@@ -1,6 +1,5 @@
 <script setup>
-import { computed, onMounted } from 'vue'
-import { mapState } from 'vuex'
+import { onMounted } from 'vue'
 
 const times = () => {
   var now = new Date()

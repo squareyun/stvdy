@@ -27,9 +27,7 @@ const openAlarms = () => {
   }
 }
 
-let tmpProfileUrl = `/randomImages/randomImage${Math.floor(
-  Math.random() * 34,
-)}.png`
+let tmpProfileUrl = `/userBalloon.png`
 
 let profileValue = ref(
   sessionStorage.getItem('profileImg')

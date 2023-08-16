@@ -1,13 +1,12 @@
 import { defineStore } from 'pinia'
 import { useAuthStore } from '@/stores'
-import { getUser, changePwd, deleteUser } from '@/api/user'
+import { getUser, changePwd, deleteUser, changeOpenAiKey } from '@/api/user'
 import { ref, watch } from 'vue'
 
 export const useUserStore = defineStore('users', () => {
   const user = ref([])
   const users = ref([])
 
-  localStorage.removeItem('user')
   if (sessionStorage.getItem('user')) {
     user.value = JSON.parse(sessionStorage.getItem('user'))
   }
@@ -45,6 +44,7 @@ export const useUserStore = defineStore('users', () => {
       username: values.nickname,
       profileImg: values.profileImagePath,
       roomImg: values.roomImagePath,
+      apiKey: values.apiKey,
     }
   }
 
@@ -71,5 +71,22 @@ export const useUserStore = defineStore('users', () => {
     )
   }
 
-  return { user, users, getInfo, setInfo, changePassword, deleteAccount }
+  const changeApiKey = async (key) => {
+    user.value.apiKey = key
+    await changeOpenAiKey(
+      key,
+      (res) => console.log(res),
+      (fail) => console.log(fail),
+    )
+  }
+
+  return {
+    user,
+    users,
+    getInfo,
+    setInfo,
+    changePassword,
+    deleteAccount,
+    changeApiKey,
+  }
 })

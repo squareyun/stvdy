@@ -2,7 +2,6 @@
 import SideBar from '@/components/SideBar.vue'
 import TopSearch from '@/components/TopSearch.vue'
 import RoomAdd from '@/components/webrtc/RoomAdd.vue'
-import AiChat from '@/components/main/AiAssist.vue'
 
 import { useUserStore } from '@/stores'
 import { computed } from 'vue'

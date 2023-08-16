@@ -1,13 +1,5 @@
 import axios from 'axios'
 
-const hello = async (success, fail) => {
-  await axios.get(`/api/users/hello`).then(success).catch(fail)
-}
-
-// const getUser = async (email, success, fail) => {
-//   await axios.post(`/users/${email}`).then(success).catch(fail)
-// }
-
 const joinUser = async (user, success, fail) => {
   await axios.post(`/api/users/join`, user).then(success).catch(fail)
 }
@@ -29,4 +21,11 @@ const deleteUser = async (userId, success, fail) => {
   await axios.delete(`/api/users/${userId}`).then(success).catch(fail)
 }
 
-export { hello, getUser, joinUser, nameUser, changePwd, deleteUser }
+const changeOpenAiKey = async (apiKey, success, fail) => {
+  const key = {
+    apiKey: apiKey,
+  }
+  await axios.put(`/api//mypage/api-key`, key).then(success).catch(fail)
+}
+
+export { getUser, joinUser, nameUser, changePwd, deleteUser, changeOpenAiKey }
