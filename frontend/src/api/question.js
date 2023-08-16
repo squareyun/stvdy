@@ -73,7 +73,6 @@ export {
   getQuestion,
   isLikeQuestion,
   likesQuestion,
-  // likesAnswer,
   answerQuestion,
   getAnswers,
   bestAnswer,

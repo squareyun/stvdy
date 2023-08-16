@@ -33,9 +33,7 @@ let profileImageUrl = ref(
     ? sessionStorage.getItem('profileImg')
     : userStore.user.profileImg,
 )
-let tmpProfileUrl = `/randomImages/randomImage${Math.floor(
-  Math.random() * 34,
-)}.png`
+let tmpProfileUrl = `/userBalloon.png`
 let tmpProfileImagePath = ref(tmpProfileUrl) // 우선 등록해둔게 없으면 무작위 프로필을 보여줌
 const profileImagePath = computed(() => {
   return profileImageUrl.value
@@ -62,9 +60,9 @@ const changeUserName = async (name) => {
 
 const schema = Yup.object().shape({
   username: Yup.string()
-    .required('닉네임을 작성해주세요.')
-    .max(45, '길이를 줄여주세요.')
-    .min(4, '더 긴 닉네임을 사용해야합니다.'),
+    .required('*닉네임을 작성해주세요.')
+    .max(45, '*길이를 줄여주세요.')
+    .min(3, '*더 긴 닉네임을 사용해야합니다.'),
 })
 
 function updateStudyImage(e) {

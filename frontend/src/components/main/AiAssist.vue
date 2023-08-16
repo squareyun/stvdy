@@ -1,40 +1,85 @@
 <script setup>
 import { Form, Field } from 'vee-validate'
-import { useAiAssist } from '@/stores'
+import { useAiAssist, useUserStore } from '@/stores'
+import { computed, onMounted } from 'vue'
+
+const userStore = useUserStore() // 프로필 이미지 등록을 위해 userStore사용
+const user = computed(() => userStore.user)
 
 const useOpenAiStore = useAiAssist()
 let qnaQuery = ''
 let aiPersona = ''
 
-async function onSubmit(values) {
-  try {
-    if (values.type !== aiPersona) {
-      qnaQuery = ''
-    }
-    aiPersona = values.type
-    const chatList = document.getElementById('ai-chat-list')
-    const newMessage = document.createElement('li')
-    newMessage.innerText = '나: ' + values.question
-    chatList.appendChild(newMessage)
-    values.question = qnaQuery + values.question
+let activated = false
+let first = true
 
+onMounted(() => {
+  first = true
+
+  if (useOpenAiStore.init()) {
+    const aiReply = document.createElement('li')
+    const chatList = document.getElementById('ai-chat-list')
+    aiReply.innerText = 'GPT 3.5: ' + useOpenAiStore.answer
+    chatList.appendChild(aiReply)
+  } else {
+    activated = true
+    const values = {
+      type: 'You are a good assistant',
+      question: '안녕 chatgpt 반갑게 인사해줄래?',
+    }
+
+    onSubmit(values)
+  }
+})
+
+async function onSubmit(values) {
+  const questionBox = document.getElementById('ai-question')
+  questionBox.value = ''
+
+  const chatList = document.getElementById('ai-chat-list')
+  const aiReply = document.createElement('li')
+
+  if (activated) {
     const loadingImg = document.createElement('img')
     loadingImg.setAttribute('src', '/loading.gif')
     loadingImg.setAttribute('id', 'loading-wheel')
-    chatList.appendChild(loadingImg)
+    try {
+      if (values.type !== aiPersona) {
+        values.type = 'You are a good assistant'
+      }
+      aiPersona = values.type
+      if (!first) {
+        const newMessage = document.createElement('li')
+        newMessage.innerText = '나: ' + values.question
+        newMessage.style.color = 'var(--hl-pres)'
+        chatList.appendChild(newMessage)
+      }
+      values.question = qnaQuery + values.question
 
-    const questionBox = document.getElementById('ai-question')
-    questionBox.value = ''
+      chatList.appendChild(loadingImg)
 
-    await useOpenAiStore.qna(values)
+      await useOpenAiStore.qna(values)
 
+      aiReply.innerText = 'GPT 3.5: ' + useOpenAiStore.answer
+      chatList.appendChild(aiReply)
+      qnaQuery += `[Previous Question: ${values.question}, Previous Answer: ${useOpenAiStore.answer}], New Question: `
+
+      if (first) first = false
+    } catch (error) {
+      aiReply.innerText = 'GPT 3.5: ' + '에러 확인. API Key를 확인해주세요.'
+    }
     chatList.removeChild(loadingImg)
-    const aiReply = document.createElement('li')
-    aiReply.innerText = 'AI: ' + useOpenAiStore.answer
-    chatList.appendChild(aiReply)
-    qnaQuery += `[Previous Question: ${values.question}, Previous Answer: ${useOpenAiStore.answer}], New Question: `
-  } catch (error) {
-    console.log(error)
+  } else {
+    userStore.changeApiKey(values.question)
+    if (useOpenAiStore.init()) {
+      aiReply.innerText = 'GPT 3.5: ' + useOpenAiStore.answer
+      chatList.appendChild(aiReply)
+    } else {
+      activated = true
+      if (first) first = false
+      aiReply.innerText = 'GPT 3.5: ' + useOpenAiStore.answer
+      chatList.appendChild(aiReply)
+    }
   }
 }
 
@@ -73,17 +118,15 @@ const openAiAssist = () => {
         <Form
           @submit="onSubmit"
           id="chat-write">
-          <Field
+          <field
             id="ai-type"
             name="type"
             as="select">
             <option
               value=""
-              disabled
               selected>
-              답변해줄 인물을 고르세요.
+              챗 GPT
             </option>
-            <option value="You are a good assistant">챗 GPT</option>
             <option
               value="You are sehyeok, a chatbot with a soul of nasty sarcasm and negative">
               우울한 세혁
@@ -96,7 +139,7 @@ const openAiAssist = () => {
               value="You are Doctor Muller, a chatbot with a soul of super serious professor">
               교수님 이거 좀..
             </option>
-          </Field>
+          </field>
           <br />
           <Field
             id="ai-question"
@@ -194,8 +237,10 @@ const openAiAssist = () => {
 }
 
 #loading-wheel {
-  height: 50px;
-  width: 50px;
+  height: 2rem;
+  width: 2rem;
+
+  margin-top: 3px;
 }
 
 #chat-write {

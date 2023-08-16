@@ -6,7 +6,6 @@ import { useUserStore } from '@/stores'
 
 const usersStore = useUserStore()
 const localUser = usersStore.user
-console.log(localUser)
 
 // const store = usewebRtcStore()
 const webrtcstore = usewebRtcStore()
