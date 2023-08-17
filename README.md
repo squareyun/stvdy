@@ -63,15 +63,41 @@ STVDY의 장점은 다음과 같습니다. 먼저. 자신만의 프로필을 통
 
 #### 1. 비로그인시
 
-![](README_assets/2023-08-17-11-57-30-image.png)
+![비로그인시 메인화면.PNG](README_assets/0a494ff0114fcc9c9cafd70b2d3bd00ee98ab435.PNG)
 
 ![](README_assets/2023-08-17-11-57-55-image.png) 
 
 #### 2. 로그인시
 
+![로그인시 메인화면.PNG](README_assets/9698e1b0d7c9772913f689a475f10ad76875d653.PNG)
+
+
+
 ### 회원가입 및 로그인
 
+#### 1. 로그인 창
+
 ![](README_assets/2023-08-17-11-58-20-image.png)
+
+#### 2. 회원가입 창
+
+![회원가입창 빈칸.PNG](README_assets/213b5a04786b0cb55b253cc6e55fcf64579b8be0.PNG)
+
+###### a. 가입되지 않은 이메일인 경우
+
+![로그인 이메일 전송.PNG](README_assets/799edfc98a41099ae65a70660c63d232f1ea735f.PNG)
+
+###### b. 가입된 이메일인 경우
+
+![로그인 이메일 전송 실패.PNG](README_assets/61a141c3a28e76b9adc6d249f21cbe72962fa6bb.PNG)
+
+#### 3. 이메일로 전송받은 전송번호 기입 후 회원 가입
+
+![회원가입창 칸채움.PNG](README_assets/04b7f5910e70d1af4fa51bc2163285c3073193b4.PNG)
+
+
+
+
 
 ### 질문게시판
 
@@ -95,13 +121,43 @@ STVDY의 장점은 다음과 같습니다. 먼저. 자신만의 프로필을 통
 
 ![](README_assets/2023-08-17-12-33-04-image.png)
 
+
+
 ### 프로필
+
+#### 1. 이미지 변경 전
+
+![프로필.PNG](README_assets/23dafcf1728b2571bd867c45a1b9dd0604e3d0fa.PNG)
+
+#### 2. 이미지 변경 후
+
+![프로필 이미지 변경.PNG](README_assets/0e86e0837c0896b723a66d3698ee733aab7d3bec.PNG)
+
+
 
 ### 테마 변경
 
+#### 1. 테마 변경 전
+
+![테마 변경.PNG](README_assets/46925547754389dd28dc1fd9e0c00f522da20fc0.PNG)
+
+#### 2. 테마 변경 후
+
+![테마 변경 후.PNG](README_assets/89af7fd3062317cb3eb613ed831c2f23261f5489.PNG)
+
+
+
 ### 스터디룸
 
+
+
+
+
 ### 챗 GPT
+
+
+
+
 
 <div id="5"></div>
 
@@ -126,26 +182,7 @@ WebRTC를 보다 간단하게 적용할 수 있고, 다양한 프레임워크와
 
 `STVDY` 에서는 화상회의 및 스터디를 하기 위해 openVidu를 사용합니다.
 
-## 2. Web Socket
-
-### web Socket이란?
-
-![webSocket](https://upload.wikimedia.org/wikipedia/commons/1/10/Websocket_connection.png)
-
-<aside>
-웹 소켓은 사용자의 브라우저와 서버 사이의 인터액티브 통신 세션을 설정할 수 있게 하는 기술입니다. 
-개발자는 웹 소켓 API를 통해 서버로 메시지를 보내고 서버의 응답을 위해 서버를 폴링하지 않고도 이벤트 중심 응답을 받는 것이 가능합니다.
-</aside>
-
-### 적용
-
-`STVDY` 에서는 실시간 공유를 위해 다음 부분에서 webSocket을 사용합니다.
-
-1. 채팅 (스터디룸 내 채팅)
-2. 방 목록화면
-   -> 방의 상태(참여 유저 수)를 실시간으로 공유합니다.
-
-## 3. 개발 환경
+## 2. 개발 환경
 
 1. BackEnd
    - openjdk 17.0.7
@@ -160,7 +197,7 @@ WebRTC를 보다 간단하게 적용할 수 있고, 다양한 프레임워크와
    - openai 3.3.0
    - vscode 1.79.2
 
-## 4. System Architecture
+## 3. System Architecture
 
 ![아키텍처.png](README_assets/9cd8cf173c268b33a24b49d8c99046fd7ec96b85.png)
 
