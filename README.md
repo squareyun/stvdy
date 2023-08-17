@@ -248,8 +248,9 @@ Git flow 사용을 위해 `sourcetree` 프로그램을 사용하였고 우아한
 
 ### 2. ERD
 
-[![erd](./assets/erd.PNG)](https://www.erdcloud.com/d/tj8QmWP6ENjYwhnWX)
+![image.png](./image.png)
 <br>
+
 
 ### 3. API 문서
 
@@ -261,7 +262,7 @@ Git flow 사용을 위해 `sourcetree` 프로그램을 사용하였고 우아한
 
 - 안세혁 : 
 
-- 이대근 : 
+- 이대근 : DB구성을 JPA라는 새로운 프레임워크와 진행하면서 혼동될 때도 있었지만 이론적으로도 기술적으로도 발전이 많았습니다. SPRING을 다루는 실력도 늘었다고 생각하며 프로젝트 전반에 대한 시야가 넓어진 좋은 경험이였습니다.
 
 - 김소이 : 
 
