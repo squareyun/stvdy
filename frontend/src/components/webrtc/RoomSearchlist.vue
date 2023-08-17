@@ -123,7 +123,7 @@
   <!-- 주 화면 -->
   <div>
     <span v-if="roomList.length" class="room-content-title">스터디 룸</span>
-    <span v-else class="room-content-title"> "{{searchKeyword}}"에 부합하는 스터디 룸이 존재하지 않습니다.</span>
+    <h3 v-else class="room-content-title"> <h1>"{{searchKeyword}}"</h1>해당 키워드에 부합하는 스터디 룸이 존재하지 않습니다.</h3>
     <div id="room-list-area">
       <div
         class="room-list"
