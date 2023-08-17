@@ -134,8 +134,8 @@ async function onSubmit(values) {
           <button
             id="question-form-menu-btn"
             :disabled="isSubmitting">
-            <span v-if="$route.name == 'createquestion'">작성</span>
-            <span v-if="$route.name == 'modifyquestion'">수정</span>
+            <span v-if="$route.name == 'createQuestion'">작성</span>
+            <span v-if="$route.name == 'modifyQuestion'">수정</span>
           </button>
         </div>
       </Form>
