@@ -92,7 +92,7 @@ export const useAuthStore = defineStore({
       }
       catch(error){
         console.log('이메일 전송 실패',error, error.response.data)
-        alert('이메일 전송에 실패했습니다. 주소를 다시 확인해주세요.')
+        alert('사용할 수 없는 이메일 주소입니다.')
       }
     }
   },
