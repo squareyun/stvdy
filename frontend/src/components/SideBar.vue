@@ -63,7 +63,7 @@ const logout = async () => {
       강의 정보 공유
     </router-link> -->
     <router-link
-      to="/question/1"
+      to="/question"
       id="side-question">
       <div class="selected"></div>
       <svg

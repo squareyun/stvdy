@@ -118,7 +118,7 @@ const deleteQtn = () => {
     $route.params.id,
     (res) => {
       console.log(res)
-      router.push(`/question/1`)
+      router.push(`/question`)
     },
     (fail) => console.log(fail),
   )
@@ -141,32 +141,38 @@ const bestAns = (id) => {
 }
 let tmpquestionerImage = ref('/authorImage.png')
 let questionerImage = ref(question.value.profileImage) // question에 담겨있는 profileImage 경로를 받아옴.
-let questionerImagePath = computed(()=>{
-  return questionerImage.value?questionerImage.value:tmpquestionerImage.value
+let questionerImagePath = computed(() => {
+  return questionerImage.value
+    ? questionerImage.value
+    : tmpquestionerImage.value
 })
 
-let tmprespondentImage = ref(`/randomImages/randomImage${Math.floor(Math.random() * 34)}.png`)
+let tmprespondentImage = ref(
+  `/randomImages/randomImage${Math.floor(Math.random() * 34)}.png`,
+)
 
 let isUpdateAnswer = ref(false)
 let updateAnswerContent = ref('')
-function QtnUpdateAnswer(answerNo, questionNo, answerContent) {  // 수정 시도
+function QtnUpdateAnswer(answerNo, questionNo, answerContent) {
+  // 수정 시도
   isUpdateAnswer.value = true
   updateAnswerContent.value = answerContent
 }
-function QtnUpdate(answerNo, questionNo) {        //백엔드와 연결
+function QtnUpdate(answerNo, questionNo) {
+  //백엔드와 연결
   questionStore.QtnUpdate(answerNo, questionNo, updateAnswerContent.value)
   isUpdateAnswer.value = false
 }
-function cancelQtnUpdate(){                       // 수정 중지
+function cancelQtnUpdate() {
+  // 수정 중지
   isUpdateAnswer.value = false
 }
-function QtnDelete(answerNo){
+function QtnDelete(answerNo) {
   let isDelete = confirm('댓글을 삭제하시겠습니까?')
-  if(isDelete){
+  if (isDelete) {
     questionStore.QtnDelte(answerNo)
-  }
-  else{
-    alert("댓글 삭제 안함")
+  } else {
+    alert('댓글 삭제 안함')
   }
 }
 </script>
@@ -254,7 +260,10 @@ function QtnDelete(answerNo){
           :key="ans.id">
           <div class="answers-detail-box">
             <span v-if="!isUpdateAnswer">{{ ans.detail }}</span>
-            <input v-else id="update-answer-input" v-model="updateAnswerContent">
+            <input
+              v-else
+              id="update-answer-input"
+              v-model="updateAnswerContent" />
             <svg
               class="best-btn"
               v-if="!question.bestSelected && user.id == question.userNo"
@@ -285,7 +294,9 @@ function QtnDelete(answerNo){
             </div>
 
             <div
-              :style="`background-image: url('${ans.profileImage || tmprespondentImage}');`"
+              :style="`background-image: url('${
+                ans.profileImage || tmprespondentImage
+              }');`"
               id="author-image"></div>
 
             <div id="author-name">
@@ -293,9 +304,21 @@ function QtnDelete(answerNo){
                 id="answer-edit-delete-box"
                 v-if="ans.userNo === user.id">
                 <!-- <p>{{ ans }}</p> -->
-                <button v-if="!isUpdateAnswer" @click="QtnUpdateAnswer(ans.id, question.id, ans.detail)">수정</button>
-                <button v-if="isUpdateAnswer" @click="QtnUpdate(ans.id, question.id)"> 수정 완료</button>
-                <button v-if="isUpdateAnswer" @click="cancelQtnUpdate">수정 취소</button>
+                <button
+                  v-if="!isUpdateAnswer"
+                  @click="QtnUpdateAnswer(ans.id, question.id, ans.detail)">
+                  수정
+                </button>
+                <button
+                  v-if="isUpdateAnswer"
+                  @click="QtnUpdate(ans.id, question.id)">
+                  수정 완료
+                </button>
+                <button
+                  v-if="isUpdateAnswer"
+                  @click="cancelQtnUpdate">
+                  수정 취소
+                </button>
                 <button @click="QtnDelete(ans.id)">삭제</button>
               </span>
               {{ ans.regist_time }}
@@ -670,8 +693,7 @@ function QtnDelete(answerNo){
   color: var(--hl-light);
 }
 /* 이거 수정해야함 */
-#update-answer-input{
-  color: blue
+#update-answer-input {
+  color: blue;
 }
-
 </style>

@@ -47,7 +47,7 @@ async function onSubmit(values) {
       data,
       (res) => {
         console.log(res)
-        router.push('/question/1')
+        router.push('/question')
       },
       (fail) => {
         console.log(fail)
@@ -59,7 +59,7 @@ async function onSubmit(values) {
       data,
       (res) => {
         console.log(res)
-        router.push('/question/1')
+        router.push('/question')
       },
       (fail) => {
         console.log(fail)
@@ -128,7 +128,7 @@ async function onSubmit(values) {
         <div id="question-form-menu">
           <router-link
             id="question-form-menu-cancel"
-            to="/question/1">
+            to="/question">
             취소하기
           </router-link>
           <button

@@ -7,6 +7,7 @@ const router = createRouter({
     {
       path: '/',
       alias: ['/home'],
+      name: 'home',
       component: () => import('@/views/HomeView.vue'),
     },
     {
@@ -16,6 +17,7 @@ const router = createRouter({
         {
           path: '',
           component: () => import('@/components/profile/MyPage.vue'),
+          name: 'mypage',
           children: [
             {
               path: 'changepwd',
@@ -36,32 +38,31 @@ const router = createRouter({
     },
     {
       path: '/question',
-      name: 'question',
       component: () => import('@/views/QuestionView.vue'),
       children: [
         {
-          path: '/question/:page',
-          name: 'listquestions',
+          path: '/question',
+          name: 'questionList',
           component: () => import('@/components/qna/QuestionList.vue'),
         },
         {
-          path: '/myquestion/:page',
-          name: 'myquestion',
+          path: '/myquestion',
+          name: 'myQuestion',
           component: () => import('@/components/qna/MyQuestionList.vue'),
         },
         {
           path: '/createquestion',
-          name: 'createquestion',
+          name: 'createQuestion',
           component: () => import('@/components/qna/CreateQuestion.vue'),
         },
         {
           path: '/modifyquestion/:id',
-          name: 'modifyquestion',
+          name: 'modifyQuestion',
           component: () => import('@/components/qna/CreateQuestion.vue'),
         },
         {
           path: '/questiondetail/:id',
-          name: 'questiondetail',
+          name: 'questionDetail',
           params: {},
           component: () => import('@/components/qna/QuestionDetail.vue'),
         },
@@ -69,7 +70,6 @@ const router = createRouter({
     },
     {
       path: '/about',
-      name: 'about',
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
@@ -94,12 +94,11 @@ const router = createRouter({
     },
     {
       path: '/room',
-      name: 'room',
       component: () => import('@/views/RoomView.vue'),
       children: [
         {
           path: '',
-          name: 'listroom',
+          name: 'roomList',
           component: () => import('@/components/webrtc/RoomList.vue'),
         },
         {
@@ -153,9 +152,16 @@ router.beforeEach(async (to) => {
 
   // 로그인 없이도 접근 가능한 라우터
   // 접근 하려는 라우터가 public 인지 확인
-  const testPages = ['/about', '/regist', '/passwordReset']
-  const authRequired = !testPages.includes(to.path)
-  const loginLogics = ['/about', '/regist', '/passwordReset']
+  const loginLogics = ['login', 'register', 'passwordReset']
+  const anyLogics = [
+    'login',
+    'register',
+    'passwordReset',
+    'home',
+    'questionList',
+    'questionDetail',
+    'roomList',
+  ]
 
   // 로컬 스토리지의 유저 로그인 정보가 있는지 받아오는 스토어
   const authStore = useAuthStore()
@@ -170,22 +176,19 @@ router.beforeEach(async (to) => {
 
   // public 라우터이면 유저 정보를 확인하지 않아 무한 반복 방지
   // 없으면 끝도 없이 유저 정보 검사후 이동을 반복
-  // if (authStore.isLogin) {
-  //   if (loginLogics.includes(to.path)) {
-  //     console.log(to.path)
-  //     authStore.returnUrl = to.fullPath
+  if (authStore.isLogin) {
+    if (loginLogics.includes(to.name)) {
+      authStore.returnUrl = to.fullPath
 
-  //     return '/'
-  //   }
-  // } else {
-  //   if (authRequired) {
-  //     console.log(authRequired)
-  //     console.log(to.path)
-  //     authStore.returnUrl = to.fullPath
+      return '/'
+    }
+  } else {
+    if (!anyLogics.includes(to.name)) {
+      authStore.returnUrl = to.fullPath
 
-  //     return '/about'
-  //   }
-  // }
+      return '/about'
+    }
+  }
 })
 
 export default router
