@@ -165,4 +165,10 @@ public class AnswerService {
         alarmRepository.save(alarm);
     }
 
+    public void delete(Integer answerNo) {
+        answerRepository.findById(answerNo)
+                .orElseThrow(() -> new IllegalArgumentException(MessageFormat.NO_ANSWER_ID));
+        
+        answerRepository.deleteById(answerNo);
+    }
 }
