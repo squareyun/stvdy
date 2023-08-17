@@ -113,4 +113,22 @@ public class AnswerController {
         return ResponseEntity.status(status).body(response);
     }
 
+    @DeleteMapping("/{answerNo}")
+    public ResponseEntity<Map<String, Object>> delete(@PathVariable("answerNo") Integer answerNo) {
+        Map<String, Object> resultMap = new HashMap<>();
+        HttpStatus status = null;
+        try {
+            answerService.delete(answerNo);
+            logger.debug("{} 답변 삭제 성공", answerNo);
+            resultMap.put("message", MessageFormat.SUCCESS);
+            status = HttpStatus.ACCEPTED;
+        } catch (Exception e) {
+            logger.error("답변 삭제 실패: {}", e.getMessage());
+            resultMap.put("message", MessageFormat.SERVER_FAIL + ": " + e.getMessage());
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+
+        return new ResponseEntity<Map<String, Object>>(resultMap, status);
+    }
+
 }
