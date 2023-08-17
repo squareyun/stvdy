@@ -42,7 +42,7 @@ async function onSubmit(values) {
     category: values.category,
   }
 
-  if ($route.name == 'createquestion') {
+  if ($route.name == 'createQuestion') {
     writeQuestion(
       data,
       (res) => {
@@ -53,7 +53,7 @@ async function onSubmit(values) {
         console.log(fail)
       },
     )
-  } else if ($route.name == 'modifyquestion') {
+  } else if ($route.name == 'modifyQuestion') {
     data.id = $route.params.id
     modifyQuestion(
       data,
