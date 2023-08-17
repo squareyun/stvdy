@@ -28,6 +28,9 @@ public class UserDto {
 	private String nickname;
 	private String state;
 
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	private String authNum;
+
 	private Set<AuthorityDto> authorityDtoSet;
 
 	public static UserDto from(User user) {

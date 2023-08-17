@@ -13,10 +13,12 @@ import com.ssafy.ssap.domain.user.User;
 import com.ssafy.ssap.domain.user.UserStateNs;
 import com.ssafy.ssap.dto.user.LoginResponseDto;
 import com.ssafy.ssap.dto.user.UserDto;
+import com.ssafy.ssap.exception.AuthNumException;
 import com.ssafy.ssap.exception.DuplicateMemberException;
 import com.ssafy.ssap.exception.NotFoundMemberException;
 import com.ssafy.ssap.repository.UserRepository;
 import com.ssafy.ssap.repository.UserStateNsRepository;
+import com.ssafy.ssap.util.RedisUtil;
 import com.ssafy.ssap.util.SecurityUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final UserStateNsRepository userStateNsRepository;
+	private final RedisUtil redisUtil;
 
 	/**
 	 * 회원가입
@@ -34,8 +37,21 @@ public class UserService {
 	@Transactional
 	public UserDto join(UserDto userDto) {
 		if (userRepository.findOneWithAuthoritiesByEmail(userDto.getEmail()).orElse(null) != null) {
-			throw new DuplicateMemberException("사용할 수 없는 이메일입니다.");
+			throw new AuthNumException("사용할 수 없는 이메일입니다.");
 		}
+
+		String key = "user_email:" + userDto.getEmail();
+		// String auth = redisUtil.getData(key);
+
+		if(!redisUtil.existData(key)) {
+			// redis에 이메일 없는 경우
+			throw new AuthNumException("인증번호가 만료되었습니다.");
+		} else if (!redisUtil.getData(key).equals(userDto.getAuthNum())) {
+			// redis에 저장된 value와 다른 경우
+			throw new AuthNumException("인증번호가 틀렸습니다.");
+		}
+
+		redisUtil.deleteData(key);
 
 		Authority authority = Authority.builder()
 			.authorityName("ROLE_USER")
