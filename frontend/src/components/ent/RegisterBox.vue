@@ -4,6 +4,7 @@ import { useAlertStore,useAuthStore } from '@/stores'
 import { joinUser } from '@/api/user'
 import router from '@/router'
 import * as Yup from 'yup'
+import { ref } from 'vue'
 const authStore = useAuthStore()
 const schema = Yup.object().shape({
   username: Yup.string()
@@ -44,7 +45,7 @@ async function onSubmit(values) {
     },
   )
 }
-const emailValue = ""
+const emailValue = ref("")
 function varificationEmail(emailValue) {  // 이메일 인증
   authStore.varificationEmail(emailValue)
 }
