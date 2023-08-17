@@ -148,21 +148,21 @@ WebRTC를 보다 간단하게 적용할 수 있고, 다양한 프레임워크와
 ## 3. 개발 환경
 
 1. BackEnd
-    - openjdk 17.0.7
-    - spring boot 3.1.2
-    - mysql 8.0.34
-    - redis 5.0.7
-    - openvidu 2.28.0
-    - intellij 2023.2
+   - openjdk 17.0.7
+   - spring boot 3.1.2
+   - mysql 8.0.34
+   - redis 5.0.7
+   - openvidu 2.28.0
+   - intellij 2023.2
 2. FrontEnd
-    - node 18.16.1
-    - vue 3.3.4
-    - openai 3.3.0
-    - vscode 1.79.2
+   - node 18.16.1
+   - vue 3.3.4
+   - openai 3.3.0
+   - vscode 1.79.2
 
 ## 4. System Architecture
 
-![기술스택-02](./assets/기술스택-02.jpg)
+![아키텍처.png](README_assets/9cd8cf173c268b33a24b49d8c99046fd7ec96b85.png)
 
 <div id="6"></div>
 
@@ -187,6 +187,8 @@ WebRTC를 보다 간단하게 적용할 수 있고, 다양한 프레임워크와
 Git flow 사용을 위해 `sourcetree` 프로그램을 사용하였고 우아한 형제들의 [git flow](https://techblog.woowahan.com/2553/)을 참고했습니다. front 와 back 으로 나누어 `faature`의 하위 브랜치를 사용하였으며 매일 오전 스크럼 이후 `back` 브랜치와 `front` 브랜치로 merge 하여 사용했습니다.<br>
 `commit message`는 `feat(대기방): 채팅방 구현` 과 같이 통일하여 작성했습니다.<br>
 <br><br><br>
+
+![gitflow.png](README_assets/58cb25ff9a2568d6316274c81bb551aa8acb42bc.png)
 
 ### 2. Jira
 
@@ -229,5 +231,5 @@ Git flow 사용을 위해 `sourcetree` 프로그램을 사용하였고 우아한
 - 윤우혁 : Backend Rest API 개발, Infra 및 CI/CD 구축을 담당하였습니다. 적용하고 싶은 기술적 요소는 많았으나 시간적인 부분에서 다소 아쉬운 점이 남습니다. 프로젝트 진행 과정에서 좋은 동료들과 함께 소통 측면과 개발 측면에서 큰 성장이 있어 뜻깊은 경험으로 남았습니다.
 
 - 김범기 : 처음으로 다수와 함께 하는 프로젝트를 진행하게 되면서 소통의 중요성과 기획단계가 얼마나 중요한지에 대해서 몸소 체감했습니다. webRTC 기술의 front부분을 맡으면서, 해당 기술에 대해 지식이 전무해 학습하면서 프로젝트에 도입하는 것이 프로젝트 기간 동안 크나큰 고통이었지만, 이 고통이 성장에 도움이 되었습니다.
-
-- 안대현 : 
+  
+  - 안대현 : 
