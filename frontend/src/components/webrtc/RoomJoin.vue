@@ -1272,6 +1272,8 @@ async function handleForceDisconnect(subscriber) {
   height: calc(100vh - 55px);
   min-height: 545px;
 
+  
+  border-left: 1px solid var(--hl-light30);
   background-color: var(--background-window);
 }
 

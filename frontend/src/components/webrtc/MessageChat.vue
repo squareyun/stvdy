@@ -126,7 +126,7 @@ function sendMessage() {
 }
 
 #chat-history::-webkit-scrollbar {
-  width: 10px;
+  width: 5px;
 }
 
 #chat-history::-webkit-scrollbar-thumb {
@@ -182,6 +182,7 @@ function sendMessage() {
   position: relative;
   display: block;
   width: 260px;
+  min-height: 40px;
 }
 
 #chat-history > li > div {
@@ -221,6 +222,7 @@ function sendMessage() {
   left: 0px;
 
   font-size: 0.8rem;
+  color: var(--font100);
 
   white-space: nowrap;
 }
