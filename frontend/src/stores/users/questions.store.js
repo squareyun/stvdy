@@ -6,6 +6,7 @@ import {
   getAnswers,
 } from '@/api/question'
 import { ref } from 'vue'
+import axios from 'axios'
 
 export const useQuestionStore = defineStore('questions', () => {
   const question = ref([])
@@ -157,6 +158,24 @@ export const useQuestionStore = defineStore('questions', () => {
   //     (fail) => console.log(fail),
   //   )
   // }
+  const QtnUpdate = async (answerNo, questionNo, content) => {
+    await axios.put(`/api/answers/${answerNo}`, {questionNo:questionNo, content:content})
+    .then(()=>{
+      console.log('댓글 수정 완료')
+    })
+    .catch((error)=>{
+      console.log('댓글 수정 실패',error)
+    })
+  }
+  const QtnDelte = async (answerNo) => {
+    await axios.delete(`/api/answers/${answerNo}`)
+    .then(()=>{
+      console.log('댓글 삭제 완료')
+    })
+    .catch((error)=>{
+      console.error('댓글 삭제 실패',error)
+    })
+  }
 
   return {
     questions,
@@ -168,5 +187,7 @@ export const useQuestionStore = defineStore('questions', () => {
     getMyList,
     getQuestionById,
     clearState,
+    QtnUpdate,
+    QtnDelte,
   }
 })

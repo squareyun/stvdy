@@ -147,6 +147,28 @@ let questionerImagePath = computed(()=>{
 
 let tmprespondentImage = ref(`/randomImages/randomImage${Math.floor(Math.random() * 34)}.png`)
 
+let isUpdateAnswer = ref(false)
+let updateAnswerContent = ref('')
+function QtnUpdateAnswer(answerNo, questionNo, answerContent) {  // 수정 시도
+  isUpdateAnswer.value = true
+  updateAnswerContent.value = answerContent
+}
+function QtnUpdate(answerNo, questionNo) {        //백엔드와 연결
+  questionStore.QtnUpdate(answerNo, questionNo, updateAnswerContent.value)
+  isUpdateAnswer.value = false
+}
+function cancelQtnUpdate(){                       // 수정 중지
+  isUpdateAnswer.value = false
+}
+function QtnDelete(answerNo){
+  let isDelete = confirm('댓글을 삭제하시겠습니까?')
+  if(isDelete){
+    questionStore.QtnDelte(answerNo)
+  }
+  else{
+    alert("댓글 삭제 안함")
+  }
+}
 </script>
 
 <template>
@@ -162,7 +184,7 @@ let tmprespondentImage = ref(`/randomImages/randomImage${Math.floor(Math.random(
       </span>
       <div id="question-detail-main">
         <div
-          placeholder="ex) 6.2전쟁은 몇년 도에 발발 했나요?"
+          placeholder="ex) 6.25전쟁은 몇년 도에 발발 했나요?"
           id="question-detail-main-text"
           name="content">
           {{ question.detail }}
@@ -231,7 +253,8 @@ let tmprespondentImage = ref(`/randomImages/randomImage${Math.floor(Math.random(
           v-for="ans in answers"
           :key="ans.id">
           <div class="answers-detail-box">
-            {{ ans.detail }}
+            <span v-if="!isUpdateAnswer">{{ ans.detail }}</span>
+            <input v-else id="update-answer-input" v-model="updateAnswerContent">
             <svg
               class="best-btn"
               v-if="!question.bestSelected && user.id != question.userNo"
@@ -269,8 +292,11 @@ let tmprespondentImage = ref(`/randomImages/randomImage${Math.floor(Math.random(
               <span
                 id="answer-edit-delete-box"
                 v-if="ans.userNo === user.id">
-                <button @click="QtnUpdate(question.id)">수정</button>
-                <button @click="QtnDelete(question.id)">삭제</button>
+                <!-- <p>{{ ans }}</p> -->
+                <button v-if="!isUpdateAnswer" @click="QtnUpdateAnswer(ans.id, question.id, ans.detail)">수정</button>
+                <button v-if="isUpdateAnswer" @click="QtnUpdate(ans.id, question.id)"> 수정 완료</button>
+                <button v-if="isUpdateAnswer" @click="cancelQtnUpdate">수정 취소</button>
+                <button @click="QtnDelete(ans.id)">삭제</button>
               </span>
               {{ ans.regist_time }}
               <span id="wrote-time">{{ ans.userNickname }}</span>
@@ -643,4 +669,9 @@ let tmprespondentImage = ref(`/randomImages/randomImage${Math.floor(Math.random(
 #answer-form-menu-btn:hover {
   color: var(--hl-light);
 }
+/* 이거 수정해야함 */
+#update-answer-input{
+  color: blue
+}
+
 </style>

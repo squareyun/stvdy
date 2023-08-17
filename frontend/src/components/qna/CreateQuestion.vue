@@ -128,7 +128,7 @@ async function onSubmit(values) {
         <div id="question-form-menu">
           <router-link
             id="question-form-menu-cancel"
-            to="question">
+            to="/question/1">
             취소하기
           </router-link>
           <button
