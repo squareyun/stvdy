@@ -137,7 +137,65 @@ STVDY의 장점은 다음과 같습니다. 먼저. 자신만의 프로필을 통
 
 ### 스터디룸
 
+#### 1.  스터디룸 생성
+
+##### a. 화면 우측 상단 검색창 옆 + 버튼을 클릭 후 나오는 입력창에 내용 기입
+
+- 필요시 키워드 및 비밀번호 여부 기입 및 제한 인원수, 종료 시간, 프라이버시 체크
+
+![스터디룸 생성.png](README_assets/0eace00dd78e1cff9684350f32b427b6260fe84f.png)
+
+#### 
+
+#### 2.  스터디룸 참여
+
+##### a. 화면 좌측 사이드 바의 스터디룸 선택 후 들어가려는 스터디룸 선택
+
+![스터디룸 참여1.png](README_assets/57eb22028fc25282a8fbd040cf2f68bcefdc917b.png)
+
+##### b. 해당 방 정보 확인 후 방 입장 여부 선택
+
+- 비밀번호 입력란 있을 시 정확한 비밀번호 입력 후 입장 가능
+
+![](README_assets/2023-08-18-03-54-28-image.png)
+
+#### 3.  스터디룸 내부 화면
+
+##### a.메시지 탭
+
+![스터디룸 캡쳐 1.PNG](README_assets/e0d1647bc7fa57fd635725354b59002dded17734.PNG)
+
+##### b. 참가자 확인 탭
+
+![스터디룸 캡쳐2.png](README_assets/d2b21cb54dfb24a0e20560598a31ea0a811c3a95.png)
+
+##### c. 그라운드 룰 확인 탭
+
+![스터디룸 캡쳐3.png](README_assets/da61258009e7cd0520651525920af28db00842d1.png)
+
+
+
+
+
+##### d. 마이크 및 카메라 오프 기능
+
+![마이크카메라 온오프기능.png](README_assets/79415f63032424395be431545551c12a21327feb.png)
+
+##### e. 마이크 및 카메라 기기 선택 기능
+
+- 우측 사이드바 하단의 설정 이모티콘을 누르고, 기기를 선택
+
+- 필요시 화면공유 기능 사용 가능
+
+![마이크카메라 기기 선택1.png](README_assets/9d79bef402bce4f15b1d3efeee8e4377bf331274.png)
+
+![마이크카메라 기기 선택2.png](README_assets/d181b2b869f5759b87fa2481232da74f3c35b115.png)
+
 ### 챗 GPT
+
+#### 1. 챗 GPT 사용
+
+#### 
 
 <div id="5"></div>
 
@@ -145,7 +203,7 @@ STVDY의 장점은 다음과 같습니다. 먼저. 자신만의 프로필을 통
 
 ## 1. webRTC
 
-### webRTC란?
+### webRTC란?![](README_assets/2023-08-18-03-36-11-image.png)
 
 <aside>
 WebRTC (Web Real-Time Communication)는 웹 브라우저 간에 플러그인의 도움 없이 서로 통신할 수 있도록 설계된 API 입니다.
@@ -157,6 +215,8 @@ WebRTC (Web Real-Time Communication)는 웹 브라우저 간에 플러그인의 
 ### openvidu
 
 WebRTC를 보다 간단하게 적용할 수 있고, 다양한 프레임워크와 호환성이 높은 openvidu를 사용하여 프로젝트를 진행했습니다.
+
+[What is OpenVidu?](https://docs.openvidu.io/en/stable/)
 
 ### 적용
 
@@ -201,7 +261,7 @@ WebRTC를 보다 간단하게 적용할 수 있고, 다양한 프레임워크와
 
 ---
 
-Git flow 사용을 위해 `sourcetree` 프로그램을 사용하였고 우아한 형제들의 [git flow](https://techblog.woowahan.com/2553/)을 참고했습니다. front 와 back 으로 나누어 `faature`의 하위 브랜치를 사용하였으며 매일 오전 스크럼 이후 `back` 브랜치와 `front` 브랜치로 merge 하여 사용했습니다.<br>
+Git flow 사용을 위해 `sourcetree` 프로그램을 사용하였고 우아한 형제들의 [git flow](https://techblog.woowahan.com/2553/)을 참고했습니다. front 와 back 으로 나누어 `feature`의 하위 브랜치를 사용하였으며 매일 오전 스크럼 이후 `back` 브랜치와 `front` 브랜치로 merge 하여 사용했습니다.<br>
 `commit message`는 `feat(대기방): 채팅방 구현` 과 같이 통일하여 작성했습니다.<br>
 <br><br><br>
 
@@ -223,8 +283,11 @@ Git flow 사용을 위해 `sourcetree` 프로그램을 사용하였고 우아한
 
 ### 1. Figma
 
-[![피그마](./assets/피그마.PNG)](https://www.figma.com/file/fRBQDGRSSAqfpwLACFunn3/Material-You-for-web-apps.-Desktop-%26-mobile-templates-(Community)?node-id=9003%3A179932)
-<br>
+![](README_assets/2023-08-18-04-13-45-image.png)
+
+![](README_assets/2023-08-18-04-14-39-image.png)
+
+
 
 ### 2. ERD
 
@@ -247,6 +310,6 @@ Git flow 사용을 위해 `sourcetree` 프로그램을 사용하였고 우아한
 
 - 윤우혁 : Backend Rest API 개발, Infra 및 CI/CD 구축을 담당하였습니다. 적용하고 싶은 기술적 요소는 많았으나 시간적인 부분에서 다소 아쉬운 점이 남습니다. 프로젝트 진행 과정에서 좋은 동료들과 함께 소통 측면과 개발 측면에서 큰 성장이 있어 뜻깊은 경험으로 남았습니다.
 
-- 김범기 : 처음으로 다수와 함께 하는 프로젝트를 진행하게 되면서 소통의 중요성과 기획단계가 얼마나 중요한지에 대해서 몸소 체감했습니다. webRTC 기술의 front부분을 맡으면서, 해당 기술에 대해 지식이 전무해 학습하면서 프로젝트에 도입하는 것이 프로젝트 기간 동안 크나큰 고통이었지만, 이 고통이 성장에 도움이 되었습니다.
-  
-  - 안대현 : 
+- 김범기 : 처음으로 다수와 함께 하는 프로젝트를 진행하게 되면서 소통의 중요성과 기획단계가 얼마나 중요한지에 대해서 몸소 체감했습니다. webRTC 기술의 front부분을 맡으면서, 해당 기술에 대해 지식이 전무해 학습하면서 프로젝트에 도입하는 것이 프로젝트 기간 동안 크나큰 고통이었지만, 이 고통이 성장에 도움이 되었습니다. 
+
+- 안대현 : 
