@@ -114,7 +114,7 @@ const logout = async () => {
         프로필
       </router-link>
       <router-link
-        to="/myquestion/1"
+        to="/myquestion"
         id="side-myquestion">
         <div class="selected"></div>
         <svg
