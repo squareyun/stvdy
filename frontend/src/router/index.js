@@ -152,10 +152,10 @@ router.beforeEach(async (to) => {
 
   // 로그인 없이도 접근 가능한 라우터
   // 접근 하려는 라우터가 public 인지 확인
-  const loginLogics = ['login', 'register', 'passwordReset']
+  const loginLogics = ['login', 'regist', 'passwordReset']
   const anyLogics = [
     'login',
-    'register',
+    'regist',
     'passwordReset',
     'home',
     'questionList',
