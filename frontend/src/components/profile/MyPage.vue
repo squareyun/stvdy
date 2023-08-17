@@ -193,7 +193,7 @@ function updateProfileImage(e) {
 
 <style>
 #user-background-img {
-  width: 960px;
+  width: 958px;
   height: 220px;
 
   border-radius: 10px 10px 0px 0px;
