@@ -162,6 +162,9 @@ function QtnUpdate(answerNo, questionNo) {
   //백엔드와 연결
   questionStore.QtnUpdate(answerNo, questionNo, updateAnswerContent.value)
   isUpdateAnswer.value = false
+  questionStore.getQuestionById($route.params.id).then(() => {
+  islikeQtn()
+})
 }
 function cancelQtnUpdate() {
   // 수정 중지
@@ -171,8 +174,11 @@ function QtnDelete(answerNo) {
   let isDelete = confirm('댓글을 삭제하시겠습니까?')
   if (isDelete) {
     questionStore.QtnDelte(answerNo)
+    questionStore.getQuestionById($route.params.id).then(() => {
+      islikeQtn()
+    })
   } else {
-    alert('댓글 삭제 안함')
+    alert('댓글 삭제를 취소합니다.')
   }
 }
 </script>
@@ -259,9 +265,9 @@ function QtnDelete(answerNo) {
           v-for="ans in answers"
           :key="ans.id">
           <div class="answers-detail-box">
-            <span v-if="!isUpdateAnswer">{{ ans.detail }}</span>
+            <span v-if="!isUpdateAnswer || (user.id != ans.userNo)">{{ ans.detail }}</span>
             <input
-              v-else
+              v-if="isUpdateAnswer && user.id == ans.userNo"
               id="update-answer-input"
               v-model="updateAnswerContent" />
             <svg
@@ -694,6 +700,8 @@ function QtnDelete(answerNo) {
 }
 /* 이거 수정해야함 */
 #update-answer-input {
-  color: blue;
+  background-color: transparent;
+  color: var(--hl-light);
+  width: 400px;
 }
 </style>

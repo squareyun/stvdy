@@ -23,6 +23,18 @@
   const currentPage = ref(1)
   const searchKeyword = ref(useRoute().params.keyword || '')
 
+  const route = useRoute();
+  // 방 데이터를 가져오는 함수
+  const fetchRoomData = async () => {
+    searchKeyword.value = route.params.keyword || '' // 새로운 검색어를 가져옴
+
+    // 검색어에 기반하여 방 데이터를 가져옴
+    await webRtcStore.getsearchAllRooms(searchKeyword.value);
+    await webRtcStore.getsearchRooms(0, searchKeyword.value, pageSize.value);
+    webRtcStore.notIsHost()
+  };
+  onMounted(fetchRoomData)
+  watch(route, fetchRoomData)
   onMounted(async () => {
     await webRtcStore.getsearchAllRooms(searchKeyword.value) // 페이지 네이션을 위해 전체 방의 갯수를 받기 위해 사용
     await webRtcStore.getsearchRooms(0,searchKeyword.value,pageSize.value) // 20개의 방씩 페이지로 받는중. wholeList로는 이미지path를 받지 못함.
@@ -110,7 +122,8 @@
 <template>
   <!-- 주 화면 -->
   <div>
-    <span class="room-content-title">스터디 룸</span>
+    <span v-if="roomList.length" class="room-content-title">스터디 룸</span>
+    <span v-else class="room-content-title"> "{{searchKeyword}}"에 부합하는 스터디 룸이 존재하지 않습니다.</span>
     <div id="room-list-area">
       <div
         class="room-list"

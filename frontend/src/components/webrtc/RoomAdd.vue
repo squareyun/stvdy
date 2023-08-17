@@ -152,7 +152,7 @@ const creatorIsHost = () => {
 
 const joinSession = () => {
   // if(!webrtcstore.myUserName || !webrtcstore.mySessionId){
-  if (!webrtcstore.myUserName) {
+  if (!userstore.user.username) {
     alert('이름을 작성해주세요.')
     return
   }

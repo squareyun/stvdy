@@ -53,7 +53,7 @@ function goKeywordStudyRoom(event){
   event.preventDefault()
   if(!searchKeyword.value){
     router.push({
-      name: 'listroom',
+      name: 'roomList',
     })
   }else{
     router.push({
