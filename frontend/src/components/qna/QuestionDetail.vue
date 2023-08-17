@@ -110,7 +110,7 @@ const answerQtn = () => {
 }
 
 const modifyQtn = () => {
-  router.push(`/modifyQuestion/${question.value.id}`)
+  router.push(`/modifyquestion/${question.value.id}`)
 }
 
 const deleteQtn = () => {

@@ -11,7 +11,7 @@ const $route = useRoute()
 const questionStore = useQuestionStore()
 let question = {}
 
-if ($route.name == 'modifyquestion') {
+if ($route.name == 'modifyQuestion') {
   question = computed(() => questionStore.question)
   questionStore.getQuestionById($route.params.id)
 }
@@ -42,7 +42,7 @@ async function onSubmit(values) {
     category: values.category,
   }
 
-  if ($route.name == 'createquestion') {
+  if ($route.name == 'createQuestion') {
     writeQuestion(
       data,
       (res) => {
@@ -53,7 +53,7 @@ async function onSubmit(values) {
         console.log(fail)
       },
     )
-  } else if ($route.name == 'modifyquestion') {
+  } else if ($route.name == 'modifyQuestion') {
     data.id = $route.params.id
     modifyQuestion(
       data,
@@ -73,12 +73,12 @@ async function onSubmit(values) {
   <div>
     <span
       class="question-content-title"
-      v-if="$route.name == 'createquestion'">
+      v-if="$route.name == 'createQuestion'">
       질문 작성
     </span>
     <span
       class="question-content-title"
-      v-if="$route.name == 'modifyquestion'">
+      v-if="$route.name == 'modifyQuestion'">
       질문 수정
     </span>
     <div class="question-content">
@@ -134,8 +134,8 @@ async function onSubmit(values) {
           <button
             id="question-form-menu-btn"
             :disabled="isSubmitting">
-            <span v-if="$route.name == 'createquestion'">작성</span>
-            <span v-if="$route.name == 'modifyquestion'">수정</span>
+            <span v-if="$route.name == 'createQuestion'">작성</span>
+            <span v-if="$route.name == 'modifyQuestion'">수정</span>
           </button>
         </div>
       </Form>
