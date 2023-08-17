@@ -19,7 +19,7 @@ const isHost = ref(false)
 const isnotFull = ref(true)     // 선택한 방의 입장가능 여부. default는 true
 let tmpStudyImagePath = ref('/testBackground.png')
 const wholepage = computed(() => Math.ceil(webRtcStore.wholeroomNo / pageSize.value)) // 페이지네이션을 위한 작업
-const pageSize = ref(10)        // 한 번에 몇개의 방을 보여줄지 정해주는 값
+const pageSize = ref(12)        // 한 번에 몇개의 방을 보여줄지 정해주는 값
 const currentPage = ref(1)
 
 onBeforeMount(async () => {

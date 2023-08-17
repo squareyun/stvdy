@@ -119,7 +119,7 @@ async function onSubmit(values) {
             rules="required"
             :class="{ 'is-invalid': errors.content }">
             <textarea
-              placeholder="ex) 6.2전쟁은 몇년 도에 발발 했나요?"
+              placeholder="ex) 6.25전쟁은 몇년 도에 발발 했나요?"
               id="question-form-main-text"
               v-bind="field"
               name="content"></textarea>

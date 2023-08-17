@@ -257,7 +257,7 @@ function QtnDelete(answerNo){
             <input v-else id="update-answer-input" v-model="updateAnswerContent">
             <svg
               class="best-btn"
-              v-if="!question.bestSelected && user.id != question.userNo"
+              v-if="!question.bestSelected && user.id == question.userNo"
               @click="bestAns(ans.id)"
               width="1.4rem"
               height="1.4rem"

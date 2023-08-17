@@ -174,7 +174,7 @@ function updateIsSeeInputPw(event) {
           <p
             class="join-field-name"
             v-if="selectedRoomPw">
-            &nbsp;&nbsp;키워드 &nbsp;
+            &nbsp;&nbsp;비밀번호 &nbsp;
           </p>
           <input
             v-if="selectedRoomPw"

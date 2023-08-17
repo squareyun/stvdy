@@ -52,7 +52,7 @@ async function moreAlarms() {
 
 <template>
   <div id="search">
-    <form action="">
+    <form action="" @submit="">
       <input
         type="text"
         id="search-input"
