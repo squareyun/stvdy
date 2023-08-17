@@ -17,7 +17,7 @@
   const isSeeInputPw = ref(false)
   const isHost = ref(false)
   const isnotFull = ref(true)     // 선택한 방의 입장가능 여부. default는 true
-  let tmpStudyImagePath = ref('/testBackground.png')
+  // let tmpStudyImagePath = ref('/testBackground.png')
   const wholepage = computed(() => Math.ceil(webRtcStore.wholeroomNo / pageSize.value)) // 페이지네이션을 위한 작업
   const pageSize = ref(12)        // 한 번에 몇개의 방을 보여줄지 정해주는 값
   const currentPage = ref(1)
@@ -101,6 +101,10 @@
   function limitRoomRule(str, maxLength) {
     return str.length > maxLength ? str.slice(0, maxLength-2) + '...' : str;
   }
+
+  function getTmpStudyImagePath() {
+    return `/randomBackImages/testBackground${Math.floor(Math.random() * 17)}.png`;
+  }
 </script>
 
 <template>
@@ -116,7 +120,7 @@
           <div
             class="room-card-image"
             :style="`background-image: url(${
-              room.imagePath || tmpStudyImagePath
+              room.imagePath || getTmpStudyImagePath()
             });
             background-repeat : no-repeat;background-size: cover; background-position: center;`"></div>
           <div class="room-image-filter-top">
