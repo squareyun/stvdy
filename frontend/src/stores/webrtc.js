@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores'
+import { computed } from 'vue'
 
 import axios from 'axios'
 
@@ -14,7 +15,7 @@ export const usewebRtcStore = defineStore({
     userId: Math.floor(Math.random() * (200 - 1 + 1)) + 1, // 테스트를 위해서 임시로...
 
     mySessionId: 'SSAP STVDY' + (Math.floor(Math.random() * (200 - 1 + 1)) + 1),
-    myUserName : useUserStore().user.username,  // user 닉네임
+    myUserName: useUserStore().user.username, // user 닉네임
     // myUserName: '테스트 유저' + (Math.floor(Math.random() * (200 - 1 + 1)) + 1),
 
     endHour: 0,
@@ -47,7 +48,7 @@ export const usewebRtcStore = defineStore({
     roomListAll: [],
     roomList: [],
     roomId: null,
-    wholeroomNo: 0,   // 페이지네이션을 위해 전체 방의 갯수를 가져옴
+    wholeroomNo: 0, // 페이지네이션을 위해 전체 방의 갯수를 가져옴
     peopleNo: 0, // 우선 peopleNo은 0으로 둠. 방 탈퇴 및 방 정보에 사용할 예정임
     keywordAllroom: [],
     router: useRouter(),
@@ -60,6 +61,13 @@ export const usewebRtcStore = defineStore({
     roomImagePath: useUserStore().user.roomImagePath,
   }),
   actions: {
+    init() {
+      const userStore = useUserStore()
+      const user = computed(() => userStore.user)
+
+      this.userNo = user.value.id
+      this.myUserName = user.value.username
+    },
     isMakingTrue() {
       this.isMaking = true
     },
@@ -229,16 +237,17 @@ export const usewebRtcStore = defineStore({
         const response = await axios.get(
           'https://i9d205.p.ssafy.io/api/rooms/wholeList',
         )
-        this.roomListAll = response.data.roomList   // roomListAll이라는 별칭으로 바꿔줌.
+        this.roomListAll = response.data.roomList // roomListAll이라는 별칭으로 바꿔줌.
         this.wholeroomNo = this.roomListAll.length
         console.log(this.roomListAll)
-        console.log('전체갯수',this.roomListAll.length)
+        console.log('전체갯수', this.roomListAll.length)
       } catch (error) {
         console.error('getRtcRooms함수 오류: ', error)
       }
     },
 
-    async getsearchRooms(pageNo = 0, keyword = '', size = 20) { // 이 것을 이용해야 룸의 이미지를 받아올수 있음
+    async getsearchRooms(pageNo = 0, keyword = '', size = 20) {
+      // 이 것을 이용해야 룸의 이미지를 받아올수 있음
       try {
         console.log('getsearchRooms함수1')
         const response = await axios.get(
@@ -249,13 +258,14 @@ export const usewebRtcStore = defineStore({
         this.roomList = response.data.roomList.content
         console.log(this.roomList)
         console.log('getsearchRooms함수3')
-        console.log('갯수',this.roomList.length)
+        console.log('갯수', this.roomList.length)
       } catch (error) {
         console.error('getsearchRooms함수 오류: ', error)
       }
     },
-    async getsearchAllRooms(keyword = '', size = 10000){  // 키워드별로 받을 때.
-      try{
+    async getsearchAllRooms(keyword = '', size = 10000) {
+      // 키워드별로 받을 때.
+      try {
         console.log('getsearchAllRooms 함수1')
         const response = await axios.get(
           `https://i9d205.p.ssafy.io/api/rooms/list?pageNo=0&keyword=${keyword}&pageSize=${size}`,
@@ -266,9 +276,9 @@ export const usewebRtcStore = defineStore({
         this.wholeroomNo = this.keywordAllroom.length
         console.log(this.keywordAllroom)
         console.log('getsearchAllRooms 함수3')
-        console.log('갯수',this.keywordAllroom.length)
-      }catch(error){
-        console.error('getsearchAllRooms 함수 오류: ', error);
+        console.log('갯수', this.keywordAllroom.length)
+      } catch (error) {
+        console.error('getsearchAllRooms 함수 오류: ', error)
       }
     },
 
