@@ -102,6 +102,11 @@ const router = createRouter({
           name: 'listroom',
           component: () => import('@/components/webrtc/RoomList.vue'),
         },
+        {
+          path: '/room/search/:keyword',
+          name: 'listkeywordroom',
+          component: () => import('@/components/webrtc/RoomSearchlist.vue'),
+        },
       ],
     },
     {

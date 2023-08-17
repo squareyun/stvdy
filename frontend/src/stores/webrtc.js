@@ -49,7 +49,7 @@ export const usewebRtcStore = defineStore({
     roomId: null,
     wholeroomNo: 0,   // 페이지네이션을 위해 전체 방의 갯수를 가져옴
     peopleNo: 0, // 우선 peopleNo은 0으로 둠. 방 탈퇴 및 방 정보에 사용할 예정임
-
+    keywordAllroom: [],
     router: useRouter(),
 
     /////////////////////////////////
@@ -252,6 +252,23 @@ export const usewebRtcStore = defineStore({
         console.log('갯수',this.roomList.length)
       } catch (error) {
         console.error('getsearchRooms함수 오류: ', error)
+      }
+    },
+    async getsearchAllRooms(keyword = '', size = 10000){  // 키워드별로 받을 때.
+      try{
+        console.log('getsearchAllRooms 함수1')
+        const response = await axios.get(
+          `https://i9d205.p.ssafy.io/api/rooms/list?pageNo=0&keyword=${keyword}&pageSize=${size}`,
+        )
+        console.log('getsearchAllRooms 함수2')
+        console.log(response.data.roomList)
+        this.keywordAllroom = response.data.roomList.content
+        this.wholeroomNo = this.keywordAllroom.length
+        console.log(this.keywordAllroom)
+        console.log('getsearchAllRooms 함수3')
+        console.log('갯수',this.keywordAllroom.length)
+      }catch(error){
+        console.error('getsearchAllRooms 함수 오류: ', error);
       }
     },
 

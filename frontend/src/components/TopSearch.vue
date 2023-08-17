@@ -37,7 +37,6 @@ let profileValue = ref(
 let profileImageUrl = ref(profileValue.value ? profileValue.value : null)
 
 const profileImagePath = computed(() => {
-  // user가 등록한 프로필 이미지가 없으면, 임의 프로필을 보여줌
   return profileImageUrl.value ? profileImageUrl.value : tmpProfileUrl //'/testProfile.png'
 })
 
@@ -48,14 +47,32 @@ async function showDetail(url) {
 async function moreAlarms() {
   router.push('/alarms')
 }
+
+let searchKeyword =  ref("")
+function goKeywordStudyRoom(event){
+  event.preventDefault()
+  if(!searchKeyword.value){
+    router.push({
+      name: 'listroom',
+    })
+  }else{
+    router.push({
+      name: 'listkeywordroom',
+      params: {
+        keyword: searchKeyword.value,
+      },
+    })
+  }
+}
 </script>
 
 <template>
   <div id="search">
-    <form action="" @submit="">
+    <form action="" @submit="goKeywordStudyRoom">
       <input
         type="text"
         id="search-input"
+        v-model="searchKeyword"
         placeholder="검색" />
       <button
         id="search-btn"

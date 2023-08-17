@@ -1,14 +1,14 @@
 <script setup>
-import { ref, computed, watch, onBeforeMount } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { usewebRtcStore } from '@/stores'
 import { useQuestionStore } from '@/stores'
-// import { storeToRefs } from 'pinia';
+import { useRoute } from 'vue-router';
 
 const webRtcStore = usewebRtcStore()
 const questionsStore = useQuestionStore()
 // 화상 회의 방과 관련된 것들
 // const roomList = ref(webRtcStore.roomList)
-const roomList = computed(() => webRtcStore.roomList)
+const roomList = computed(() => webRtcStore.roomList) //여기서 roomList는 키워드 값에 대한 전체리스트
 const title = ref(null)
 const isRoomInfo = ref(false)
 const selectedRoom = ref(null) // 선택한 방의 정보
@@ -21,10 +21,11 @@ let tmpStudyImagePath = ref('/testBackground.png')
 const wholepage = computed(() => Math.ceil(webRtcStore.wholeroomNo / pageSize.value)) // 페이지네이션을 위한 작업
 const pageSize = ref(12)        // 한 번에 몇개의 방을 보여줄지 정해주는 값
 const currentPage = ref(1)
+const searchKeyword = ref(useRoute().params.keyword || '')
 
-onBeforeMount(async () => {
-  await webRtcStore.getRtcRooms() // 페이지 네이션을 위해 전체 방의 갯수를 받기 위해 사용
-  await webRtcStore.getsearchRooms(0,'',pageSize.value) // 20개의 방씩 페이지로 받는중. wholeList로는 이미지path를 받지 못함.
+onMounted(async () => {
+  await webRtcStore.getsearchAllRooms(searchKeyword.value) // 페이지 네이션을 위해 전체 방의 갯수를 받기 위해 사용
+  await webRtcStore.getsearchRooms(0,searchKeyword.value,pageSize.value) // 20개의 방씩 페이지로 받는중. wholeList로는 이미지path를 받지 못함.
   webRtcStore.notIsHost()
 })
 
@@ -44,7 +45,8 @@ watch(
 )
 
 // button 클릭시 사용할 수 있도록. getsearchRooms 정의해줌.
-function getsearchRooms(pageNo = 0, keyword = '', size = pageSize.value) {
+function getsearchRooms(pageNo = 0, keyword = searchKeyword.value, size = pageSize.value) {
+  console.log('!!!!!!!!!!!!!!!!',searchKeyword.value)
   currentPage.value = pageNo +1
   webRtcStore.getsearchRooms(pageNo, keyword, size)
 }
@@ -136,7 +138,7 @@ function updateIsSeeInputPw(event) {
       <div
         class="page-nav-left"
         :class="{ deactivated: 1 === currentPage }"
-        @click="getsearchRooms(0,'',pageSize)">
+        @click="getsearchRooms(0,searchKeyword,pageSize)">
         <svg
           width="1.2rem"
           height="1.2rem"
@@ -156,7 +158,7 @@ function updateIsSeeInputPw(event) {
           :class="{ active: page === currentPage }"
           v-for="page in wholepage"
           :key="page"
-          @click="getsearchRooms(page-1,'',pageSize)">
+          @click="getsearchRooms(page-1,searchKeyword,pageSize)">
           {{ page }}
         </li>
       </ul>
@@ -165,7 +167,7 @@ function updateIsSeeInputPw(event) {
         :class="{
           deactivated: currentPage === wholepage,
         }"
-        @click="getsearchRooms(wholepage-1,'',pageSize)">
+        @click="getsearchRooms(wholepage-1,searchKeyword,pageSize)">
         <svg
           width="1.2rem"
           height="1.2rem"
