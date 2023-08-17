@@ -1,10 +1,10 @@
 <script setup>
 import { Form, Field } from 'vee-validate'
-import { useAlertStore } from '@/stores'
+import { useAlertStore,useAuthStore } from '@/stores'
 import { joinUser } from '@/api/user'
 import router from '@/router'
 import * as Yup from 'yup'
-
+const authStore = useAuthStore()
 const schema = Yup.object().shape({
   username: Yup.string()
     .required('*닉네임을 작성해주세요.')
@@ -30,6 +30,7 @@ async function onSubmit(values) {
     password: values.password,
     name: values.realname,
     nickname: values.username,
+    authNum: values.emailVarify,
   }
 
   joinUser(
@@ -42,6 +43,10 @@ async function onSubmit(values) {
       console.log(error)
     },
   )
+}
+const emailValue = ""
+function varificationEmail(emailValue) {  // 이메일 인증
+  authStore.varificationEmail(emailValue)
 }
 </script>
 

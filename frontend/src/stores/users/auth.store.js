@@ -4,6 +4,7 @@ import { useAlertStore, useUserStore } from '@/stores'
 import { loginAuth } from '@/api/auth'
 import { ref } from 'vue'
 import router from '@/router'
+import axios from 'axios'
 
 export const useAuthStore = defineStore({
   id: 'auth',
@@ -82,5 +83,17 @@ export const useAuthStore = defineStore({
 
       router.push('/about')
     },
+
+    async varificationEmail(emailValue){
+      try{
+        const response = await axios.get(`/api/users/join/${emailValue}`)
+        console.log('이메일 전송 완료', response.data)
+        alert('이메일 전송 완료!')
+      }
+      catch(error){
+        console.log('이메일 전송 실패',error, error.response.data)
+        alert('이메일 전송에 실패했습니다. 주소를 다시 확인해주세요.')
+      }
+    }
   },
 })
