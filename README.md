@@ -173,10 +173,6 @@ STVDY의 장점은 다음과 같습니다. 먼저. 자신만의 프로필을 통
 
 ![스터디룸 캡쳐3.png](README_assets/da61258009e7cd0520651525920af28db00842d1.png)
 
-
-
-
-
 ##### d. 마이크 및 카메라 오프 기능
 
 ![마이크카메라 온오프기능.png](README_assets/79415f63032424395be431545551c12a21327feb.png)
@@ -194,6 +190,10 @@ STVDY의 장점은 다음과 같습니다. 먼저. 자신만의 프로필을 통
 ### 챗 GPT
 
 #### 1. 챗 GPT 사용
+
+- 모든 페이지 좌측 상단에 있는 챗 GPT 클릭후 개인 API 등록 후 사용 가능
+
+![챗 gpt 사용1.png](README_assets/b11259315642e38d4f37aec236c4a2525280a049.png)
 
 #### 
 
@@ -239,7 +239,7 @@ WebRTC를 보다 간단하게 적용할 수 있고, 다양한 프레임워크와
 
 ## 3. System Architecture
 
-![아키텍처](/uploads/67a97301c75177fc249255156776ca16/아키텍처.png)
+![아키텍쳐1.png](README_assets/a0cb85249ed539951efa8481254451b201a3ecd9.png)
 
 <div id="6"></div>
 
@@ -287,13 +287,10 @@ Git flow 사용을 위해 `sourcetree` 프로그램을 사용하였고 우아한
 
 ![](README_assets/2023-08-18-04-14-39-image.png)
 
-
-
 ### 2. ERD
 
 ![image.png](./image.png)
 <br>
-
 
 ### 3. API 문서
 
